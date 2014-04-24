@@ -74,7 +74,7 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
 class BlockDeviceMapping(ec2.BlockDeviceMapping):
     def validate(self):
         if len(set(self.properties.keys()).intersection(
-            set(['Ebs', 'VirtualName']))) != 1:
+                set(['Ebs', 'VirtualName']))) != 1:
             raise ValueError('One of Ebs or VirtualName required')
 
         return True
