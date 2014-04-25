@@ -64,13 +64,6 @@ class TestEc2Resource(object):
         )
         assert_equals(dhcp_opts.JSONrepr(), data)
 
-    def test_dhcp_options_validate(self):
-        dhcp_opts = ec2.DHCPOptions(
-            "test",
-            DomainName="example.com"
-        )
-        dhcp_opts.validate()
-
     def test_eip(self):
         data = {
             'Properties': {
