@@ -99,7 +99,31 @@ class TestEc2Resource(object):
         )
         assert_raises(ValueError, eipa.JSONrepr)
 
-    def test_eip_association_valid(self):
+    def test_eip_association_invalid_no_allocation_id(self):
+        eipa = ec2.EIPAssociation(
+            "test",
+            EIP="testme-123",
+            NetworkInterfaceId="test-345"
+        )
+        assert_raises(ValueError, eipa.JSONrepr)
+
+    def test_eip_association_valid_allocation_id(self):
+        data = {
+            'Properties': {
+                'AllocationId': 'testme-123',
+                'NetworkInterfaceId': 'testme-234'
+            },
+            'Type': 'AWS::EC2::EIPAssociation'
+        }
+
+        eipa = ec2.EIPAssociation(
+            "test",
+            AllocationId="testme-123",
+            NetworkInterfaceId="testme-234"
+        )
+        assert_equals(eipa.JSONrepr(), data)
+
+    def test_eip_association_valid_eip(self):
         data = {
             'Properties': {
                 'EIP': 'testme-123',
@@ -115,14 +139,6 @@ class TestEc2Resource(object):
         )
         assert_equals(eipa.JSONrepr(), data)
 
-    def test_eip_association_validate(self):
-        eipa = ec2.EIPAssociation(
-            "test",
-            EIP="testme-123",
-            InstanceId="testme-234"
-        )
-        eipa.validate()
-
     def test_ebs_block_device_invalid_io1_no_iops(self):
         ebsbd = ec2.EBSBlockDevice(
             "test",
@@ -135,6 +151,14 @@ class TestEc2Resource(object):
             "test",
             VolumeType="io1",
             Iops=2100,
+        )
+        assert_raises(ValueError, ebsbd.JSONrepr)
+
+    def test_ebs_block_device_invalid_standard_invalid_iops(self):
+        ebsbd = ec2.EBSBlockDevice(
+            "test",
+            VolumeType="standard",
+            Iops=200,
         )
         assert_raises(ValueError, ebsbd.JSONrepr)
 
@@ -155,7 +179,10 @@ class TestEc2Resource(object):
         assert_equals(ebsbd.JSONrepr(), data)
 
     def test_block_device_mapping_invalid_no_type(self):
-        ebsbdm = ec2.BlockDeviceMapping("test")
+        ebsbdm = ec2.BlockDeviceMapping(
+            "test",
+            DeviceName="/dev/sda",
+        )
         assert_raises(ValueError, ebsbdm.JSONrepr)
 
     def test_block_device_mapping_invalid_conflicting_type(self):
