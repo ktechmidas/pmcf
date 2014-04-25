@@ -40,11 +40,8 @@ class EIP(ec2.EIP):
 class EIPAssociation(ec2.EIPAssociation):
     def validate(self):
         net_props = ['InstanceId', 'PrivateIpAddress']
-        nic_rsrc = []
-        for prop in ['AllocationId', 'EIP']:
-            if self.properties.get(prop):
-                nic_rsrc.append(prop)
-        if len(nic_rsrc) != 1:
+        if len(set(self.properties.keys()).intersection(
+                set(['AllocationId', 'EIP']))) != 1:
             raise ValueError("Need to specify an EIP")
 
         if self.properties.get('AllocationId'):
