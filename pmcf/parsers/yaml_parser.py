@@ -22,3 +22,8 @@ class YamlParser(object):
             return yaml.load(config)
         except Exception, e:
             raise exceptions.ParserFailure(e)
+
+
+__all__ = [
+    YamlParser
+]

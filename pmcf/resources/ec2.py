@@ -194,3 +194,43 @@ class VPNGateway(ec2.VPNGateway):
 
 class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
     pass
+
+
+__all__ = [
+    BlockDeviceMapping,
+    CustomerGateway,
+    DHCPOptions,
+    EBSBlockDevice,
+    EIP,
+    EIPAssociation,
+    ICMP,
+    Instance,
+    InternetGateway,
+    MountPoint,
+    NetworkAcl,
+    NetworkAclEntry,
+    NetworkInterface,
+    NetworkInterfaceAttachment,
+    NetworkInterfaceProperty,
+    PortRange,
+    PrivateIpAddressSpecification,
+    Route,
+    RouteTable,
+    SecurityGroup,
+    SecurityGroupEgress,
+    SecurityGroupIngress,
+    SecurityGroupRule,
+    Subnet,
+    SubnetNetworkAclAssociation,
+    SubnetRouteTableAssociation,
+    Tag,
+    Volume,
+    VolumeAttachment,
+    VPC,
+    VPCDHCPOptionsAssociation,
+    VPCGatewayAttachment,
+    VPNConnection,
+    VPNConnectionRoute,
+    VPNGateway,
+    VPNGatewayRoutePropagation
+]

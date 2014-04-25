@@ -18,3 +18,8 @@ class ParserFailure(Exception):
         full_message = ("Error parsing input: %s" % message)
         super(ParserFailure, self).__init__(full_message)
         self.message = full_message
+
+
+__all__ = [
+    ParserFailure
+]
