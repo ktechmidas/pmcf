@@ -86,7 +86,12 @@ class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
 
 
 class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
-    pass
+    def validate(self):
+        if len(set(self.properties.keys()).intersection(
+                set(['NetworkInterfaceId', 'SubnetId']))) != 1:
+            raise ValueError('One of Ebs or VirtualName required')
+
+        return True
 
 
 class Instance(ec2.Instance):

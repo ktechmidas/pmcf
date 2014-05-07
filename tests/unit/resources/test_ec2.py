@@ -229,30 +229,75 @@ class TestEc2Resource(object):
         )
         assert_equals(mp.JSONrepr(), data)
 
-#    def test_PrivateIpAddressSpecification_invalid(self):
-#        pass
-#
-#    def test_PrivateIpAddressSpecification_valid(self):
-#        pass
-#
-#    def test_NetworkInterfaceProperty_invalid(self):
-#        pass
-#
-#    def test_NetworkInterfaceProperty_valid(self):
-#        pass
-#
+    def test_private_ipaddress_specification_invalid_no_ip(self):
+        pips = ec2.PrivateIpAddressSpecification(
+            "test",
+            Primary=False,
+        )
+        assert_raises(ValueError, pips.JSONrepr)
+
+    def test_private_ipaddress_specification_invalid_no_primary(self):
+        pips = ec2.PrivateIpAddressSpecification(
+            PrivateIpAddress='1.2.3.4',
+        )
+        assert_raises(ValueError, pips.JSONrepr)
+
+    def test_private_ipaddress_specification_valid(self):
+        data = {'Primary': 'true', 'PrivateIpAddress': '1.2.3.4'}
+        pips = ec2.PrivateIpAddressSpecification(
+            PrivateIpAddress='1.2.3.4',
+            Primary=True,
+        )
+        assert_equals(pips.JSONrepr(), data)
+
+    def test_network_interface_property_invalid_no_subnet_or_int(self):
+        nip = ec2.NetworkInterfaceProperty(
+            DeviceIndex='1',
+        )
+        assert_raises(ValueError, nip.JSONrepr)
+
+    def test_network_interface_property_invalid_both_subnet_and_int(self):
+        nip = ec2.NetworkInterfaceProperty(
+            NetworkInterfaceId='testme-123',
+            DeviceIndex='1',
+            SubnetId='testme-456'
+        )
+        assert_raises(ValueError, nip.JSONrepr)
+
+    def test_network_interface_property_valid(self):
+        data = {
+            'AssociatePublicIpAddress': 'true',
+            'DeleteOnTermination': 'true',
+            'Description': 'testme',
+            'DeviceIndex': '1',
+            'NetworkInterfaceId': 'testme-123'
+        }
+        nip = ec2.NetworkInterfaceProperty(
+            NetworkInterfaceId='testme-123',
+            AssociatePublicIpAddress=True,
+            DeviceIndex='1',
+            DeleteOnTermination=True,
+            Description='testme',
+        )
+        assert_equals(nip.JSONrepr(), data)
+
 #    def test_Instance_invalid(self):
 #        pass
 #
 #    def test_Instance_valid(self):
 #        pass
 #
-#    def test_InternetGateway_invalid(self):
-#        pass
-#
-#    def test_InternetGateway_valid(self):
-#        pass
-#
+    def test_internet_gateway_invalid(self):
+        # You can't screw this one up
+        pass
+
+    def test_internet_gateway_valid(self):
+        data = {'Type': 'AWS::EC2::InternetGateway'}
+        ig = ec2.InternetGateway(
+            "test"
+        )
+        assert_equals(ig.JSONrepr(), data)
+
 #    def test_NetworkAcl_invalid(self):
 #        pass
 #
