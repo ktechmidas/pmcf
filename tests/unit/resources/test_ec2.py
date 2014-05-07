@@ -298,12 +298,23 @@ class TestEc2Resource(object):
         )
         assert_equals(ig.JSONrepr(), data)
 
-#    def test_NetworkAcl_invalid(self):
-#        pass
-#
-#    def test_NetworkAcl_valid(self):
-#        pass
-#
+    def test_network_acl_invalid_no_vpcid(self):
+        na = ec2.NetworkAcl("test")
+        assert_raises(ValueError, na.JSONrepr)
+
+    def test_network_acl_valid(self):
+        data = {
+            'Type': 'AWS::EC2::NetworkAcl',
+            'Properties': {
+                'VpcId': 'testme-123'
+            }
+        }
+        na = ec2.NetworkAcl(
+            "test",
+            VpcId='testme-123'
+        )
+        assert_equals(na.JSONrepr(), data)
+
 #    def test_ICMP_invalid(self):
 #        pass
 #
