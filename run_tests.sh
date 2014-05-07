@@ -3,7 +3,7 @@
 ret=0
 
 echo "Running unit tests ..."
-nosetests -v || ret=$(($ret|$?))
+nosetests -v --cover-min-percentage=80 --cover-html --cover-html-dir=coverage || ret=$(($ret|$?))
 
 echo "Running pep8 tests ..."
 pep8 --show-source pmcf || ret=$(($ret|$?))
