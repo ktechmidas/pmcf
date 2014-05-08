@@ -94,7 +94,7 @@ class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['NetworkInterfaceId', 'SubnetId']))) != 1:
-            raise ValueError('One of Ebs or VirtualName required')
+            raise ValueError('One of NetworkInterfaceId or SubnetId required')
 
         return True
 
