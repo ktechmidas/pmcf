@@ -1,5 +1,4 @@
 coverage
 flake8
-json
 nose
 nose-cov
