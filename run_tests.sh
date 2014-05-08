@@ -3,7 +3,7 @@
 ret=0
 
 echo "Running unit tests ..."
-nosetests -v --cover-min-percentage=80 --cover-html \
+nosetests -v --cover-html \
 	     --cover-html-dir=coverage --cover-inclusive \
 	     --cover-erase || ret=$(($ret|$?))
 
