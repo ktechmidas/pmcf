@@ -112,15 +112,35 @@ class NetworkAcl(ec2.NetworkAcl):
 
 
 class ICMP(ec2.ICMP):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['Code', 'Type']))) != 2:
+            raise ValueError('Code and Type are required')
+
+        return True
 
 
 class PortRange(ec2.PortRange):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['From', 'To']))) != 2:
+            raise ValueError('From and To are required')
+
+        return True
 
 
 class NetworkAclEntry(ec2.NetworkAclEntry):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties['Protocol'] == 1:
+            if not self.properties.get('Icmp'):
+                raise ValueError('Icmp must be specified when protocol is 1')
+        elif self.properties['Protocol'] in [6, 17]:  # TCP, UDP
+            if not self.properties.get('PortRange'):
+                raise ValueError('PortRange must be specified when protocol '
+                                 'protocol is 6 or 17')
 
 
 class NetworkInterface(ec2.NetworkInterface):

@@ -12,9 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.resources import ec2
+from pmcf.data.template import DataTemplate
 
 
 class TestEc2Resource(object):
@@ -315,24 +317,193 @@ class TestEc2Resource(object):
         )
         assert_equals(na.JSONrepr(), data)
 
-#    def test_ICMP_invalid(self):
-#        pass
-#
-#    def test_ICMP_valid(self):
-#        pass
-#
-#    def test_PortRange_invalid(self):
-#        pass
-#
-#    def test_PortRange_valid(self):
-#        pass
-#
-#    def test_NetworkAclEntry_invalid(self):
-#        pass
-#
-#    def test_NetworkAclEntry_valid(self):
-#        pass
-#
+    def test_icmp_invalid_no_code(self):
+        icmp = ec2.ICMP(
+            "test",
+            Code=-1
+        )
+        assert_raises(ValueError, icmp.JSONrepr)
+
+    def test_icmp_invalid_no_type(self):
+        icmp = ec2.ICMP(
+            "test",
+            Type=-1
+        )
+        assert_raises(ValueError, icmp.JSONrepr)
+
+    def test_icmp_valid(self):
+        data = {'Code': -1, 'Type': -1}
+        icmp = ec2.ICMP(
+            "test",
+            Code=-1,
+            Type=-1
+        )
+        assert_equals(icmp.JSONrepr(), data)
+
+    def test_port_range_invalid_no_from(self):
+        pr = ec2.PortRange(
+            "test",
+            To=80
+        )
+        assert_raises(ValueError, pr.JSONrepr)
+
+    def test_port_range_invalid_no_to(self):
+        pr = ec2.PortRange(
+            "test",
+            From=80
+        )
+        assert_raises(ValueError, pr.JSONrepr)
+
+    def test_port_range_valid(self):
+        data = {'From': 80, 'To': 80}
+        pr = ec2.PortRange(
+            "test",
+            From=80,
+            To=80,
+        )
+        assert_equals(pr.JSONrepr(), data)
+
+    def test_network_acl_entry_invalid_icmp(self):
+        nae = ec2.NetworkAclEntry(
+            "test",
+            CidrBlock='1.2.3.0/24',
+            Egress=False,
+            NetworkAclId='testme123',
+            PortRange=ec2.PortRange(From=1, To=2),
+            Protocol=1,
+            RuleAction='allow',
+            RuleNumber=1
+        )
+        assert_raises(ValueError, nae.JSONrepr)
+
+    def test_network_acl_entry_invalid_tcp(self):
+        nae = ec2.NetworkAclEntry(
+            "test",
+            CidrBlock='1.2.3.0/24',
+            Egress=False,
+            NetworkAclId='testme123',
+            Icmp=ec2.ICMP(Code=-1, Type=-1),
+            Protocol=6,
+            RuleAction='allow',
+            RuleNumber=1
+        )
+        assert_raises(ValueError, nae.JSONrepr)
+
+    def test_network_acl_entry_invalid_udp(self):
+        nae = ec2.NetworkAclEntry(
+            "test",
+            CidrBlock='1.2.3.0/24',
+            Egress=False,
+            NetworkAclId='testme123',
+            Icmp=ec2.ICMP(Code=-1, Type=-1),
+            Protocol=17,
+            RuleAction='allow',
+            RuleNumber=1
+        )
+        assert_raises(ValueError, nae.JSONrepr)
+
+    def test_network_acl_entry_valid_icmp(self):
+        t = DataTemplate()
+        data = {
+            "Resources": {
+                "test": {
+                    "Properties": {
+                        "CidrBlock": "1.2.3.0/24",
+                        "Egress": "false",
+                        "Icmp": {
+                            "Code": -1,
+                            "Type": -1
+                        },
+                        "NetworkAclId": "testme123",
+                        "Protocol": 1,
+                        "RuleAction": "allow",
+                        "RuleNumber": 1
+                    },
+                    "Type": "AWS::EC2::NetworkAclEntry"
+                }
+            }
+        }
+
+        t.add_resource(ec2.NetworkAclEntry(
+            "test",
+            CidrBlock='1.2.3.0/24',
+            Egress=False,
+            NetworkAclId='testme123',
+            Protocol=1,
+            Icmp=ec2.ICMP(Code=-1, Type=-1),
+            RuleAction='allow',
+            RuleNumber=1
+        ))
+        assert_equals(json.loads(t.to_json()), data)
+
+    def test_network_acl_entry_valid_tcp(self):
+        t = DataTemplate()
+        data = {
+            "Resources": {
+                "test": {
+                    "Properties": {
+                        "CidrBlock": "1.2.3.0/24",
+                        "Egress": "false",
+                        "PortRange": {
+                            "From": 1,
+                            "To": 2
+                        },
+                        "NetworkAclId": "testme123",
+                        "Protocol": 6,
+                        "RuleAction": "allow",
+                        "RuleNumber": 1
+                    },
+                    "Type": "AWS::EC2::NetworkAclEntry"
+                }
+            }
+        }
+
+        t.add_resource(ec2.NetworkAclEntry(
+            "test",
+            CidrBlock='1.2.3.0/24',
+            Egress=False,
+            NetworkAclId='testme123',
+            Protocol=6,
+            PortRange=ec2.PortRange(From=1, To=2),
+            RuleAction='allow',
+            RuleNumber=1
+        ))
+        assert_equals(json.loads(t.to_json()), data)
+
+    def test_network_acl_entry_valid_udp(self):
+        t = DataTemplate()
+        data = {
+            "Resources": {
+                "test": {
+                    "Properties": {
+                        "CidrBlock": "1.2.3.0/24",
+                        "Egress": "false",
+                        "PortRange": {
+                            "From": 1,
+                            "To": 2
+                        },
+                        "NetworkAclId": "testme123",
+                        "Protocol": 17,
+                        "RuleAction": "allow",
+                        "RuleNumber": 1
+                    },
+                    "Type": "AWS::EC2::NetworkAclEntry"
+                }
+            }
+        }
+
+        t.add_resource(ec2.NetworkAclEntry(
+            "test",
+            CidrBlock='1.2.3.0/24',
+            Egress=False,
+            NetworkAclId='testme123',
+            PortRange=ec2.PortRange(From=1, To=2),
+            Protocol=17,
+            RuleAction='allow',
+            RuleNumber=1
+        ))
+        assert_equals(json.loads(t.to_json()), data)
+
 #    def test_NetworkInterface_invalid(self):
 #        pass
 #
