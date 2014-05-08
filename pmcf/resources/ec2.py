@@ -28,6 +28,7 @@ class CustomerGateway(ec2.CustomerGateway):
 
 class DHCPOptions(ec2.DHCPOptions):
     def validate(self):
+        super(self.__class__, self).validate()
         if len(set(self.propnames).intersection(self.properties.keys())) > 0:
             return True
         raise ValueError('Need at least one property')
@@ -39,6 +40,7 @@ class EIP(ec2.EIP):
 
 class EIPAssociation(ec2.EIPAssociation):
     def validate(self):
+        super(self.__class__, self).validate()
         net_props = ['InstanceId', 'PrivateIpAddress']
         if len(set(self.properties.keys()).intersection(
                 set(['AllocationId', 'EIP']))) != 1:
@@ -55,6 +57,7 @@ class EIPAssociation(ec2.EIPAssociation):
 
 class EBSBlockDevice(ec2.EBSBlockDevice):
     def validate(self):
+        super(self.__class__, self).validate()
         if self.properties.get('VolumeType') == 'io1':
             iops = int(self.properties.get('Iops', 0))
             if iops < 100 or iops > 2000:
@@ -70,6 +73,7 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
 
 class BlockDeviceMapping(ec2.BlockDeviceMapping):
     def validate(self):
+        super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['Ebs', 'VirtualName']))) != 1:
             raise ValueError('One of Ebs or VirtualName required')
@@ -87,6 +91,7 @@ class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
 
 class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
     def validate(self):
+        super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['NetworkInterfaceId', 'SubnetId']))) != 1:
             raise ValueError('One of Ebs or VirtualName required')
