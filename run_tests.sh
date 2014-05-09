@@ -15,7 +15,7 @@ source ${VENV}/bin/activate
 echo "Running unit tests ..."
 nosetests -v --cover-html \
 	     --cover-html-dir=coverage --cover-inclusive \
-	     --cover-erase || ret=$(($ret|$?))
+	     --cover-erase "$@" || ret=$(($ret|$?))
 
 echo "Running pep8 tests ..."
 pep8 --show-source pmcf || ret=$(($ret|$?))
