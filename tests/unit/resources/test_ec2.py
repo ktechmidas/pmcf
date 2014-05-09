@@ -21,6 +21,11 @@ from pmcf.data.template import DataTemplate
 
 class TestEc2Resource(object):
 
+    def _data_for_resource(self, data):
+        t = DataTemplate()
+        t.add_resource(data)
+        return json.loads(t.to_json())['Resources']['test']
+
     def test_tag(self):
         data = {'Key': 'foo', 'Value': 'bar'}
         tag = ec2.Tag(key='foo', value='bar')
@@ -46,7 +51,7 @@ class TestEc2Resource(object):
             IpAddress="1.2.3.4",
             Type="ipsec.1",
         )
-        assert_equals(cust_gw.JSONrepr(), data)
+        assert_equals(self._data_for_resource(cust_gw), data)
 
     def test_dhcp_options_invalid(self):
         dhcp_opts = ec2.DHCPOptions("test")
@@ -64,7 +69,7 @@ class TestEc2Resource(object):
             "test",
             DomainName="example.com"
         )
-        assert_equals(dhcp_opts.JSONrepr(), data)
+        assert_equals(self._data_for_resource(dhcp_opts), data)
 
     def test_eip(self):
         data = {
@@ -78,7 +83,7 @@ class TestEc2Resource(object):
             "test",
             Domain="vpc",
         )
-        assert_equals(eip.JSONrepr(), data)
+        assert_equals(self._data_for_resource(eip), data)
 
     def test_eip_association_invalid_no_device(self):
         eipa = ec2.EIPAssociation(
@@ -116,7 +121,7 @@ class TestEc2Resource(object):
             AllocationId="testme-123",
             NetworkInterfaceId="testme-234"
         )
-        assert_equals(eipa.JSONrepr(), data)
+        assert_equals(self._data_for_resource(eipa), data)
 
     def test_eip_association_valid_eip(self):
         data = {
@@ -132,7 +137,7 @@ class TestEc2Resource(object):
             EIP="testme-123",
             InstanceId="testme-234"
         )
-        assert_equals(eipa.JSONrepr(), data)
+        assert_equals(self._data_for_resource(eipa), data)
 
     def test_ebs_block_device_invalid_io1_no_iops(self):
         ebsbd = ec2.EBSBlockDevice(
@@ -164,14 +169,14 @@ class TestEc2Resource(object):
             VolumeType="io1",
             Iops=1100,
         )
-        assert_equals(ebsbd.JSONrepr(), data)
+        assert_equals(self._data_for_resource(ebsbd), data)
 
     def test_ebs_block_device_valid_standard(self):
         data = {'VolumeType': 'standard'}
         ebsbd = ec2.EBSBlockDevice(
             "test",
         )
-        assert_equals(ebsbd.JSONrepr(), data)
+        assert_equals(self._data_for_resource(ebsbd), data)
 
     def test_block_device_mapping_invalid_no_type(self):
         ebsbdm = ec2.BlockDeviceMapping(
@@ -209,7 +214,7 @@ class TestEc2Resource(object):
             DeviceName="/dev/sda",
             VirtualName="ephemeral1"
         )
-        assert_equals(ebsbdm.JSONrepr(), data)
+        assert_equals(self._data_for_resource(ebsbdm), data)
 
     def test_mount_point_invalid_no_volumeid(self):
         mp = ec2.MountPoint(
@@ -226,10 +231,11 @@ class TestEc2Resource(object):
     def test_mount_point_valid(self):
         data = {'Device': '/dev/sda', 'VolumeId': '1atestme'}
         mp = ec2.MountPoint(
+            "test",
             VolumeId="1atestme",
             Device="/dev/sda"
         )
-        assert_equals(mp.JSONrepr(), data)
+        assert_equals(self._data_for_resource(mp), data)
 
     def test_private_ipaddress_specification_invalid_no_ip(self):
         pips = ec2.PrivateIpAddressSpecification(
@@ -247,10 +253,11 @@ class TestEc2Resource(object):
     def test_private_ipaddress_specification_valid(self):
         data = {'Primary': 'true', 'PrivateIpAddress': '1.2.3.4'}
         pips = ec2.PrivateIpAddressSpecification(
+            "test",
             PrivateIpAddress='1.2.3.4',
             Primary=True,
         )
-        assert_equals(pips.JSONrepr(), data)
+        assert_equals(self._data_for_resource(pips), data)
 
     def test_network_interface_property_invalid_no_subnet_or_int(self):
         nip = ec2.NetworkInterfaceProperty(
@@ -275,13 +282,14 @@ class TestEc2Resource(object):
             'NetworkInterfaceId': 'testme-123'
         }
         nip = ec2.NetworkInterfaceProperty(
+            "test",
             NetworkInterfaceId='testme-123',
             AssociatePublicIpAddress=True,
             DeviceIndex='1',
             DeleteOnTermination=True,
             Description='testme',
         )
-        assert_equals(nip.JSONrepr(), data)
+        assert_equals(self._data_for_resource(nip), data)
 
 #    def test_Instance_invalid(self):
 #        pass
@@ -298,7 +306,7 @@ class TestEc2Resource(object):
         ig = ec2.InternetGateway(
             "test"
         )
-        assert_equals(ig.JSONrepr(), data)
+        assert_equals(self._data_for_resource(ig), data)
 
     def test_network_acl_invalid_no_vpcid(self):
         na = ec2.NetworkAcl("test")
@@ -315,7 +323,7 @@ class TestEc2Resource(object):
             "test",
             VpcId='testme-123'
         )
-        assert_equals(na.JSONrepr(), data)
+        assert_equals(self._data_for_resource(na), data)
 
     def test_icmp_invalid_no_code(self):
         icmp = ec2.ICMP(
@@ -338,7 +346,7 @@ class TestEc2Resource(object):
             Code=-1,
             Type=-1
         )
-        assert_equals(icmp.JSONrepr(), data)
+        assert_equals(self._data_for_resource(icmp), data)
 
     def test_port_range_invalid_no_from(self):
         pr = ec2.PortRange(
@@ -361,7 +369,7 @@ class TestEc2Resource(object):
             From=80,
             To=80,
         )
-        assert_equals(pr.JSONrepr(), data)
+        assert_equals(self._data_for_resource(pr), data)
 
     def test_network_acl_entry_invalid_icmp(self):
         nae = ec2.NetworkAclEntry(
@@ -524,7 +532,7 @@ class TestEc2Resource(object):
             PrivateIpAddress='1.2.3.4',
             SubnetId='testme-123'
         )
-        assert_equals(ni.JSONrepr(), data)
+        assert_equals(self._data_for_resource(ni), data)
 
     def test_network_interface_attachment_invalid(self):
         nia = ec2.NetworkInterfaceAttachment(
@@ -549,7 +557,7 @@ class TestEc2Resource(object):
             NetworkInterfaceId='testme-456',
             DeviceIndex='0'
         )
-        assert_equals(nia.JSONrepr(), data)
+        assert_equals(self._data_for_resource(nia), data)
 
     def test_route_invalid_no_dest(self):
         r = ec2.Route(
@@ -584,7 +592,7 @@ class TestEc2Resource(object):
             RouteTableId='testme-123',
             GatewayId='testme-124',
         )
-        assert_equals(r.JSONrepr(), data)
+        assert_equals(self._data_for_resource(r), data)
 
     def test_route_valid_instance(self):
         data = {
@@ -601,7 +609,7 @@ class TestEc2Resource(object):
             RouteTableId='testme-123',
             InstanceId='testme-125',
         )
-        assert_equals(r.JSONrepr(), data)
+        assert_equals(self._data_for_resource(r), data)
 
     def test_route_valid_nic(self):
         data = {
