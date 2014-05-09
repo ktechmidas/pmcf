@@ -17,11 +17,16 @@ without the patch and passes with the patch.
 
 Running Tests
 -------------
-To create virtual environments and populate them with the dependencies
+The test harness runs in a python virtual environment to avoid polluting
+the normal python environment.  In order to install the python libraries in
+the venv, it is necessary to install a few packages:
+``apt-get install build-essential python-dev libyaml-dev``
+
+To create a virtual environment and populate it with the dependencies
 necessary to run tests and builds of the software, run
 ``./tools/install_venv.sh``
 
-The testing system is based on python nosetools.  Once you have a virtualenv
-created,The approach to running tests is to simply run the command
+The testing system is based on python nosetools.  Simply run the command
 ``./run_tests.sh``
-
+If you have not already created a venv, this script will do so on the first
+run.
