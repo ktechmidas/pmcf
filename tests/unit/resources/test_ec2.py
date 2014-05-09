@@ -504,24 +504,122 @@ class TestEc2Resource(object):
         ))
         assert_equals(json.loads(t.to_json()), data)
 
-#    def test_NetworkInterface_invalid(self):
-#        pass
-#
-#    def test_NetworkInterface_valid(self):
-#        pass
-#
-#    def test_NetworkInterfaceAttachment_invalid(self):
-#        pass
-#
-#    def test_NetworkInterfaceAttachment_valid(self):
-#        pass
-#
-#    def test_Route_invalid(self):
-#        pass
-#
-#    def test_Route_valid(self):
-#        pass
-#
+    def test_network_interface_invalid(self):
+        ni = ec2.NetworkInterface(
+            "test",
+            PrivateIpAddress='1.2.3.4'
+        )
+        assert_raises(ValueError, ni.JSONrepr)
+
+    def test_network_interface_valid(self):
+        data = {
+            'Properties': {
+                'PrivateIpAddress': '1.2.3.4',
+                'SubnetId': 'testme-123'
+            },
+            'Type': 'AWS::EC2::NetworkInterface'
+        }
+        ni = ec2.NetworkInterface(
+            "test",
+            PrivateIpAddress='1.2.3.4',
+            SubnetId='testme-123'
+        )
+        assert_equals(ni.JSONrepr(), data)
+
+    def test_network_interface_attachment_invalid(self):
+        nia = ec2.NetworkInterfaceAttachment(
+            "test",
+            InstanceId='testme-123',
+            DeviceIndex='0'
+        )
+        assert_raises(ValueError, nia.JSONrepr)
+
+    def test_network_interface_attachment_valid(self):
+        data = {
+            'Properties': {
+                'DeviceIndex': '0',
+                'InstanceId': 'testme-123',
+                'NetworkInterfaceId': 'testme-456'
+            },
+            'Type': 'AWS::EC2::NetworkInterfaceAttachment'
+        }
+        nia = ec2.NetworkInterfaceAttachment(
+            "test",
+            InstanceId='testme-123',
+            NetworkInterfaceId='testme-456',
+            DeviceIndex='0'
+        )
+        assert_equals(nia.JSONrepr(), data)
+
+    def test_route_invalid_no_dest(self):
+        r = ec2.Route(
+            "test",
+            DestinationCidrBlock='1.2.3.0/24',
+            RouteTableId='testme-123'
+        )
+        assert_raises(ValueError, r.JSONrepr)
+
+    def test_route_invalid_double_dest(self):
+        r = ec2.Route(
+            "test",
+            DestinationCidrBlock='1.2.3.0/24',
+            RouteTableId='testme-123',
+            GatewayId='testme-124',
+            InstanceId='testme-125'
+        )
+        assert_raises(ValueError, r.JSONrepr)
+
+    def test_route_valid_gateway(self):
+        data = {
+            'Properties': {
+                'DestinationCidrBlock': '1.2.3.0/24',
+                'GatewayId': 'testme-124',
+                'RouteTableId': 'testme-123'
+            },
+            'Type': 'AWS::EC2::Route'
+        }
+        r = ec2.Route(
+            "test",
+            DestinationCidrBlock='1.2.3.0/24',
+            RouteTableId='testme-123',
+            GatewayId='testme-124',
+        )
+        assert_equals(r.JSONrepr(), data)
+
+    def test_route_valid_instance(self):
+        data = {
+            'Properties': {
+                'DestinationCidrBlock': '1.2.3.0/24',
+                'InstanceId': 'testme-125',
+                'RouteTableId': 'testme-123'
+            },
+            'Type': 'AWS::EC2::Route'
+        }
+        r = ec2.Route(
+            "test",
+            DestinationCidrBlock='1.2.3.0/24',
+            RouteTableId='testme-123',
+            InstanceId='testme-125',
+        )
+        assert_equals(r.JSONrepr(), data)
+
+    def test_route_valid_nic(self):
+        data = {
+            'Properties': {
+                'DestinationCidrBlock': '1.2.3.0/24',
+                'NetworkInterfaceId': 'testme-126',
+                'RouteTableId': 'testme-123'
+            },
+            'Type': 'AWS::EC2::Route'
+        }
+        r = ec2.Route(
+            "test",
+            DestinationCidrBlock='1.2.3.0/24',
+            RouteTableId='testme-123',
+            NetworkInterfaceId='testme-126',
+        )
+        assert_equals(r.JSONrepr(), data)
+
 #    def test_RouteTable_invalid(self):
 #        pass
 #

@@ -152,7 +152,13 @@ class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
 
 
 class Route(ec2.Route):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['GatewayId', 'InstanceId', 'NetworkInterfaceId']))) != 1:
+            raise ValueError('From and To are required')
+
+        return True
 
 
 class RouteTable(ec2.RouteTable):
