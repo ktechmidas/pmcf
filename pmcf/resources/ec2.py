@@ -156,7 +156,8 @@ class Route(ec2.Route):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['GatewayId', 'InstanceId', 'NetworkInterfaceId']))) != 1:
-            raise ValueError('From and To are required')
+            raise ValueError('One of GatewayId, InstanceId, or '
+                             'NetworkInterfaceId are required')
 
         return True
 
@@ -166,11 +167,38 @@ class RouteTable(ec2.RouteTable):
 
 
 class SecurityGroupEgress(ec2.SecurityGroupEgress):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['CidrIp', 'DestinationSecurityGroupId']))) != 1:
+            raise ValueError('CidrIp or DestinationSecurityGroupId are '
+                             'required')
+
+        return True
 
 
 class SecurityGroupIngress(ec2.SecurityGroupIngress):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['GroupName', 'GroupId']))) != 1:
+            raise ValueError('GroupName or GroupId are required')
+
+        if self.properties.get('CidrIp'):
+            if len(set(self.properties.keys()).intersection(
+                set(['SourceSecurityGroupName', 'SourceSecurityGroupId',
+                     'SourceSecurityGroupOwnerId']))) != 0:
+                raise ValueError('Cannot specify SourceSecurityGroup options '
+                                 'and CidrIp')
+
+        elif len(set(self.properties.keys()).intersection(
+                set(['SourceSecurityGroupName',
+                     'SourceSecurityGroupId']))) != 1:
+                raise ValueError('Either SourceSecurityGroupName or '
+                                 'SourceSecurityGroupId is necessary when '
+                                 'CidrIp is unset')
+
+        return True
 
 
 class SecurityGroupRule(ec2.SecurityGroupRule):

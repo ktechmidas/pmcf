@@ -28,7 +28,10 @@ class TestEc2Resource(object):
 
     def test_tag(self):
         data = {'Key': 'foo', 'Value': 'bar'}
-        tag = ec2.Tag(key='foo', value='bar')
+        tag = ec2.Tag(
+            key='foo',
+            value='bar'
+        )
         assert_equals(tag.JSONrepr(), data)
 
     def test_customer_gateway_invalid(self):
@@ -626,26 +629,193 @@ class TestEc2Resource(object):
             RouteTableId='testme-123',
             NetworkInterfaceId='testme-126',
         )
-        assert_equals(r.JSONrepr(), data)
+        assert_equals(self._data_for_resource(r), data)
 
-#    def test_RouteTable_invalid(self):
-#        pass
-#
-#    def test_RouteTable_valid(self):
-#        pass
-#
-#    def test_SecurityGroupEgress_invalid(self):
-#        pass
-#
-#    def test_SecurityGroupEgress_valid(self):
-#        pass
-#
-#    def test_SecurityGroupIngress_invalid(self):
-#        pass
-#
-#    def test_SecurityGroupIngress_valid(self):
-#        pass
-#
+    def test_route_table_invalid(self):
+        rt = ec2.RouteTable(
+            "test"
+        )
+        assert_raises(ValueError, rt.JSONrepr)
+
+    def test_route_table_valid(self):
+        data = {
+            'Properties': {
+                'VpcId': 'testme-123'
+            },
+            'Type': 'AWS::EC2::RouteTable'
+        }
+        rt = ec2.RouteTable(
+            "test",
+            VpcId='testme-123'
+        )
+        assert_equals(self._data_for_resource(rt), data)
+
+    def test_security_group_egress_invalid_no_dest(self):
+        sge = ec2.SecurityGroupEgress(
+            "test",
+            GroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(ValueError, sge.JSONrepr)
+
+    def test_security_group_egress_invalid_two_dests(self):
+        sge = ec2.SecurityGroupEgress(
+            "test",
+            CidrIp='10.1.2.0/24',
+            DestinationSecurityGroupId='testsg-123',
+            GroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(ValueError, sge.JSONrepr)
+
+    def test_security_group_egress_valid_cidr(self):
+        data = {
+            'Properties': {
+                'CidrIp': '10.1.2.0/24',
+                'FromPort': 80,
+                'GroupId': 'testme-123',
+                'IpProtocol': '6',
+                'ToPort': 80
+            },
+            'Type': 'AWS::EC2::SecurityGroupEgress'
+        }
+        sge = ec2.SecurityGroupEgress(
+            "test",
+            CidrIp='10.1.2.0/24',
+            GroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_equals(self._data_for_resource(sge), data)
+
+    def test_security_group_egress_valid_sg(self):
+        data = {
+            'Properties': {
+                'DestinationSecurityGroupId': 'testsg-123',
+                'FromPort': 80,
+                'GroupId': 'testme-123',
+                'IpProtocol': '6',
+                'ToPort': 80
+            },
+            'Type': 'AWS::EC2::SecurityGroupEgress'
+        }
+        sge = ec2.SecurityGroupEgress(
+            "test",
+            DestinationSecurityGroupId='testsg-123',
+            GroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_equals(self._data_for_resource(sge), data)
+
+    def test_security_group_ingress_invalid_two_groups(self):
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            CidrIp='10.1.2.0/24',
+            GroupId='testme-123',
+            GroupName='MySG',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(ValueError, sgi.JSONrepr)
+
+    def test_security_group_ingress_invalid_two_source_groups(self):
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            GroupName='MySG',
+            SourceSecurityGroupName='YourSG',
+            SourceSecurityGroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(ValueError, sgi.JSONrepr)
+
+    def test_security_group_ingress_invalid_two_sources(self):
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            CidrIp='10.1.2.0/24',
+            GroupName='MySG',
+            SourceSecurityGroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(ValueError, sgi.JSONrepr)
+
+    def test_security_group_ingress_valid_gname_source_group(self):
+        data = {
+            'Properties': {
+                'FromPort': 80,
+                'GroupName': 'MySG',
+                'IpProtocol': '6',
+                'SourceSecurityGroupId': 'testme-123',
+                'ToPort': 80
+            },
+            'Type': 'AWS::EC2::SecurityGroupIngress'
+        }
+
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            GroupName='MySG',
+            SourceSecurityGroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_equals(self._data_for_resource(sgi), data)
+
+    def test_security_group_ingress_valid_gid_source_group(self):
+        data = {
+            'Properties': {
+                'FromPort': 80,
+                'GroupId': 'testsg-123',
+                'IpProtocol': '6',
+                'SourceSecurityGroupId': 'testme-123',
+                'ToPort': 80
+            },
+            'Type': 'AWS::EC2::SecurityGroupIngress'
+        }
+
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            GroupId='testsg-123',
+            SourceSecurityGroupId='testme-123',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_equals(self._data_for_resource(sgi), data)
+
+    def test_security_group_ingress_valid_gname_source_cidr(self):
+        data = {
+            'Properties': {
+                'FromPort': 80,
+                'GroupName': 'MySG',
+                'IpProtocol': '6',
+                'CidrIp': '1.2.3.0/24',
+                'ToPort': 80
+            },
+            'Type': 'AWS::EC2::SecurityGroupIngress'
+        }
+
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            GroupName='MySG',
+            CidrIp='1.2.3.0/24',
+            IpProtocol='6',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_equals(self._data_for_resource(sgi), data)
+
 #    def test_SecurityGroupRule_invalid(self):
 #        pass
 #
