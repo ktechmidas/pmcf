@@ -202,7 +202,23 @@ class SecurityGroupIngress(ec2.SecurityGroupIngress):
 
 
 class SecurityGroupRule(ec2.SecurityGroupRule):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('CidrIp'):
+            if len(set(self.properties.keys()).intersection(
+                set(['SourceSecurityGroupName', 'SourceSecurityGroupId',
+                     'SourceSecurityGroupOwnerId']))) != 0:
+                raise ValueError('Cannot specify SourceSecurityGroup options '
+                                 'and CidrIp')
+
+        elif len(set(self.properties.keys()).intersection(
+                set(['SourceSecurityGroupName',
+                     'SourceSecurityGroupId']))) != 1:
+                raise ValueError('Either SourceSecurityGroupName or '
+                                 'SourceSecurityGroupId is necessary when '
+                                 'CidrIp is unset')
+
+        return True
 
 
 class SecurityGroup(ec2.SecurityGroup):

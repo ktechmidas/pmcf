@@ -816,18 +816,106 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(sgi), data)
 
-#    def test_SecurityGroupRule_invalid(self):
-#        pass
-#
-#    def test_SecurityGroupRule_valid(self):
-#        pass
-#
-#    def test_SecurityGroup_invalid(self):
-#        pass
-#
-#    def test_SecurityGroup_valid(self):
-#        pass
-#
+    def test_security_group_rule_invalid_cidr_and_sgid(self):
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            CidrIp='10.1.2.0/24',
+            FromPort=80,
+            ToPort=80,
+            IpProtocol='6',
+            SourceSecurityGroupId='testme-123',
+        )
+        assert_raises(ValueError, sgr.JSONrepr)
+
+    def test_security_group_rule_invalid_cidr_and_sgname(self):
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            CidrIp='10.1.2.0/24',
+            FromPort=80,
+            ToPort=80,
+            IpProtocol='6',
+            SourceSecurityGroupName='MySG',
+        )
+        assert_raises(ValueError, sgr.JSONrepr)
+
+    def test_security_group_rule_invalid_sgname_and_sgid(self):
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            FromPort=80,
+            ToPort=80,
+            IpProtocol='6',
+            SourceSecurityGroupName='MySG',
+            SourceSecurityGroupId='MySG',
+        )
+        assert_raises(ValueError, sgr.JSONrepr)
+
+    def test_security_group_rule_valid_sgname(self):
+        data = {
+            'FromPort': 80,
+            'IpProtocol': '6',
+            'SourceSecurityGroupName': 'MySG',
+            'ToPort': 80
+        }
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            FromPort=80,
+            ToPort=80,
+            IpProtocol='6',
+            SourceSecurityGroupName='MySG',
+        )
+        assert_equals(self._data_for_resource(sgr), data)
+
+    def test_security_group_rule_valid_sgid(self):
+        data = {
+            'FromPort': 80,
+            'IpProtocol': '6',
+            'SourceSecurityGroupId': 'testme-123',
+            'ToPort': 80
+        }
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            FromPort=80,
+            ToPort=80,
+            IpProtocol='6',
+            SourceSecurityGroupId='testme-123',
+        )
+        assert_equals(self._data_for_resource(sgr), data)
+
+    def test_security_group_rule_valid_cidr(self):
+        data = {
+            'FromPort': 80,
+            'IpProtocol': '6',
+            'CidrIp': '10.1.2.0/24',
+            'ToPort': 80
+        }
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            FromPort=80,
+            ToPort=80,
+            IpProtocol='6',
+            CidrIp='10.1.2.0/24',
+        )
+        assert_equals(self._data_for_resource(sgr), data)
+
+    def test_security_group_invalid(self):
+        sg = ec2.SecurityGroup(
+            "test",
+        )
+        assert_raises(ValueError, sg.JSONrepr)
+
+    def test_security_group_valid(self):
+        data = {
+            'Properties': {
+                'GroupDescription': 'test'
+            },
+            'Type': 'AWS::EC2::SecurityGroup'
+        }
+        sg = ec2.SecurityGroup(
+            "test",
+            GroupDescription='test'
+        )
+        assert_equals(self._data_for_resource(sg), data)
+
 #    def test_Subnet_invalid(self):
 #        pass
 #
