@@ -414,28 +414,23 @@ class TestEc2Resource(object):
         assert_raises(ValueError, nae.JSONrepr)
 
     def test_network_acl_entry_valid_icmp(self):
-        t = DataTemplate()
         data = {
-            "Resources": {
-                "test": {
-                    "Properties": {
-                        "CidrBlock": "1.2.3.0/24",
-                        "Egress": "false",
-                        "Icmp": {
-                            "Code": -1,
-                            "Type": -1
-                        },
-                        "NetworkAclId": "testme123",
-                        "Protocol": 1,
-                        "RuleAction": "allow",
-                        "RuleNumber": 1
-                    },
-                    "Type": "AWS::EC2::NetworkAclEntry"
-                }
-            }
+            "Properties": {
+                "CidrBlock": "1.2.3.0/24",
+                "Egress": "false",
+                "Icmp": {
+                    "Code": -1,
+                    "Type": -1
+                },
+                "NetworkAclId": "testme123",
+                "Protocol": 1,
+                "RuleAction": "allow",
+                "RuleNumber": 1
+            },
+            "Type": "AWS::EC2::NetworkAclEntry"
         }
 
-        t.add_resource(ec2.NetworkAclEntry(
+        nae = ec2.NetworkAclEntry(
             "test",
             CidrBlock='1.2.3.0/24',
             Egress=False,
@@ -444,32 +439,27 @@ class TestEc2Resource(object):
             Icmp=ec2.ICMP(Code=-1, Type=-1),
             RuleAction='allow',
             RuleNumber=1
-        ))
-        assert_equals(json.loads(t.to_json()), data)
+        )
+        assert_equals(self._data_for_resource(nae), data)
 
     def test_network_acl_entry_valid_tcp(self):
-        t = DataTemplate()
         data = {
-            "Resources": {
-                "test": {
-                    "Properties": {
-                        "CidrBlock": "1.2.3.0/24",
-                        "Egress": "false",
-                        "PortRange": {
-                            "From": 1,
-                            "To": 2
-                        },
-                        "NetworkAclId": "testme123",
-                        "Protocol": 6,
-                        "RuleAction": "allow",
-                        "RuleNumber": 1
-                    },
-                    "Type": "AWS::EC2::NetworkAclEntry"
-                }
-            }
+            "Properties": {
+                "CidrBlock": "1.2.3.0/24",
+                "Egress": "false",
+                "PortRange": {
+                    "From": 1,
+                    "To": 2
+                },
+                "NetworkAclId": "testme123",
+                "Protocol": 6,
+                "RuleAction": "allow",
+                "RuleNumber": 1
+            },
+            "Type": "AWS::EC2::NetworkAclEntry"
         }
 
-        t.add_resource(ec2.NetworkAclEntry(
+        nae = ec2.NetworkAclEntry(
             "test",
             CidrBlock='1.2.3.0/24',
             Egress=False,
@@ -478,32 +468,27 @@ class TestEc2Resource(object):
             PortRange=ec2.PortRange(From=1, To=2),
             RuleAction='allow',
             RuleNumber=1
-        ))
-        assert_equals(json.loads(t.to_json()), data)
+        )
+        assert_equals(self._data_for_resource(nae), data)
 
     def test_network_acl_entry_valid_udp(self):
-        t = DataTemplate()
         data = {
-            "Resources": {
-                "test": {
-                    "Properties": {
-                        "CidrBlock": "1.2.3.0/24",
-                        "Egress": "false",
-                        "PortRange": {
-                            "From": 1,
-                            "To": 2
-                        },
-                        "NetworkAclId": "testme123",
-                        "Protocol": 17,
-                        "RuleAction": "allow",
-                        "RuleNumber": 1
-                    },
-                    "Type": "AWS::EC2::NetworkAclEntry"
-                }
-            }
+            "Properties": {
+                "CidrBlock": "1.2.3.0/24",
+                "Egress": "false",
+                "PortRange": {
+                    "From": 1,
+                    "To": 2
+                },
+                "NetworkAclId": "testme123",
+                "Protocol": 17,
+                "RuleAction": "allow",
+                "RuleNumber": 1
+            },
+            "Type": "AWS::EC2::NetworkAclEntry"
         }
 
-        t.add_resource(ec2.NetworkAclEntry(
+        nae = ec2.NetworkAclEntry(
             "test",
             CidrBlock='1.2.3.0/24',
             Egress=False,
@@ -512,8 +497,8 @@ class TestEc2Resource(object):
             Protocol=17,
             RuleAction='allow',
             RuleNumber=1
-        ))
-        assert_equals(json.loads(t.to_json()), data)
+        )
+        assert_equals(self._data_for_resource(nae), data)
 
     def test_network_interface_invalid(self):
         ni = ec2.NetworkInterface(
