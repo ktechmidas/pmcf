@@ -902,18 +902,57 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(sg), data)
 
-#    def test_Subnet_invalid(self):
-#        pass
-#
-#    def test_Subnet_valid(self):
-#        pass
-#
-#    def test_SubnetNetworkAclAssociation_invalid(self):
-#        pass
-#
-#    def test_SubnetNetworkAclAssociation_valid(self):
-#        pass
-#
+    def test_subnet_invalid(self):
+        s = ec2.Subnet(
+            "test",
+            CidrBlock='10.0.0.0/24'
+        )
+        assert_raises(PropertyExeption, s.JSONrepr)
+
+    def test_subnet_invalid(self):
+        data = {
+            'Properties': {
+                'CidrBlock': '10.0.0.0/24',
+                'VpcId': 'testme-123'
+            },
+            'Type': u'AWS::EC2::Subnet'
+        }
+        s = ec2.Subnet(
+            "test",
+            CidrBlock='10.0.0.0/24',
+            VpcId='testme-123'
+        )
+        assert_equals(self._data_for_resource(s), data)
+
+    def test_subnet_network_acl_association_invalid_no_subnet(self):
+        snaa = ec2.SubnetNetworkAclAssociation(
+            "test",
+            NetworkAclId="testme-123"
+        )
+        assert_raises(PropertyExeption, snaa.JSONrepr)
+
+    def test_subnet_network_acl_association_invalid_no_network(self):
+        snaa = ec2.SubnetNetworkAclAssociation(
+            "test",
+            SubnetId="testme-456",
+        )
+        assert_raises(PropertyExeption, snaa.JSONrepr)
+
+    def test_subnet_network_acl_association_valid(self):
+        data = {
+            'Properties': {
+                'NetworkAclId': 'testme-123',
+                'SubnetId': 'testme-456'
+            },
+            'Type': 'AWS::EC2::SubnetNetworkAclAssociation'
+        }
+        snaa = ec2.SubnetNetworkAclAssociation(
+            "test",
+            SubnetId="testme-456",
+            NetworkAclId="testme-123"
+        )
+        assert_equals(self._data_for_resource(snaa), data)
+
 #    def test_SubnetRouteTableAssociation_invalid(self):
 #        pass
 #
