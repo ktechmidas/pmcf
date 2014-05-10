@@ -18,6 +18,16 @@
 from troposphere import ec2
 
 
+def error(resource, msg):
+    res_type = getattr(resource, 'type', '<unknown type>')
+    msg += ' in type %s' % res_type
+    res_title = getattr(resource, 'title')
+    if res_title:
+        msg += ' (%s)' % res_title
+
+    raise ValueError(msg)
+
+
 class Tag(ec2.Tag):
     pass
 
@@ -31,7 +41,7 @@ class DHCPOptions(ec2.DHCPOptions):
         super(self.__class__, self).validate()
         if len(set(self.propnames).intersection(self.properties.keys())) > 0:
             return True
-        raise ValueError('Need at least one property')
+        error(self, 'Need at least one property')
 
 
 class EIP(ec2.EIP):
@@ -44,13 +54,13 @@ class EIPAssociation(ec2.EIPAssociation):
         net_props = ['InstanceId', 'PrivateIpAddress']
         if len(set(self.properties.keys()).intersection(
                 set(['AllocationId', 'EIP']))) != 1:
-            raise ValueError("Need to specify an EIP")
+            error(self, 'Need to specify an EIP')
 
         if self.properties.get('AllocationId'):
             net_props.append('NetworkInterfaceId')
 
         if len(set(self.properties.keys()).intersection(set(net_props))) != 1:
-            raise ValueError('Need to specify associated resource')
+            error(self, 'Need to specify associated resource')
 
         return True
 
@@ -61,12 +71,12 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
         if self.properties.get('VolumeType') == 'io1':
             iops = int(self.properties.get('Iops', 0))
             if iops < 100 or iops > 2000:
-                raise ValueError('iops property not in range 100-2000')
+                error(self, 'iops property not in range 100-2000')
         else:
             self.properties['VolumeType'] = 'standard'
             if self.properties.get('Iops'):
-                raise ValueError('iops property not allowed on volumes '
-                                 'of type standard')
+                error(self, 'iops property not allowed on volumes '
+                            'of type standard')
 
         return True
 
@@ -76,7 +86,7 @@ class BlockDeviceMapping(ec2.BlockDeviceMapping):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['Ebs', 'VirtualName']))) != 1:
-            raise ValueError('One of Ebs or VirtualName required')
+            error(self, 'One of Ebs or VirtualName required')
 
         return True
 
@@ -94,7 +104,7 @@ class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['NetworkInterfaceId', 'SubnetId']))) != 1:
-            raise ValueError('One of NetworkInterfaceId or SubnetId required')
+            error(self, 'One of NetworkInterfaceId or SubnetId required')
 
         return True
 
@@ -116,7 +126,7 @@ class ICMP(ec2.ICMP):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['Code', 'Type']))) != 2:
-            raise ValueError('Code and Type are required')
+            error(self, 'Code and Type are required')
 
         return True
 
@@ -126,7 +136,7 @@ class PortRange(ec2.PortRange):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['From', 'To']))) != 2:
-            raise ValueError('From and To are required')
+            error(self, 'From and To are required')
 
         return True
 
@@ -136,11 +146,11 @@ class NetworkAclEntry(ec2.NetworkAclEntry):
         super(self.__class__, self).validate()
         if self.properties['Protocol'] == 1:
             if not self.properties.get('Icmp'):
-                raise ValueError('Icmp must be specified when protocol is 1')
+                error(self, 'Icmp must be specified when protocol is 1')
         elif self.properties['Protocol'] in [6, 17]:  # TCP, UDP
             if not self.properties.get('PortRange'):
-                raise ValueError('PortRange must be specified when protocol '
-                                 'protocol is 6 or 17')
+                error(self, 'PortRange must be specified when protocol '
+                            'protocol is 6 or 17')
 
 
 class NetworkInterface(ec2.NetworkInterface):
@@ -156,8 +166,8 @@ class Route(ec2.Route):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['GatewayId', 'InstanceId', 'NetworkInterfaceId']))) != 1:
-            raise ValueError('One of GatewayId, InstanceId, or '
-                             'NetworkInterfaceId are required')
+            error(self, 'One of GatewayId, InstanceId, or NetworkInterfaceId '
+                        'are required')
 
         return True
 
@@ -171,8 +181,7 @@ class SecurityGroupEgress(ec2.SecurityGroupEgress):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['CidrIp', 'DestinationSecurityGroupId']))) != 1:
-            raise ValueError('CidrIp or DestinationSecurityGroupId are '
-                             'required')
+            error(self, 'CidrIp or DestinationSecurityGroupId are required')
 
         return True
 
@@ -182,21 +191,21 @@ class SecurityGroupIngress(ec2.SecurityGroupIngress):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['GroupName', 'GroupId']))) != 1:
-            raise ValueError('GroupName or GroupId are required')
+            error(self, 'GroupName or GroupId are required')
 
         if self.properties.get('CidrIp'):
             if len(set(self.properties.keys()).intersection(
                 set(['SourceSecurityGroupName', 'SourceSecurityGroupId',
                      'SourceSecurityGroupOwnerId']))) != 0:
-                raise ValueError('Cannot specify SourceSecurityGroup options '
-                                 'and CidrIp')
+                error(self, 'Cannot specify SourceSecurityGroup options '
+                            'and CidrIp')
 
         elif len(set(self.properties.keys()).intersection(
                 set(['SourceSecurityGroupName',
                      'SourceSecurityGroupId']))) != 1:
-                raise ValueError('Either SourceSecurityGroupName or '
-                                 'SourceSecurityGroupId is necessary when '
-                                 'CidrIp is unset')
+                error(self, 'Either SourceSecurityGroupName or '
+                            'SourceSecurityGroupId is necessary when CidrIp '
+                            'is unset')
 
         return True
 
@@ -208,15 +217,15 @@ class SecurityGroupRule(ec2.SecurityGroupRule):
             if len(set(self.properties.keys()).intersection(
                 set(['SourceSecurityGroupName', 'SourceSecurityGroupId',
                      'SourceSecurityGroupOwnerId']))) != 0:
-                raise ValueError('Cannot specify SourceSecurityGroup options '
-                                 'and CidrIp')
+                error(self, 'Cannot specify SourceSecurityGroup options '
+                            'and CidrIp')
 
         elif len(set(self.properties.keys()).intersection(
                 set(['SourceSecurityGroupName',
                      'SourceSecurityGroupId']))) != 1:
-                raise ValueError('Either SourceSecurityGroupName or '
-                                 'SourceSecurityGroupId is necessary when '
-                                 'CidrIp is unset')
+                error(self, 'Either SourceSecurityGroupName or '
+                            'SourceSecurityGroupId is necessary when CidrIp '
+                            'is unset')
 
         return True
 
