@@ -20,6 +20,14 @@ class ParserFailure(Exception):
         self.message = full_message
 
 
+class PropertyExeption(Exception):
+    def __init__(self, message):
+        full_message = ("Error in resource properties : %s" % message)
+        super(PropertyExeption, self).__init__(full_message)
+        self.message = full_message
+
+
 __all__ = [
-    ParserFailure
+    ParserFailure,
+    PropertyExeption
 ]
