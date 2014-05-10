@@ -17,6 +17,8 @@
 
 from troposphere import ec2
 
+from pmcf.exceptions import PropertyExeption
+
 
 def error(resource, msg):
     res_type = getattr(resource, 'type', '<unknown type>')
@@ -25,7 +27,7 @@ def error(resource, msg):
     if res_title:
         msg += ' (%s)' % res_title
 
-    raise ValueError(msg)
+    raise PropertyExeption(msg)
 
 
 class Tag(ec2.Tag):
@@ -33,24 +35,64 @@ class Tag(ec2.Tag):
 
 
 class CustomerGateway(ec2.CustomerGateway):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class DHCPOptions(ec2.DHCPOptions):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if len(set(self.propnames).intersection(self.properties.keys())) > 0:
             return True
         error(self, 'Need at least one property')
 
 
 class EIP(ec2.EIP):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class EIPAssociation(ec2.EIPAssociation):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         net_props = ['InstanceId', 'PrivateIpAddress']
         if len(set(self.properties.keys()).intersection(
                 set(['AllocationId', 'EIP']))) != 1:
@@ -66,8 +108,18 @@ class EIPAssociation(ec2.EIPAssociation):
 
 
 class EBSBlockDevice(ec2.EBSBlockDevice):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if self.properties.get('VolumeType') == 'io1':
             iops = int(self.properties.get('Iops', 0))
             if iops < 100 or iops > 2000:
@@ -82,8 +134,18 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
 
 
 class BlockDeviceMapping(ec2.BlockDeviceMapping):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if len(set(self.properties.keys()).intersection(
                 set(['Ebs', 'VirtualName']))) != 1:
             error(self, 'One of Ebs or VirtualName required')
@@ -92,16 +154,46 @@ class BlockDeviceMapping(ec2.BlockDeviceMapping):
 
 
 class MountPoint(ec2.MountPoint):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if len(set(self.properties.keys()).intersection(
                 set(['NetworkInterfaceId', 'SubnetId']))) != 1:
             error(self, 'One of NetworkInterfaceId or SubnetId required')
@@ -110,20 +202,60 @@ class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
 
 
 class Instance(ec2.Instance):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class InternetGateway(ec2.InternetGateway):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class NetworkAcl(ec2.NetworkAcl):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class ICMP(ec2.ICMP):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if len(set(self.properties.keys()).intersection(
                 set(['Code', 'Type']))) != 2:
             error(self, 'Code and Type are required')
@@ -132,8 +264,18 @@ class ICMP(ec2.ICMP):
 
 
 class PortRange(ec2.PortRange):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if len(set(self.properties.keys()).intersection(
                 set(['From', 'To']))) != 2:
             error(self, 'From and To are required')
@@ -142,8 +284,18 @@ class PortRange(ec2.PortRange):
 
 
 class NetworkAclEntry(ec2.NetworkAclEntry):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if self.properties['Protocol'] == 1:
             if not self.properties.get('Icmp'):
                 error(self, 'Icmp must be specified when protocol is 1')
@@ -154,16 +306,45 @@ class NetworkAclEntry(ec2.NetworkAclEntry):
 
 
 class NetworkInterface(ec2.NetworkInterface):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class Route(ec2.Route):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
         if len(set(self.properties.keys()).intersection(
                 set(['GatewayId', 'InstanceId', 'NetworkInterfaceId']))) != 1:
             error(self, 'One of GatewayId, InstanceId, or NetworkInterfaceId '
@@ -173,12 +354,31 @@ class Route(ec2.Route):
 
 
 class RouteTable(ec2.RouteTable):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class SecurityGroupEgress(ec2.SecurityGroupEgress):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
         if len(set(self.properties.keys()).intersection(
                 set(['CidrIp', 'DestinationSecurityGroupId']))) != 1:
             error(self, 'CidrIp or DestinationSecurityGroupId are required')
@@ -187,8 +387,18 @@ class SecurityGroupEgress(ec2.SecurityGroupEgress):
 
 
 class SecurityGroupIngress(ec2.SecurityGroupIngress):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if len(set(self.properties.keys()).intersection(
                 set(['GroupName', 'GroupId']))) != 1:
             error(self, 'GroupName or GroupId are required')
@@ -211,8 +421,18 @@ class SecurityGroupIngress(ec2.SecurityGroupIngress):
 
 
 class SecurityGroupRule(ec2.SecurityGroupRule):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
     def validate(self):
-        super(self.__class__, self).validate()
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
         if self.properties.get('CidrIp'):
             if len(set(self.properties.keys()).intersection(
                 set(['SourceSecurityGroupName', 'SourceSecurityGroupId',
@@ -231,55 +451,185 @@ class SecurityGroupRule(ec2.SecurityGroupRule):
 
 
 class SecurityGroup(ec2.SecurityGroup):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class Subnet(ec2.Subnet):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class SubnetNetworkAclAssociation(ec2.SubnetNetworkAclAssociation):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class SubnetRouteTableAssociation(ec2.SubnetRouteTableAssociation):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class Volume(ec2.Volume):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VolumeAttachment(ec2.VolumeAttachment):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPC(ec2.VPC):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPCDHCPOptionsAssociation(ec2.VPCDHCPOptionsAssociation):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPNConnection(ec2.VPNConnection):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPNConnectionRoute(ec2.VPNConnectionRoute):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPNGateway(ec2.VPNGateway):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
-    pass
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            raise PropertyExeption(e)
+
+    def validate(self):
+        try:
+            super(self.__class__, self).validate()
+        except ValueError, e:
+            raise PropertyExeption(e)
 
 
 __all__ = [
