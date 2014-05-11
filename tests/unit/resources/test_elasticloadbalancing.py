@@ -20,13 +20,6 @@ from pmcf.resources import elasticloadbalancing as elb
 
 from tests.unit.resources import TestResource
 
-try:
-    from nose.tools import assert_multi_line_equal
-except ImportError:
-    assert_multi_line_equal = assert_equal
-else:
-    assert_multi_line_equal.im_class.maxDiff = None
-
 
 class TestELBResource(TestResource):
 
