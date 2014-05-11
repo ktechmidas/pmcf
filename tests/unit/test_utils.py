@@ -12,20 +12,17 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-
-from pmcf.exceptions import PropertyException
-
-
-def error(resource, msg):
-    res_type = getattr(resource, 'type', '<unknown type>')
-    msg += ' in type %s' % res_type
-    res_title = getattr(resource, 'title', None)
-    if res_title:
-        msg += ' (%s)' % res_title
-
-    raise PropertyException(msg)
+from nose.tools import assert_equals
+from pmcf import exceptions
+from pmcf import utils
 
 
-__all__ = [
-    error
-]
+class TestUtils(object):
+
+    def test_error(self):
+        msg = 'test message'
+        try:
+            utils.error(object(), msg)
+        except exceptions.PropertyException, e:
+            assert_equals(e.message, "Error in resource properties : " + msg +
+                                     " in type <unknown type>")
