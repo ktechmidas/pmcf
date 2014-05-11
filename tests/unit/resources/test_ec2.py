@@ -12,20 +12,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
 from nose.tools import assert_equals, assert_raises
 
-from pmcf.data.template import DataTemplate
 from pmcf.exceptions import PropertyException
 from pmcf.resources import ec2
 
+from tests.unit.resources import TestResource
 
-class TestEc2Resource(object):
 
-    def _data_for_resource(self, data):
-        t = DataTemplate()
-        t.add_resource(data)
-        return json.loads(t.to_json())['Resources']['test']
+class TestEc2Resource(TestResource):
 
     def test_tag_valid(self):
         data = {'Key': 'foo', 'Value': 'bar'}

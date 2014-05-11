@@ -11,3 +11,15 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+import json
+
+from pmcf.data.template import DataTemplate
+
+
+class TestResource(object):
+
+    def _data_for_resource(self, data):
+        t = DataTemplate()
+        t.add_resource(data)
+        return json.loads(t.to_json())['Resources']['test']
