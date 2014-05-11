@@ -169,6 +169,22 @@ class Instance(ec2.Instance):
         except ValueError, e:
             raise PropertyExeption(e)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+
+        if self.properties.get('NetworkInterfaces'):
+            if self.properties.get('SecurityGroupIds'):
+                error(self, 'Can not specify both NetworkInterfaces and '
+                            'SecurityGroupIds')
+            if self.properties.get('SubnetId'):
+                error(self, 'Can not specify both NetworkInterfaces and '
+                            'SubnetId')
+
+        it = self.properties.get('Tenancy')
+        if it:
+            if it not in ['default', 'dedicated']:
+                error(self, 'Tenancy must be one of "default", "dedicated"')
+
 
 class InternetGateway(ec2.InternetGateway):
     def JSONrepr(self):
@@ -394,6 +410,29 @@ class Volume(ec2.Volume):
         except ValueError, e:
             raise PropertyExeption(e)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+
+        iops = int(self.properties.get('Iops', 0))
+        size = self.properties.get('Size')
+
+        if self.properties.get('VolumeType') == 'io1':
+            if iops < 100 or iops > 4000:
+                error(self, 'iops property not in range 100-4000')
+        else:
+            self.properties['VolumeType'] = 'standard'
+            if self.properties.get('Iops'):
+                error(self, 'iops property not allowed on volumes '
+                            'of type standard')
+        if size:
+            if self.properties.get('SnapshotId'):
+                error(self, 'Cannot set Size and SnapshotId')
+            if iops > 0:
+                if iops > (int(size) * 10):
+                    error(self, 'Size must be at least 10 times iops')
+
+        return True
+
 
 class VolumeAttachment(ec2.VolumeAttachment):
     def JSONrepr(self):
@@ -410,6 +449,20 @@ class VPC(ec2.VPC):
         except ValueError, e:
             raise PropertyExeption(e)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+
+        if self.properties.get('EnableDnsHostnames'):
+            if not self.properties.get('EnableDnsSupport'):
+                error(self, 'EnableDnsSupport must be true if '
+                            'EnableDnsHostnames is true')
+
+        it = self.properties.get('InstanceTenancy')
+        if it:
+            if it not in ['default', 'dedicated']:
+                error(self, 'InstanceTenancy must be one of "default", '
+                            '"dedicated"')
+
 
 class VPCDHCPOptionsAssociation(ec2.VPCDHCPOptionsAssociation):
     def JSONrepr(self):
@@ -425,6 +478,13 @@ class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             raise PropertyExeption(e)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+
+        if len(set(self.properties.keys()).intersection(
+                set(['InternetGatewayId', 'VpnGatewayId']))) != 1:
+            error(self, 'InternetGatewayId or VpnGatewayId are required')
 
 
 class VPNConnection(ec2.VPNConnection):
@@ -450,6 +510,11 @@ class VPNGateway(ec2.VPNGateway):
         except ValueError, e:
             raise PropertyExeption(e)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Type') != 'ipsec.1':
+            error(self, 'Type must be ipsec.1')
+
 
 class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
     def JSONrepr(self):
@@ -457,6 +522,11 @@ class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             raise PropertyExeption(e)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+        if not self.properties.get('RouteTableIds'):
+            error(self, 'Resource RouteTableIds required')
 
 
 __all__ = [

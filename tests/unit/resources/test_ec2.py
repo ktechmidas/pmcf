@@ -263,6 +263,12 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(pips), data)
 
+    def test_network_interface_property_invalid_no_index(self):
+        nip = ec2.NetworkInterfaceProperty(
+            "test"
+        )
+        assert_raises(PropertyExeption, nip.JSONrepr)
+
     def test_network_interface_property_invalid_no_subnet_or_int(self):
         nip = ec2.NetworkInterfaceProperty(
             DeviceIndex='1',
@@ -295,12 +301,68 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(nip), data)
 
-#    def test_Instance_invalid(self):
-#        pass
-#
-#    def test_Instance_valid(self):
-#        pass
-#
+    def test_instance_invalid_no_image(self):
+        i = ec2.Instance(
+            "test",
+        )
+        assert_raises(PropertyExeption, i.JSONrepr)
+
+    def test_instance_invalid(self):
+        pass
+
+    def test_instance_invalid_bad_tenancy(self):
+        i = ec2.Instance(
+            "test",
+            ImageId='testme-123',
+            Tenancy='stromble'
+        )
+        assert_raises(PropertyExeption, i.JSONrepr)
+
+    def test_instance_invalid_interfaces_and_secgroups(self):
+        nip = ec2.NetworkInterfaceProperty(
+            "test",
+            NetworkInterfaceId='testme-123',
+            DeviceIndex='1',
+        )
+
+        i = ec2.Instance(
+            "test",
+            ImageId='testme-123',
+            NetworkInterfaces=[nip],
+            SecurityGroupIds=['testsg-123']
+        )
+        assert_raises(PropertyExeption, i.JSONrepr)
+
+    def test_instance_invalid_interfaces_and_subnet(self):
+        nip = ec2.NetworkInterfaceProperty(
+            "test",
+            NetworkInterfaceId='testme-123',
+            DeviceIndex='1',
+        )
+
+        i = ec2.Instance(
+            "test",
+            ImageId='testme-123',
+            NetworkInterfaces=[nip],
+            SubnetId='testsn-123'
+        )
+        assert_raises(PropertyExeption, i.JSONrepr)
+
+    def test_instance_valid_tenancy(self):
+        data = {
+            'Properties': {
+                'ImageId': 'testme-123',
+                'Tenancy': 'default'
+            },
+            'Type': u'AWS::EC2::Instance'
+        }
+        i = ec2.Instance(
+            "test",
+            ImageId='testme-123',
+            Tenancy='default'
+        )
+        assert_equals(self._data_for_resource(i), data)
+
     def test_internet_gateway_invalid(self):
         # You can't screw this one up
         pass
@@ -374,6 +436,18 @@ class TestEc2Resource(object):
             To=80,
         )
         assert_equals(self._data_for_resource(pr), data)
+
+    def test_network_acl_entry_invalid_no_cidr(self):
+        nae = ec2.NetworkAclEntry(
+            "test",
+            Egress=False,
+            NetworkAclId='testme123',
+            PortRange=ec2.PortRange(From=1, To=2),
+            Protocol=1,
+            RuleAction='allow',
+            RuleNumber=1
+        )
+        assert_raises(PropertyExeption, nae.JSONrepr)
 
     def test_network_acl_entry_invalid_icmp(self):
         nae = ec2.NetworkAclEntry(
@@ -548,6 +622,13 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(nia), data)
 
+    def test_route_invalid_no_table(self):
+        r = ec2.Route(
+            "test",
+            DestinationCidrBlock='1.2.3.0/24',
+        )
+        assert_raises(PropertyExeption, r.JSONrepr)
+
     def test_route_invalid_no_dest(self):
         r = ec2.Route(
             "test",
@@ -636,6 +717,15 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(rt), data)
 
+    def test_security_group_egress_invalid_no_proto(self):
+        sge = ec2.SecurityGroupEgress(
+            "test",
+            GroupId='testme-123',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(PropertyExeption, sge.JSONrepr)
+
     def test_security_group_egress_invalid_no_dest(self):
         sge = ec2.SecurityGroupEgress(
             "test",
@@ -699,6 +789,17 @@ class TestEc2Resource(object):
             ToPort=80,
         )
         assert_equals(self._data_for_resource(sge), data)
+
+    def test_security_group_ingress_invalid_no_proto(self):
+        sgi = ec2.SecurityGroupIngress(
+            "test",
+            CidrIp='10.1.2.0/24',
+            GroupId='testme-123',
+            GroupName='MySG',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(PropertyExeption, sgi.JSONrepr)
 
     def test_security_group_ingress_invalid_two_groups(self):
         sgi = ec2.SecurityGroupIngress(
@@ -802,6 +903,15 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(sgi), data)
 
+    def test_security_group_rule_invalid_no_proto(self):
+        sgr = ec2.SecurityGroupRule(
+            "test",
+            CidrIp='10.1.2.0/24',
+            FromPort=80,
+            ToPort=80,
+        )
+        assert_raises(PropertyExeption, sgr.JSONrepr)
+
     def test_security_group_rule_invalid_cidr_and_sgid(self):
         sgr = ec2.SecurityGroupRule(
             "test",
@@ -902,10 +1012,17 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(sg), data)
 
-    def test_subnet_invalid(self):
+    def test_subnet_invalid_no_vpcid(self):
         s = ec2.Subnet(
             "test",
             CidrBlock='10.0.0.0/24'
+        )
+        assert_raises(PropertyExeption, s.JSONrepr)
+
+    def test_subnet_invalid_no_cidr(self):
+        s = ec2.Subnet(
+            "test",
+            VpcId='testme-123'
         )
         assert_raises(PropertyExeption, s.JSONrepr)
 
@@ -953,62 +1070,455 @@ class TestEc2Resource(object):
         )
         assert_equals(self._data_for_resource(snaa), data)
 
-#    def test_SubnetRouteTableAssociation_invalid(self):
-#        pass
-#
-#    def test_SubnetRouteTableAssociation_valid(self):
-#        pass
-#
-#    def test_Volume_invalid(self):
-#        pass
-#
-#    def test_Volume_valid(self):
-#        pass
-#
-#    def test_VolumeAttachment_invalid(self):
-#        pass
-#
-#    def test_VolumeAttachment_valid(self):
-#        pass
-#
-#    def test_VPC_invalid(self):
-#        pass
-#
-#    def test_VPC_valid(self):
-#        pass
-#
-#    def test_VPCDHCPOptionsAssociation_invalid(self):
-#        pass
-#
-#    def test_VPCDHCPOptionsAssociation_valid(self):
-#        pass
-#
-#    def test_VPCGatewayAttachment_invalid(self):
-#        pass
-#
-#    def test_VPCGatewayAttachment_valid(self):
-#        pass
-#
-#    def test_VPNConnection_invalid(self):
-#        pass
-#
-#    def test_VPNConnection_valid(self):
-#        pass
-#
-#    def test_VPNConnectionRoute_invalid(self):
-#        pass
-#
-#    def test_VPNConnectionRoute_valid(self):
-#        pass
-#
-#    def test_VPNGateway_invalid(self):
-#        pass
-#
-#    def test_VPNGateway_valid(self):
-#        pass
-#
-#    def test_VPNGatewayRoutePropagation_invalid(self):
-#        pass
-#
-#    def test_VPNGatewayRoutePropagation_valid(self):
-#        pass
+    def test_subnet_route_table_association_invalid_no_table(self):
+        srta = ec2.SubnetRouteTableAssociation(
+            "test",
+            SubnetId='testme-123'
+        )
+        assert_raises(PropertyExeption, srta.JSONrepr)
+
+    def test_subnet_route_table_association_invalid_no_subnet(self):
+        srta = ec2.SubnetRouteTableAssociation(
+            "test",
+            RouteTableId='testme-123'
+        )
+        assert_raises(PropertyExeption, srta.JSONrepr)
+
+    def test_subnet_route_table_association_valid(self):
+        data = {
+            'Properties': {
+                'RouteTableId': 'testrt-123',
+                'SubnetId': 'testsi-123'
+            },
+            'Type': 'AWS::EC2::SubnetRouteTableAssociation'
+        }
+        srta = ec2.SubnetRouteTableAssociation(
+            "test",
+            SubnetId='testsi-123',
+            RouteTableId='testrt-123'
+        )
+        assert_equals(self._data_for_resource(srta), data)
+
+    def test_volume_invalid_no_az(self):
+        v = ec2.Volume(
+            "test",
+            Size='10'
+        )
+        assert_raises(PropertyExeption, v.JSONrepr)
+
+    def test_volume_invalid_iops_and_standard(self):
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='10',
+            VolumeType='standard',
+            Iops=2000,
+        )
+        assert_raises(PropertyExeption, v.JSONrepr)
+
+    def test_volume_invalid_too_many_iops(self):
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='10',
+            VolumeType='io1',
+            Iops=5000,
+        )
+        assert_raises(PropertyExeption, v.JSONrepr)
+
+    def test_volume_invalid_not_enough_iops(self):
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='10',
+            VolumeType='io1',
+            Iops=50,
+        )
+        assert_raises(PropertyExeption, v.JSONrepr)
+
+    def test_volume_invalid_size_and_snapshot(self):
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='10',
+            SnapshotId='testsn-123',
+        )
+        assert_raises(PropertyExeption, v.JSONrepr)
+
+    def test_volume_invalid_iops_for_size(self):
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='10',
+            Iops=1000,
+            VolumeType='io1'
+        )
+        assert_raises(PropertyExeption, v.JSONrepr)
+
+    def test_volume_valid_iops(self):
+        data = {
+            'Properties': {
+                'AvailabilityZone': 'eu-west1c',
+                'Iops': 1000,
+                'Size': '100',
+                'VolumeType': 'io1'
+            },
+            'Type': 'AWS::EC2::Volume'
+        }
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='100',
+            Iops=1000,
+            VolumeType='io1'
+        )
+        assert_equals(self._data_for_resource(v), data)
+
+    def test_volume_valid_snapshot(self):
+        data = {
+            'Properties': {
+                'AvailabilityZone': 'eu-west1c',
+                'SnapshotId': 'testsn-123',
+                'VolumeType': 'standard'
+            },
+            'Type': 'AWS::EC2::Volume'
+        }
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            SnapshotId='testsn-123'
+        )
+        assert_equals(self._data_for_resource(v), data)
+
+    def test_volume_valid_standard(self):
+        data = {
+            'Properties': {
+                'AvailabilityZone': 'eu-west1c',
+                'Size': '100',
+                'VolumeType': 'standard'
+            },
+            'Type': 'AWS::EC2::Volume'
+        }
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='100'
+        )
+        assert_equals(self._data_for_resource(v), data)
+
+    def test_volume_attachment_invalid_no_device(self):
+        va = ec2.VolumeAttachment(
+            "test",
+            InstanceId='testme-123',
+            VolumeId='testv-123'
+        )
+        assert_raises(PropertyExeption, va.JSONrepr)
+
+    def test_volume_attachment_invalid_no_instance(self):
+        va = ec2.VolumeAttachment(
+            "test",
+            Device='/dev/sdd',
+            VolumeId='testv-123'
+        )
+        assert_raises(PropertyExeption, va.JSONrepr)
+
+    def test_volume_attachment_invalid_no_volume(self):
+        va = ec2.VolumeAttachment(
+            "test",
+            Device='/dev/sdd',
+            InstanceId='testme-123',
+        )
+        assert_raises(PropertyExeption, va.JSONrepr)
+
+    def test_volume_attachment_valid(self):
+        data = {
+            'Properties': {
+                'Device': '/dev/sdd',
+                'InstanceId': 'testme-123',
+                'VolumeId': 'testv-123'
+            },
+            'Type': 'AWS::EC2::VolumeAttachment'
+        }
+        va = ec2.VolumeAttachment(
+            "test",
+            Device='/dev/sdd',
+            InstanceId='testme-123',
+            VolumeId='testv-123'
+        )
+        assert_equals(self._data_for_resource(va), data)
+
+    def test_vpc_invalid_no_cidr(self):
+        vpc = ec2.VPC(
+            "test",
+        )
+        assert_raises(PropertyExeption, vpc.JSONrepr)
+
+    def test_vpc_invalid_hostname_no_dns(self):
+        vpc = ec2.VPC(
+            "test",
+            CidrBlock='10.0.0.0/16',
+            EnableDnsHostnames=True,
+        )
+        assert_raises(PropertyExeption, vpc.JSONrepr)
+
+    def test_vpc_invalid_instance_tenancy(self):
+        vpc = ec2.VPC(
+            "test",
+            CidrBlock='10.0.0.0/16',
+            InstanceTenancy='wibble',
+        )
+        assert_raises(PropertyExeption, vpc.JSONrepr)
+
+    def test_vpc_valid_tenancy_default(self):
+        data = {
+            'Properties': {
+                'CidrBlock': '10.0.0.0/16',
+                'InstanceTenancy': 'default'
+            },
+            'Type': 'AWS::EC2::VPC'
+        }
+        vpc = ec2.VPC(
+            "test",
+            CidrBlock='10.0.0.0/16',
+            InstanceTenancy='default',
+        )
+        assert_equals(self._data_for_resource(vpc), data)
+
+    def test_vpc_valid_tenancy_dedicated(self):
+        data = {
+            'Properties': {
+                'CidrBlock': '10.0.0.0/16',
+                'InstanceTenancy': 'dedicated'
+            },
+            'Type': 'AWS::EC2::VPC'
+        }
+        vpc = ec2.VPC(
+            "test",
+            CidrBlock='10.0.0.0/16',
+            InstanceTenancy='dedicated',
+        )
+        assert_equals(self._data_for_resource(vpc), data)
+
+    def test_vpc_valid_tenancy_dnshostnames(self):
+        data = {
+            'Properties': {
+                'CidrBlock': '10.0.0.0/16',
+                'EnableDnsHostnames': 'true',
+                'EnableDnsSupport': 'true'
+            },
+            'Type': 'AWS::EC2::VPC'
+        }
+        vpc = ec2.VPC(
+            "test",
+            CidrBlock='10.0.0.0/16',
+            EnableDnsSupport=True,
+            EnableDnsHostnames=True,
+        )
+        assert_equals(self._data_for_resource(vpc), data)
+
+    def test_vpc_dhcp_options_association_invalid_no_option(self):
+        vdoa = ec2.VPCDHCPOptionsAssociation(
+            "test",
+            VpcId='testvpc-123'
+        )
+        assert_raises(PropertyExeption, vdoa.JSONrepr)
+
+    def test_vpc_dhcp_options_association_invalid_no_vpc(self):
+        vdoa = ec2.VPCDHCPOptionsAssociation(
+            "test",
+            DhcpOptionsId='testdo-123',
+        )
+        assert_raises(PropertyExeption, vdoa.JSONrepr)
+
+    def test_vpc_dhcp_options_association_valid(self):
+        data = {
+            'Properties': {
+                'DhcpOptionsId': 'testdo-123',
+                'VpcId': 'testvpc-123'
+            },
+            'Type': 'AWS::EC2::VPCDHCPOptionsAssociation'
+        }
+        vdoa = ec2.VPCDHCPOptionsAssociation(
+            "test",
+            DhcpOptionsId='testdo-123',
+            VpcId='testvpc-123'
+        )
+        assert_equals(self._data_for_resource(vdoa), data)
+
+    def test_vpc_gateway_attachment_invalid_no_gateway(self):
+        vga = ec2.VPCGatewayAttachment(
+            "test",
+            VpcId='testvpc-123',
+        )
+        assert_raises(PropertyExeption, vga.JSONrepr)
+
+    def test_vpc_gateway_attachment_invalid_no_vpc(self):
+        vga = ec2.VPCGatewayAttachment(
+            "test",
+            InternetGatewayId='testig-123',
+        )
+        assert_raises(PropertyExeption, vga.JSONrepr)
+
+    def test_vpc_gateway_attachment_invalid_two_gateway(self):
+        vga = ec2.VPCGatewayAttachment(
+            "test",
+            InternetGatewayId='testig-123',
+            VpcId='testvpc-123',
+            VpnGatewayId='testvpn-123',
+        )
+        assert_raises(PropertyExeption, vga.JSONrepr)
+
+    def test_vpc_gateway_attachment_valid_gw(self):
+        data = {
+            'Properties': {
+                'VpcId': 'testvpc-123',
+                'InternetGatewayId': 'testig-123',
+            },
+            'Type': 'AWS::EC2::VPCGatewayAttachment'
+        }
+        vga = ec2.VPCGatewayAttachment(
+            "test",
+            InternetGatewayId='testig-123',
+            VpcId='testvpc-123',
+        )
+        assert_equals(self._data_for_resource(vga), data)
+
+    def test_vpc_gateway_attachment_valid_vpn(self):
+        data = {
+            'Properties': {
+                'VpcId': 'testvpc-123',
+                'VpnGatewayId': 'testvpn-123'
+            },
+            'Type': 'AWS::EC2::VPCGatewayAttachment'
+        }
+        vga = ec2.VPCGatewayAttachment(
+            "test",
+            VpcId='testvpc-123',
+            VpnGatewayId='testvpn-123',
+        )
+        assert_equals(self._data_for_resource(vga), data)
+
+    def test_vpnconnection_invalid_no_cust_gw(self):
+        vpnc = ec2.VPNConnection(
+            "test",
+            Type='ipsec.1',
+            VpnGatewayId='testvpngi-123'
+        )
+        assert_raises(PropertyExeption, vpnc.JSONrepr)
+
+    def test_vpnconnection_invalid_no_type(self):
+        vpnc = ec2.VPNConnection(
+            "test",
+            CustomerGatewayId='testcgi-123',
+            VpnGatewayId='testvpngi-123'
+        )
+        assert_raises(PropertyExeption, vpnc.JSONrepr)
+
+    def test_vpnconnection_invalid_no_gw(self):
+        vpnc = ec2.VPNConnection(
+            "test",
+            Type='ipsec.1',
+            CustomerGatewayId='testcgi-123',
+        )
+        assert_raises(PropertyExeption, vpnc.JSONrepr)
+
+    def test_vpnconnection_valid(self):
+        data = {
+            'Properties': {
+                'CustomerGatewayId': 'testcgi-123',
+                'Type': 'ipsec.1',
+                'VpnGatewayId': 'testvpngi-123'
+            },
+            'Type': 'AWS::EC2::VPNConnection'
+        }
+        vpnc = ec2.VPNConnection(
+            "test",
+            Type='ipsec.1',
+            CustomerGatewayId='testcgi-123',
+            VpnGatewayId='testvpngi-123'
+        )
+        assert_equals(self._data_for_resource(vpnc), data)
+
+    def test_vpnconnectionroute_invalid_no_dest(self):
+        vpncr = ec2.VPNConnectionRoute(
+            "test",
+            VpnConnectionId='testvpnc-123'
+        )
+        assert_raises(PropertyExeption, vpncr.JSONrepr)
+
+    def test_vpnconnectionroute_invalid_no_vpncid(self):
+        vpncr = ec2.VPNConnectionRoute(
+            "test",
+            DestinationCidrBlock='10.2.3.0/24',
+        )
+        assert_raises(PropertyExeption, vpncr.JSONrepr)
+
+    def test_vpnconnectionroute_valid(self):
+        data = {
+            'Properties': {
+                'DestinationCidrBlock': '10.2.3.0/24',
+                'VpnConnectionId': 'testvpnc-123'
+            },
+            'Type': 'AWS::EC2::VPNConnectionRoute'
+        }
+        vpncr = ec2.VPNConnectionRoute(
+            "test",
+            DestinationCidrBlock='10.2.3.0/24',
+            VpnConnectionId='testvpnc-123'
+        )
+        assert_equals(self._data_for_resource(vpncr), data)
+
+    def test_vpn_gateway_invalid_no_type(self):
+        vpng = ec2.VPNGateway(
+            "test",
+        )
+        assert_raises(PropertyExeption, vpng.JSONrepr)
+
+    def test_vpn_gateway_invalid_bad_type(self):
+        vpng = ec2.VPNGateway(
+            "test",
+            Type='openvpn'
+        )
+        assert_raises(PropertyExeption, vpng.JSONrepr)
+
+    def test_vpn_gateway_valid(self):
+        data = {
+            'Properties': {
+                'Type': 'ipsec.1'
+            },
+            'Type': 'AWS::EC2::VPNGateway'
+        }
+        vpng = ec2.VPNGateway(
+            "test",
+            Type='ipsec.1'
+        )
+        assert_equals(self._data_for_resource(vpng), data)
+
+    def test_vpn_gateway_route_propagation_invalid_no_route(self):
+        vpngrp = ec2.VPNGatewayRoutePropagation(
+            "test",
+            VpnGatewayId='testvpng-123'
+        )
+        assert_raises(PropertyExeption, vpngrp.JSONrepr)
+
+    def test_vpn_gateway_route_propagation_invalid_no_vpc(self):
+        vpngrp = ec2.VPNGatewayRoutePropagation(
+            "test",
+            RouteTableIds=['testrt-123'],
+        )
+        assert_raises(PropertyExeption, vpngrp.JSONrepr)
+
+    def test_vpn_gateway_route_propagation_valid(self):
+        data = {
+            'Properties': {
+                'RouteTableIds': ['testrt-123'],
+                'VpnGatewayId': u'testvpng-123'
+            },
+            'Type': 'AWS::EC2::VPNGatewayRoutePropagation'
+        }
+        vpngrp = ec2.VPNGatewayRoutePropagation(
+            "test",
+            RouteTableIds=['testrt-123'],
+            VpnGatewayId='testvpng-123'
+        )
+        assert_equals(self._data_for_resource(vpngrp), data)
