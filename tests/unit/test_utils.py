@@ -24,5 +24,5 @@ class TestUtils(object):
         try:
             utils.error(object(), msg)
         except exceptions.PropertyException, e:
-            assert_equals(e.message, "Error in resource properties : " + msg +
+            assert_equals(e.message, "Error in resource properties: " + msg +
                                      " in type <unknown type>")

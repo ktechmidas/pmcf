@@ -27,3 +27,13 @@ class TestException(object):
             raiser(msg)
         except exceptions.ParserFailure, e:
             assert_equals(e.message, "Error parsing input: " + msg)
+
+    def test_raise_property_error(self):
+        def raiser(message):
+            raise exceptions.PropertyException(message)
+
+        msg = 'test message'
+        try:
+            raiser(msg)
+        except exceptions.PropertyException, e:
+            assert_equals(e.message, "Error in resource properties: " + msg)

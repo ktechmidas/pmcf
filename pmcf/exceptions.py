@@ -22,7 +22,7 @@ class ParserFailure(Exception):
 
 class PropertyException(Exception):
     def __init__(self, message):
-        full_message = ("Error in resource properties : %s" % message)
+        full_message = ("Error in resource properties: %s" % message)
         super(PropertyException, self).__init__(full_message)
         self.message = full_message
 
