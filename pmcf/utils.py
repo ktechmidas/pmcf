@@ -13,21 +13,19 @@
 #    under the License.
 
 
-class ParserFailure(Exception):
-    def __init__(self, message):
-        full_message = ("Error parsing input: %s" % message)
-        super(ParserFailure, self).__init__(full_message)
-        self.message = full_message
+from pmcf.exceptions import PropertyException
 
 
-class PropertyException(Exception):
-    def __init__(self, message):
-        full_message = ("Error in resource properties : %s" % message)
-        super(PropertyException, self).__init__(full_message)
-        self.message = full_message
+def error(resource, msg):
+    res_type = getattr(resource, 'type', '<unknown type>')
+    msg += ' in type %s' % res_type
+    res_title = getattr(resource, 'title')
+    if res_title:
+        msg += ' (%s)' % res_title
+
+    raise PropertyException(msg)
 
 
 __all__ = [
-    ParserFailure,
-    PropertyException
+    error
 ]

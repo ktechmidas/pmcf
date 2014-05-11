@@ -17,17 +17,8 @@
 
 from troposphere import ec2
 
-from pmcf.exceptions import PropertyExeption
-
-
-def error(resource, msg):
-    res_type = getattr(resource, 'type', '<unknown type>')
-    msg += ' in type %s' % res_type
-    res_title = getattr(resource, 'title')
-    if res_title:
-        msg += ' (%s)' % res_title
-
-    raise PropertyExeption(msg)
+from pmcf.utils import PropertyException
+from pmcf.utils import error
 
 
 class Tag(ec2.Tag):
@@ -39,7 +30,7 @@ class CustomerGateway(ec2.CustomerGateway):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class DHCPOptions(ec2.DHCPOptions):
@@ -47,7 +38,7 @@ class DHCPOptions(ec2.DHCPOptions):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -62,7 +53,7 @@ class EIP(ec2.EIP):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class EIPAssociation(ec2.EIPAssociation):
@@ -70,7 +61,7 @@ class EIPAssociation(ec2.EIPAssociation):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -94,7 +85,7 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -117,7 +108,7 @@ class BlockDeviceMapping(ec2.BlockDeviceMapping):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -134,7 +125,7 @@ class MountPoint(ec2.MountPoint):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
@@ -142,7 +133,7 @@ class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
@@ -150,7 +141,7 @@ class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -167,7 +158,7 @@ class Instance(ec2.Instance):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -191,7 +182,7 @@ class InternetGateway(ec2.InternetGateway):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class NetworkAcl(ec2.NetworkAcl):
@@ -199,7 +190,7 @@ class NetworkAcl(ec2.NetworkAcl):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class ICMP(ec2.ICMP):
@@ -207,7 +198,7 @@ class ICMP(ec2.ICMP):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -224,7 +215,7 @@ class PortRange(ec2.PortRange):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -241,7 +232,7 @@ class NetworkAclEntry(ec2.NetworkAclEntry):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -260,7 +251,7 @@ class NetworkInterface(ec2.NetworkInterface):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
@@ -268,7 +259,7 @@ class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class Route(ec2.Route):
@@ -276,7 +267,7 @@ class Route(ec2.Route):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -293,7 +284,7 @@ class RouteTable(ec2.RouteTable):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class SecurityGroupEgress(ec2.SecurityGroupEgress):
@@ -301,7 +292,7 @@ class SecurityGroupEgress(ec2.SecurityGroupEgress):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -318,7 +309,7 @@ class SecurityGroupIngress(ec2.SecurityGroupIngress):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -349,7 +340,7 @@ class SecurityGroupRule(ec2.SecurityGroupRule):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -376,7 +367,7 @@ class SecurityGroup(ec2.SecurityGroup):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class Subnet(ec2.Subnet):
@@ -384,7 +375,7 @@ class Subnet(ec2.Subnet):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class SubnetNetworkAclAssociation(ec2.SubnetNetworkAclAssociation):
@@ -392,7 +383,7 @@ class SubnetNetworkAclAssociation(ec2.SubnetNetworkAclAssociation):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class SubnetRouteTableAssociation(ec2.SubnetRouteTableAssociation):
@@ -400,7 +391,7 @@ class SubnetRouteTableAssociation(ec2.SubnetRouteTableAssociation):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class Volume(ec2.Volume):
@@ -408,7 +399,7 @@ class Volume(ec2.Volume):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -439,7 +430,7 @@ class VolumeAttachment(ec2.VolumeAttachment):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class VPC(ec2.VPC):
@@ -447,7 +438,7 @@ class VPC(ec2.VPC):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -469,7 +460,7 @@ class VPCDHCPOptionsAssociation(ec2.VPCDHCPOptionsAssociation):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
@@ -477,7 +468,7 @@ class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -492,7 +483,7 @@ class VPNConnection(ec2.VPNConnection):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class VPNConnectionRoute(ec2.VPNConnectionRoute):
@@ -500,7 +491,7 @@ class VPNConnectionRoute(ec2.VPNConnectionRoute):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
 
 class VPNGateway(ec2.VPNGateway):
@@ -508,7 +499,7 @@ class VPNGateway(ec2.VPNGateway):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()
@@ -521,7 +512,7 @@ class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
         try:
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
-            raise PropertyExeption(e)
+            raise PropertyException(e)
 
     def validate(self):
         super(self.__class__, self).validate()

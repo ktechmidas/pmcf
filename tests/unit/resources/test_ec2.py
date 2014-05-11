@@ -16,7 +16,7 @@ import json
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.data.template import DataTemplate
-from pmcf.exceptions import PropertyExeption
+from pmcf.exceptions import PropertyException
 from pmcf.resources import ec2
 
 
@@ -37,7 +37,7 @@ class TestEc2Resource(object):
 
     def test_customer_gateway_invalid(self):
         cust_gw = ec2.CustomerGateway('test')
-        assert_raises(PropertyExeption, cust_gw.JSONrepr)
+        assert_raises(PropertyException, cust_gw.JSONrepr)
 
     def test_customer_gateway_valid(self):
         data = {
@@ -59,7 +59,7 @@ class TestEc2Resource(object):
 
     def test_dhcp_options_invalid(self):
         dhcp_opts = ec2.DHCPOptions("test")
-        assert_raises(PropertyExeption, dhcp_opts.JSONrepr)
+        assert_raises(PropertyException, dhcp_opts.JSONrepr)
 
     def test_dhcp_options_valid(self):
         data = {
@@ -94,14 +94,14 @@ class TestEc2Resource(object):
             "test",
             InstanceId="testme-234"
         )
-        assert_raises(PropertyExeption, eipa.JSONrepr)
+        assert_raises(PropertyException, eipa.JSONrepr)
 
     def test_eip_association_invalid_no_instance(self):
         eipa = ec2.EIPAssociation(
             "test",
             EIP="testme-123"
         )
-        assert_raises(PropertyExeption, eipa.JSONrepr)
+        assert_raises(PropertyException, eipa.JSONrepr)
 
     def test_eip_association_invalid_no_allocation_id(self):
         eipa = ec2.EIPAssociation(
@@ -109,7 +109,7 @@ class TestEc2Resource(object):
             EIP="testme-123",
             NetworkInterfaceId="test-345"
         )
-        assert_raises(PropertyExeption, eipa.JSONrepr)
+        assert_raises(PropertyException, eipa.JSONrepr)
 
     def test_eip_association_valid_allocation_id(self):
         data = {
@@ -148,7 +148,7 @@ class TestEc2Resource(object):
             "test",
             VolumeType="io1"
         )
-        assert_raises(PropertyExeption, ebsbd.JSONrepr)
+        assert_raises(PropertyException, ebsbd.JSONrepr)
 
     def test_ebs_block_device_invalid_io1_invalid_iops(self):
         ebsbd = ec2.EBSBlockDevice(
@@ -156,7 +156,7 @@ class TestEc2Resource(object):
             VolumeType="io1",
             Iops=2100,
         )
-        assert_raises(PropertyExeption, ebsbd.JSONrepr)
+        assert_raises(PropertyException, ebsbd.JSONrepr)
 
     def test_ebs_block_device_invalid_standard_invalid_iops(self):
         ebsbd = ec2.EBSBlockDevice(
@@ -164,7 +164,7 @@ class TestEc2Resource(object):
             VolumeType="standard",
             Iops=200,
         )
-        assert_raises(PropertyExeption, ebsbd.JSONrepr)
+        assert_raises(PropertyException, ebsbd.JSONrepr)
 
     def test_ebs_block_device_valid_high_io(self):
         data = {'Iops': 1100, 'VolumeType': 'io1'}
@@ -187,7 +187,7 @@ class TestEc2Resource(object):
             "test",
             DeviceName="/dev/sda",
         )
-        assert_raises(PropertyExeption, ebsbdm.JSONrepr)
+        assert_raises(PropertyException, ebsbdm.JSONrepr)
 
     def test_block_device_mapping_invalid_conflicting_type(self):
         ebsbdm = ec2.BlockDeviceMapping(
@@ -195,21 +195,21 @@ class TestEc2Resource(object):
             Ebs=ec2.EBSBlockDevice("test", VolumeSize=50),
             VirtualName="ephemeral1"
         )
-        assert_raises(PropertyExeption, ebsbdm.JSONrepr)
+        assert_raises(PropertyException, ebsbdm.JSONrepr)
 
     def test_block_device_mapping_invalid_no_devicename_ebs(self):
         ebsbdm = ec2.BlockDeviceMapping(
             "test",
             Ebs=ec2.EBSBlockDevice("test", VolumeSize=50),
         )
-        assert_raises(PropertyExeption, ebsbdm.JSONrepr)
+        assert_raises(PropertyException, ebsbdm.JSONrepr)
 
     def test_block_device_mapping_invalid_no_devicename_ephemeral(self):
         ebsbdm = ec2.BlockDeviceMapping(
             "test",
             VirtualName="ephemeral1"
         )
-        assert_raises(PropertyExeption, ebsbdm.JSONrepr)
+        assert_raises(PropertyException, ebsbdm.JSONrepr)
 
     def test_block_device_mapping_valid(self):
         data = {'DeviceName': '/dev/sda', 'VirtualName': 'ephemeral1'}
@@ -224,13 +224,13 @@ class TestEc2Resource(object):
         mp = ec2.MountPoint(
             Device="/dev/sda"
         )
-        assert_raises(PropertyExeption, mp.JSONrepr)
+        assert_raises(PropertyException, mp.JSONrepr)
 
     def test_mount_point_invalid_no_deviceid(self):
         mp = ec2.MountPoint(
             VolumeId="1atestme",
         )
-        assert_raises(PropertyExeption, mp.JSONrepr)
+        assert_raises(PropertyException, mp.JSONrepr)
 
     def test_mount_point_valid(self):
         data = {'Device': '/dev/sda', 'VolumeId': '1atestme'}
@@ -246,13 +246,13 @@ class TestEc2Resource(object):
             "test",
             Primary=False,
         )
-        assert_raises(PropertyExeption, pips.JSONrepr)
+        assert_raises(PropertyException, pips.JSONrepr)
 
     def test_private_ipaddress_specification_invalid_no_primary(self):
         pips = ec2.PrivateIpAddressSpecification(
             PrivateIpAddress='1.2.3.4',
         )
-        assert_raises(PropertyExeption, pips.JSONrepr)
+        assert_raises(PropertyException, pips.JSONrepr)
 
     def test_private_ipaddress_specification_valid(self):
         data = {'Primary': 'true', 'PrivateIpAddress': '1.2.3.4'}
@@ -267,13 +267,13 @@ class TestEc2Resource(object):
         nip = ec2.NetworkInterfaceProperty(
             "test"
         )
-        assert_raises(PropertyExeption, nip.JSONrepr)
+        assert_raises(PropertyException, nip.JSONrepr)
 
     def test_network_interface_property_invalid_no_subnet_or_int(self):
         nip = ec2.NetworkInterfaceProperty(
             DeviceIndex='1',
         )
-        assert_raises(PropertyExeption, nip.JSONrepr)
+        assert_raises(PropertyException, nip.JSONrepr)
 
     def test_network_interface_property_invalid_both_subnet_and_int(self):
         nip = ec2.NetworkInterfaceProperty(
@@ -281,7 +281,7 @@ class TestEc2Resource(object):
             DeviceIndex='1',
             SubnetId='testme-456'
         )
-        assert_raises(PropertyExeption, nip.JSONrepr)
+        assert_raises(PropertyException, nip.JSONrepr)
 
     def test_network_interface_property_valid(self):
         data = {
@@ -305,7 +305,7 @@ class TestEc2Resource(object):
         i = ec2.Instance(
             "test",
         )
-        assert_raises(PropertyExeption, i.JSONrepr)
+        assert_raises(PropertyException, i.JSONrepr)
 
     def test_instance_invalid(self):
         pass
@@ -316,7 +316,7 @@ class TestEc2Resource(object):
             ImageId='testme-123',
             Tenancy='stromble'
         )
-        assert_raises(PropertyExeption, i.JSONrepr)
+        assert_raises(PropertyException, i.JSONrepr)
 
     def test_instance_invalid_interfaces_and_secgroups(self):
         nip = ec2.NetworkInterfaceProperty(
@@ -331,7 +331,7 @@ class TestEc2Resource(object):
             NetworkInterfaces=[nip],
             SecurityGroupIds=['testsg-123']
         )
-        assert_raises(PropertyExeption, i.JSONrepr)
+        assert_raises(PropertyException, i.JSONrepr)
 
     def test_instance_invalid_interfaces_and_subnet(self):
         nip = ec2.NetworkInterfaceProperty(
@@ -346,7 +346,7 @@ class TestEc2Resource(object):
             NetworkInterfaces=[nip],
             SubnetId='testsn-123'
         )
-        assert_raises(PropertyExeption, i.JSONrepr)
+        assert_raises(PropertyException, i.JSONrepr)
 
     def test_instance_valid_tenancy(self):
         data = {
@@ -376,7 +376,7 @@ class TestEc2Resource(object):
 
     def test_network_acl_invalid_no_vpcid(self):
         na = ec2.NetworkAcl("test")
-        assert_raises(PropertyExeption, na.JSONrepr)
+        assert_raises(PropertyException, na.JSONrepr)
 
     def test_network_acl_valid(self):
         data = {
@@ -396,14 +396,14 @@ class TestEc2Resource(object):
             "test",
             Code=-1
         )
-        assert_raises(PropertyExeption, icmp.JSONrepr)
+        assert_raises(PropertyException, icmp.JSONrepr)
 
     def test_icmp_invalid_no_type(self):
         icmp = ec2.ICMP(
             "test",
             Type=-1
         )
-        assert_raises(PropertyExeption, icmp.JSONrepr)
+        assert_raises(PropertyException, icmp.JSONrepr)
 
     def test_icmp_valid(self):
         data = {'Code': -1, 'Type': -1}
@@ -419,14 +419,14 @@ class TestEc2Resource(object):
             "test",
             To=80
         )
-        assert_raises(PropertyExeption, pr.JSONrepr)
+        assert_raises(PropertyException, pr.JSONrepr)
 
     def test_port_range_invalid_no_to(self):
         pr = ec2.PortRange(
             "test",
             From=80
         )
-        assert_raises(PropertyExeption, pr.JSONrepr)
+        assert_raises(PropertyException, pr.JSONrepr)
 
     def test_port_range_valid(self):
         data = {'From': 80, 'To': 80}
@@ -447,7 +447,7 @@ class TestEc2Resource(object):
             RuleAction='allow',
             RuleNumber=1
         )
-        assert_raises(PropertyExeption, nae.JSONrepr)
+        assert_raises(PropertyException, nae.JSONrepr)
 
     def test_network_acl_entry_invalid_icmp(self):
         nae = ec2.NetworkAclEntry(
@@ -460,7 +460,7 @@ class TestEc2Resource(object):
             RuleAction='allow',
             RuleNumber=1
         )
-        assert_raises(PropertyExeption, nae.JSONrepr)
+        assert_raises(PropertyException, nae.JSONrepr)
 
     def test_network_acl_entry_invalid_tcp(self):
         nae = ec2.NetworkAclEntry(
@@ -473,7 +473,7 @@ class TestEc2Resource(object):
             RuleAction='allow',
             RuleNumber=1
         )
-        assert_raises(PropertyExeption, nae.JSONrepr)
+        assert_raises(PropertyException, nae.JSONrepr)
 
     def test_network_acl_entry_invalid_udp(self):
         nae = ec2.NetworkAclEntry(
@@ -486,7 +486,7 @@ class TestEc2Resource(object):
             RuleAction='allow',
             RuleNumber=1
         )
-        assert_raises(PropertyExeption, nae.JSONrepr)
+        assert_raises(PropertyException, nae.JSONrepr)
 
     def test_network_acl_entry_valid_icmp(self):
         data = {
@@ -580,7 +580,7 @@ class TestEc2Resource(object):
             "test",
             PrivateIpAddress='1.2.3.4'
         )
-        assert_raises(PropertyExeption, ni.JSONrepr)
+        assert_raises(PropertyException, ni.JSONrepr)
 
     def test_network_interface_valid(self):
         data = {
@@ -603,7 +603,7 @@ class TestEc2Resource(object):
             InstanceId='testme-123',
             DeviceIndex='0'
         )
-        assert_raises(PropertyExeption, nia.JSONrepr)
+        assert_raises(PropertyException, nia.JSONrepr)
 
     def test_network_interface_attachment_valid(self):
         data = {
@@ -627,7 +627,7 @@ class TestEc2Resource(object):
             "test",
             DestinationCidrBlock='1.2.3.0/24',
         )
-        assert_raises(PropertyExeption, r.JSONrepr)
+        assert_raises(PropertyException, r.JSONrepr)
 
     def test_route_invalid_no_dest(self):
         r = ec2.Route(
@@ -635,7 +635,7 @@ class TestEc2Resource(object):
             DestinationCidrBlock='1.2.3.0/24',
             RouteTableId='testme-123'
         )
-        assert_raises(PropertyExeption, r.JSONrepr)
+        assert_raises(PropertyException, r.JSONrepr)
 
     def test_route_invalid_double_dest(self):
         r = ec2.Route(
@@ -645,7 +645,7 @@ class TestEc2Resource(object):
             GatewayId='testme-124',
             InstanceId='testme-125'
         )
-        assert_raises(PropertyExeption, r.JSONrepr)
+        assert_raises(PropertyException, r.JSONrepr)
 
     def test_route_valid_gateway(self):
         data = {
@@ -702,7 +702,7 @@ class TestEc2Resource(object):
         rt = ec2.RouteTable(
             "test"
         )
-        assert_raises(PropertyExeption, rt.JSONrepr)
+        assert_raises(PropertyException, rt.JSONrepr)
 
     def test_route_table_valid(self):
         data = {
@@ -724,7 +724,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sge.JSONrepr)
+        assert_raises(PropertyException, sge.JSONrepr)
 
     def test_security_group_egress_invalid_no_dest(self):
         sge = ec2.SecurityGroupEgress(
@@ -734,7 +734,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sge.JSONrepr)
+        assert_raises(PropertyException, sge.JSONrepr)
 
     def test_security_group_egress_invalid_two_dests(self):
         sge = ec2.SecurityGroupEgress(
@@ -746,7 +746,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sge.JSONrepr)
+        assert_raises(PropertyException, sge.JSONrepr)
 
     def test_security_group_egress_valid_cidr(self):
         data = {
@@ -799,7 +799,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sgi.JSONrepr)
+        assert_raises(PropertyException, sgi.JSONrepr)
 
     def test_security_group_ingress_invalid_two_groups(self):
         sgi = ec2.SecurityGroupIngress(
@@ -811,7 +811,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sgi.JSONrepr)
+        assert_raises(PropertyException, sgi.JSONrepr)
 
     def test_security_group_ingress_invalid_two_source_groups(self):
         sgi = ec2.SecurityGroupIngress(
@@ -823,7 +823,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sgi.JSONrepr)
+        assert_raises(PropertyException, sgi.JSONrepr)
 
     def test_security_group_ingress_invalid_two_sources(self):
         sgi = ec2.SecurityGroupIngress(
@@ -835,7 +835,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sgi.JSONrepr)
+        assert_raises(PropertyException, sgi.JSONrepr)
 
     def test_security_group_ingress_valid_gname_source_group(self):
         data = {
@@ -910,7 +910,7 @@ class TestEc2Resource(object):
             FromPort=80,
             ToPort=80,
         )
-        assert_raises(PropertyExeption, sgr.JSONrepr)
+        assert_raises(PropertyException, sgr.JSONrepr)
 
     def test_security_group_rule_invalid_cidr_and_sgid(self):
         sgr = ec2.SecurityGroupRule(
@@ -921,7 +921,7 @@ class TestEc2Resource(object):
             IpProtocol='6',
             SourceSecurityGroupId='testme-123',
         )
-        assert_raises(PropertyExeption, sgr.JSONrepr)
+        assert_raises(PropertyException, sgr.JSONrepr)
 
     def test_security_group_rule_invalid_cidr_and_sgname(self):
         sgr = ec2.SecurityGroupRule(
@@ -932,7 +932,7 @@ class TestEc2Resource(object):
             IpProtocol='6',
             SourceSecurityGroupName='MySG',
         )
-        assert_raises(PropertyExeption, sgr.JSONrepr)
+        assert_raises(PropertyException, sgr.JSONrepr)
 
     def test_security_group_rule_invalid_sgname_and_sgid(self):
         sgr = ec2.SecurityGroupRule(
@@ -943,7 +943,7 @@ class TestEc2Resource(object):
             SourceSecurityGroupName='MySG',
             SourceSecurityGroupId='MySG',
         )
-        assert_raises(PropertyExeption, sgr.JSONrepr)
+        assert_raises(PropertyException, sgr.JSONrepr)
 
     def test_security_group_rule_valid_sgname(self):
         data = {
@@ -997,7 +997,7 @@ class TestEc2Resource(object):
         sg = ec2.SecurityGroup(
             "test",
         )
-        assert_raises(PropertyExeption, sg.JSONrepr)
+        assert_raises(PropertyException, sg.JSONrepr)
 
     def test_security_group_valid(self):
         data = {
@@ -1017,14 +1017,14 @@ class TestEc2Resource(object):
             "test",
             CidrBlock='10.0.0.0/24'
         )
-        assert_raises(PropertyExeption, s.JSONrepr)
+        assert_raises(PropertyException, s.JSONrepr)
 
     def test_subnet_invalid_no_cidr(self):
         s = ec2.Subnet(
             "test",
             VpcId='testme-123'
         )
-        assert_raises(PropertyExeption, s.JSONrepr)
+        assert_raises(PropertyException, s.JSONrepr)
 
     def test_subnet_invalid(self):
         data = {
@@ -1046,14 +1046,14 @@ class TestEc2Resource(object):
             "test",
             NetworkAclId="testme-123"
         )
-        assert_raises(PropertyExeption, snaa.JSONrepr)
+        assert_raises(PropertyException, snaa.JSONrepr)
 
     def test_subnet_network_acl_association_invalid_no_network(self):
         snaa = ec2.SubnetNetworkAclAssociation(
             "test",
             SubnetId="testme-456",
         )
-        assert_raises(PropertyExeption, snaa.JSONrepr)
+        assert_raises(PropertyException, snaa.JSONrepr)
 
     def test_subnet_network_acl_association_valid(self):
         data = {
@@ -1075,14 +1075,14 @@ class TestEc2Resource(object):
             "test",
             SubnetId='testme-123'
         )
-        assert_raises(PropertyExeption, srta.JSONrepr)
+        assert_raises(PropertyException, srta.JSONrepr)
 
     def test_subnet_route_table_association_invalid_no_subnet(self):
         srta = ec2.SubnetRouteTableAssociation(
             "test",
             RouteTableId='testme-123'
         )
-        assert_raises(PropertyExeption, srta.JSONrepr)
+        assert_raises(PropertyException, srta.JSONrepr)
 
     def test_subnet_route_table_association_valid(self):
         data = {
@@ -1104,7 +1104,7 @@ class TestEc2Resource(object):
             "test",
             Size='10'
         )
-        assert_raises(PropertyExeption, v.JSONrepr)
+        assert_raises(PropertyException, v.JSONrepr)
 
     def test_volume_invalid_iops_and_standard(self):
         v = ec2.Volume(
@@ -1114,7 +1114,7 @@ class TestEc2Resource(object):
             VolumeType='standard',
             Iops=2000,
         )
-        assert_raises(PropertyExeption, v.JSONrepr)
+        assert_raises(PropertyException, v.JSONrepr)
 
     def test_volume_invalid_too_many_iops(self):
         v = ec2.Volume(
@@ -1124,7 +1124,7 @@ class TestEc2Resource(object):
             VolumeType='io1',
             Iops=5000,
         )
-        assert_raises(PropertyExeption, v.JSONrepr)
+        assert_raises(PropertyException, v.JSONrepr)
 
     def test_volume_invalid_not_enough_iops(self):
         v = ec2.Volume(
@@ -1134,7 +1134,7 @@ class TestEc2Resource(object):
             VolumeType='io1',
             Iops=50,
         )
-        assert_raises(PropertyExeption, v.JSONrepr)
+        assert_raises(PropertyException, v.JSONrepr)
 
     def test_volume_invalid_size_and_snapshot(self):
         v = ec2.Volume(
@@ -1143,7 +1143,7 @@ class TestEc2Resource(object):
             Size='10',
             SnapshotId='testsn-123',
         )
-        assert_raises(PropertyExeption, v.JSONrepr)
+        assert_raises(PropertyException, v.JSONrepr)
 
     def test_volume_invalid_iops_for_size(self):
         v = ec2.Volume(
@@ -1153,7 +1153,7 @@ class TestEc2Resource(object):
             Iops=1000,
             VolumeType='io1'
         )
-        assert_raises(PropertyExeption, v.JSONrepr)
+        assert_raises(PropertyException, v.JSONrepr)
 
     def test_volume_valid_iops(self):
         data = {
@@ -1212,7 +1212,7 @@ class TestEc2Resource(object):
             InstanceId='testme-123',
             VolumeId='testv-123'
         )
-        assert_raises(PropertyExeption, va.JSONrepr)
+        assert_raises(PropertyException, va.JSONrepr)
 
     def test_volume_attachment_invalid_no_instance(self):
         va = ec2.VolumeAttachment(
@@ -1220,7 +1220,7 @@ class TestEc2Resource(object):
             Device='/dev/sdd',
             VolumeId='testv-123'
         )
-        assert_raises(PropertyExeption, va.JSONrepr)
+        assert_raises(PropertyException, va.JSONrepr)
 
     def test_volume_attachment_invalid_no_volume(self):
         va = ec2.VolumeAttachment(
@@ -1228,7 +1228,7 @@ class TestEc2Resource(object):
             Device='/dev/sdd',
             InstanceId='testme-123',
         )
-        assert_raises(PropertyExeption, va.JSONrepr)
+        assert_raises(PropertyException, va.JSONrepr)
 
     def test_volume_attachment_valid(self):
         data = {
@@ -1251,7 +1251,7 @@ class TestEc2Resource(object):
         vpc = ec2.VPC(
             "test",
         )
-        assert_raises(PropertyExeption, vpc.JSONrepr)
+        assert_raises(PropertyException, vpc.JSONrepr)
 
     def test_vpc_invalid_hostname_no_dns(self):
         vpc = ec2.VPC(
@@ -1259,7 +1259,7 @@ class TestEc2Resource(object):
             CidrBlock='10.0.0.0/16',
             EnableDnsHostnames=True,
         )
-        assert_raises(PropertyExeption, vpc.JSONrepr)
+        assert_raises(PropertyException, vpc.JSONrepr)
 
     def test_vpc_invalid_instance_tenancy(self):
         vpc = ec2.VPC(
@@ -1267,7 +1267,7 @@ class TestEc2Resource(object):
             CidrBlock='10.0.0.0/16',
             InstanceTenancy='wibble',
         )
-        assert_raises(PropertyExeption, vpc.JSONrepr)
+        assert_raises(PropertyException, vpc.JSONrepr)
 
     def test_vpc_valid_tenancy_default(self):
         data = {
@@ -1321,14 +1321,14 @@ class TestEc2Resource(object):
             "test",
             VpcId='testvpc-123'
         )
-        assert_raises(PropertyExeption, vdoa.JSONrepr)
+        assert_raises(PropertyException, vdoa.JSONrepr)
 
     def test_vpc_dhcp_options_association_invalid_no_vpc(self):
         vdoa = ec2.VPCDHCPOptionsAssociation(
             "test",
             DhcpOptionsId='testdo-123',
         )
-        assert_raises(PropertyExeption, vdoa.JSONrepr)
+        assert_raises(PropertyException, vdoa.JSONrepr)
 
     def test_vpc_dhcp_options_association_valid(self):
         data = {
@@ -1350,14 +1350,14 @@ class TestEc2Resource(object):
             "test",
             VpcId='testvpc-123',
         )
-        assert_raises(PropertyExeption, vga.JSONrepr)
+        assert_raises(PropertyException, vga.JSONrepr)
 
     def test_vpc_gateway_attachment_invalid_no_vpc(self):
         vga = ec2.VPCGatewayAttachment(
             "test",
             InternetGatewayId='testig-123',
         )
-        assert_raises(PropertyExeption, vga.JSONrepr)
+        assert_raises(PropertyException, vga.JSONrepr)
 
     def test_vpc_gateway_attachment_invalid_two_gateway(self):
         vga = ec2.VPCGatewayAttachment(
@@ -1366,7 +1366,7 @@ class TestEc2Resource(object):
             VpcId='testvpc-123',
             VpnGatewayId='testvpn-123',
         )
-        assert_raises(PropertyExeption, vga.JSONrepr)
+        assert_raises(PropertyException, vga.JSONrepr)
 
     def test_vpc_gateway_attachment_valid_gw(self):
         data = {
@@ -1404,7 +1404,7 @@ class TestEc2Resource(object):
             Type='ipsec.1',
             VpnGatewayId='testvpngi-123'
         )
-        assert_raises(PropertyExeption, vpnc.JSONrepr)
+        assert_raises(PropertyException, vpnc.JSONrepr)
 
     def test_vpnconnection_invalid_no_type(self):
         vpnc = ec2.VPNConnection(
@@ -1412,7 +1412,7 @@ class TestEc2Resource(object):
             CustomerGatewayId='testcgi-123',
             VpnGatewayId='testvpngi-123'
         )
-        assert_raises(PropertyExeption, vpnc.JSONrepr)
+        assert_raises(PropertyException, vpnc.JSONrepr)
 
     def test_vpnconnection_invalid_no_gw(self):
         vpnc = ec2.VPNConnection(
@@ -1420,7 +1420,7 @@ class TestEc2Resource(object):
             Type='ipsec.1',
             CustomerGatewayId='testcgi-123',
         )
-        assert_raises(PropertyExeption, vpnc.JSONrepr)
+        assert_raises(PropertyException, vpnc.JSONrepr)
 
     def test_vpnconnection_valid(self):
         data = {
@@ -1444,14 +1444,14 @@ class TestEc2Resource(object):
             "test",
             VpnConnectionId='testvpnc-123'
         )
-        assert_raises(PropertyExeption, vpncr.JSONrepr)
+        assert_raises(PropertyException, vpncr.JSONrepr)
 
     def test_vpnconnectionroute_invalid_no_vpncid(self):
         vpncr = ec2.VPNConnectionRoute(
             "test",
             DestinationCidrBlock='10.2.3.0/24',
         )
-        assert_raises(PropertyExeption, vpncr.JSONrepr)
+        assert_raises(PropertyException, vpncr.JSONrepr)
 
     def test_vpnconnectionroute_valid(self):
         data = {
@@ -1472,14 +1472,14 @@ class TestEc2Resource(object):
         vpng = ec2.VPNGateway(
             "test",
         )
-        assert_raises(PropertyExeption, vpng.JSONrepr)
+        assert_raises(PropertyException, vpng.JSONrepr)
 
     def test_vpn_gateway_invalid_bad_type(self):
         vpng = ec2.VPNGateway(
             "test",
             Type='openvpn'
         )
-        assert_raises(PropertyExeption, vpng.JSONrepr)
+        assert_raises(PropertyException, vpng.JSONrepr)
 
     def test_vpn_gateway_valid(self):
         data = {
@@ -1499,14 +1499,14 @@ class TestEc2Resource(object):
             "test",
             VpnGatewayId='testvpng-123'
         )
-        assert_raises(PropertyExeption, vpngrp.JSONrepr)
+        assert_raises(PropertyException, vpngrp.JSONrepr)
 
     def test_vpn_gateway_route_propagation_invalid_no_vpc(self):
         vpngrp = ec2.VPNGatewayRoutePropagation(
             "test",
             RouteTableIds=['testrt-123'],
         )
-        assert_raises(PropertyExeption, vpngrp.JSONrepr)
+        assert_raises(PropertyException, vpngrp.JSONrepr)
 
     def test_vpn_gateway_route_propagation_valid(self):
         data = {
