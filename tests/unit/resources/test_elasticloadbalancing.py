@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.exceptions import PropertyException
