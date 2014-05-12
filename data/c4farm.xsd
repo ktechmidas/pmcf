@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="c4farm">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="farmName" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>A unique name for your farm. It must not contain spaces. If necessary use underscores. The required naming format is :&lt;appname&gt;-&lt;environment&gt;-&lt;version&gt;</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="[a-z0-9]*-(prod|stage|test|perf|uat|int|dev|inftest|show)-v[0-9]*[a-z0-9\-]*"></xs:pattern>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="farmOwner" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>Email address of the farm owner. Defaults to gis-channel4@piksel.com.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}"></xs:pattern>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="key" type="xs:string" maxOccurs="1" >
+                    <xs:annotation>
+                        <xs:documentation>The AWS keypair name used to allow logins into the farm nodes</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="dnskey" type="xs:string" maxOccurs="1" >
+                    <xs:annotation>
+                        <xs:documentation>Key name used for updating dynamic DNS (ioko supplied)</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="dnssecret" type="xs:string" maxOccurs="1" >
+                    <xs:annotation>
+                        <xs:documentation>Secret used for updating dynamic DNS (ioko supplied)</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="precedence" minOccurs="0" maxOccurs="1">
+                    <xs:annotation>
+                        <xs:documentation>Farm precedence order configuration</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="rolePrecedence" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                            <xs:element name="hardPrecedence" minOccurs="0" maxOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>Use within precedence to decide whether requirement is 'best effort' or 'hard'</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="ELB" minOccurs="0" maxOccurs="unbounded" >
+                    <xs:annotation>
+                        <xs:documentation>ELB/Elastic Load Balancer Configuration</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:annotation>
+                            <xs:documentation>Defines a listener for servicing requests</xs:documentation>
+                        </xs:annotation>
+                        <xs:sequence>
+                            <xs:element name="suffix" type="xs:string" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>Suffix appended to ELB</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="cname" type="xs:string" minOccurs="0" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>CNAME for ELB</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="listener" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="protocol">
+                                            <xs:simpleType>
+                                                <xs:annotation>
+                                                    <xs:documentation>Defines if this is plain (TCP) or specific (HTTP)</xs:documentation>
+                                                </xs:annotation>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="HTTP" />
+                                                    <xs:enumeration value="HTTPS" />
+                                                    <xs:enumeration value="TCP" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="port" type="xs:integer" >
+                                            <xs:annotation>
+                                                <xs:documentation>External (internet facing) port to listen on</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="instancePort" type="xs:integer" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Backend (App or Web Server) Port Number</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="healthCheck" type="xs:string" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>URL for ELB to access to validate health of back-end servers, in the format PROTOCOL:PORT/URL (eg: HTTP:8080/index.html)</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="sslCert" type="xs:string" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Name of SSL cert for use with an ELB</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="cloudwatch" maxOccurs="1">
+                    <xs:simpleType>
+                        <xs:annotation>
+                            <xs:documentation>Enable cloudwatch</xs:documentation>
+                        </xs:annotation>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="true" />
+                            <xs:enumeration value="false" />
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="availabilityZone" minOccurs="0" maxOccurs="1" >
+                    <xs:annotation>
+                        <xs:documentation>AWS Availabity zone, eg. eu-west-1a</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="vpc" minOccurs="0" maxOccurs="1" >
+                    <xs:annotation>
+                        <xs:documentation>AWS VPC subnet, eg. 10.0.1.0/24 (no bigger than /16)</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="cidr" minOccurs="1" maxOccurs="1">
+                                <xs:annotation>
+                                    <xs:documentation>Network/subnet in the form 192.168.0.1/24 (/16 is the max value)</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="subnet" minOccurs="0" maxOccurs="2">
+                                <xs:annotation>
+                                    <xs:documentation>Network/subnet in the form 192.168.0.1/24 (/16 is the max value)</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="roleBucket" type="xs:string" >
+                    <xs:annotation>
+                        <xs:documentation>S3 bucket that infrastructure roles will be gathered from (ioko supplied value)</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="appBucket" type="xs:string" >
+                    <xs:annotation>
+                        <xs:documentation>S3 bucket containing application deployment archives</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="noDefaultSG" minOccurs="0" maxOccurs="1" >
+                    <xs:annotation>
+                        <xs:documentation>Do not attach the default Security Group (aws.c4.default)</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="securityGroup" type="xs:string" minOccurs="0" maxOccurs="999" >
+                    <xs:annotation>
+                        <xs:documentation>Attach the named Security Group</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="instances" minOccurs="1" maxOccurs="unbounded">
+                    <xs:annotation>
+                        <xs:documentation>Farm instances</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="tier" type="xs:string" >
+                                <xs:annotation>
+                                    <xs:documentation>Associate instance to a tier. Used for human identification.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="availabilityZone" minOccurs="0" maxOccurs="unbounded" >
+                                <xs:annotation>
+                                    <xs:documentation>AWS Availabity zone, eg. eu-west-1a. If multiple appear, the FW will iterate over them</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="role" type="xs:string" minOccurs="1" maxOccurs="unbounded">
+                                <xs:annotation>
+                                    <xs:documentation>Role type</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="cname" type="xs:string" minOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>CNAME root name. A tier unique ID will be appended at runtime. For example: cname = web. At runtime, you will find web01 as the first instance in this teir.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="volume" minOccurs="0" maxOccurs="255" >
+                                <xs:annotation>
+                                    <xs:documentation>EBS Volume. Persistance storage.</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="volumeId" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                            <xs:annotation>
+                                                <xs:documentation>Volume ID of an existing EBS volume. volumeDevice must also be set.  Do not set to create a new volume.</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="volumeSnapId" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                            <xs:annotation>
+                                                <xs:documentation>Volume ID of an existing EBS volume To SnapSoot. volumeDevice must also be set. Will be a clone of existing data.</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="volumeSize" type="xs:integer" minOccurs="0" maxOccurs="1" >
+                                            <xs:annotation>
+                                                <xs:documentation>Size of a new volume in Megabytes</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="volumeDevice">
+                                            <xs:annotation>
+                                                <xs:documentation>Linux device to present volume as. For example, /dev/sdh</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:pattern value="/dev/sd[a-z]" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="dbBackup" minOccurs="0" maxOccurs="1" >
+                                            <xs:annotation>
+                                                <xs:documentation>Set Database backups. Only first occurence will be observed</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="true" />
+                                                    <xs:enumeration value="false" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="dbBackupHour" minOccurs="0" maxOccurs="1" >
+                                            <xs:annotation>
+                                                <xs:documentation>Set hour in which a DB backup will be performed. Only first occurence will be observed</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:integer">
+                                                    <xs:minInclusive value="0" />
+                                                    <xs:maxInclusive value="23" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="dbBackupRetain" minOccurs="0" maxOccurs="1">
+                                            <xs:annotation>
+                                                <xs:documentation>Set number of DB backups to retain. When number is reached, the oldes backups will be removed. Only first occurence will be observed</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:integer">
+                                                    <xs:minInclusive value="1" />
+                                                    <xs:maxInclusive value="999" />
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="count" type="xs:integer" />
+                            <xs:element name="amiId" type="xs:string" >
+                                <xs:annotation>
+                                    <xs:documentation>AMI ID (supplied by KITD)</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="akiId" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>AKI ID (supplied by KITD)</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="size">
+                                <xs:annotation>
+                                    <xs:documentation> Instance size type [t1.micr|m1.small|c1.medium|m1.large|m1.xlarge|m2.xlarge|m2.2xlarge|m2.4xlarge|c1.xlarge]</xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="m1.small"></xs:enumeration>
+                                        <xs:enumeration value="m1.medium"></xs:enumeration>
+                                        <xs:enumeration value="m1.large"></xs:enumeration>
+                                        <xs:enumeration value="m1.xlarge"></xs:enumeration>
+                                        <xs:enumeration value="t1.micro"></xs:enumeration>
+                                        <xs:enumeration value="m2.xlarge"></xs:enumeration>
+                                        <xs:enumeration value="m2.2xlarge"></xs:enumeration>
+                                        <xs:enumeration value="m2.4xlarge"></xs:enumeration>
+                                        <xs:enumeration value="c1.medium"></xs:enumeration>
+                                        <xs:enumeration value="c1.xlarge"></xs:enumeration>
+                                        <xs:enumeration value="cc1.4xlarge"></xs:enumeration>
+                                        <xs:enumeration value="cc2.8xlarge"></xs:enumeration>
+                                        <xs:enumeration value="cg1.4xlarge"></xs:enumeration>
+                                        <xs:enumeration value="hi1.4xlarge"></xs:enumeration>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="app" type="xs:string" minOccurs="0" maxOccurs="unbounded" >
+                                <xs:annotation>
+                                    <xs:documentation>Application name to deploy to this instance</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="vpc_cidr" minOccurs="0" maxOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>Use within instance definition to attach instance to a VPC Subnet</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="elb" minOccurs="0" maxOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>Use within instance definition to attach ELB to instance</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="additional_user_data" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>Additional information to append to the userdata. This should take the format, "key=value:key=value" without quotes.</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="firewall" minOccurs="0" maxOccurs="1" >
+                                <xs:annotation>
+                                    <xs:documentation>Define a firewall rule block</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="rule" minOccurs="0" maxOccurs="999" >
+                                            <xs:annotation>
+                                                <xs:documentation>Show the start of an individual rule.</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="source" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                                        <xs:annotation>
+                                                            <xs:documentation>Source for our rule, of form CIDR, sg-xxx, tier.</xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
+                                                    <xs:element name="destination" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                                        <xs:annotation>
+                                                            <xs:documentation>Destination for our rule, if we're specifying a remote farm</xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
+                                                    <xs:element name="accountid" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                                        <xs:annotation>
+                                                            <xs:documentation>Destination account ID for our rule, if we're specifying a remote farm</xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
+                                                    <xs:element name="port" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                                        <xs:annotation>
+                                                            <xs:documentation>Assuming TCP/UDP, the port</xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
+                                                    <xs:element name="protocol" type="xs:string" minOccurs="0" maxOccurs="1" >
+                                                        <xs:annotation>
+                                                            <xs:documentation>TCP/UDP/ICMP</xs:documentation>
+                                                        </xs:annotation>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="securityGroup" type="xs:string" minOccurs="0" maxOccurs="999" >
+                                <xs:annotation>
+                                    <xs:documentation>Attach the named Security Group</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+    
