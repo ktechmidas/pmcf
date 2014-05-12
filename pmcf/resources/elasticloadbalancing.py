@@ -102,3 +102,14 @@ class LoadBalancer(elb.LoadBalancer):
         if len(set(self.properties.keys()).intersection(
                set(['AvailabilityZones', 'Subnets']))) > 1:
             error(self, 'Can not specify both Subnets and AvailabilityZones')
+
+
+__all__ = [
+    AppCookieStickinessPolicy,
+    ConnectionDrainingPolicy,
+    HealthCheck,
+    LBCookieStickinessPolicy,
+    Listener,
+    LoadBalancer,
+    Policy,
+]
