@@ -18,6 +18,20 @@ import abc
 class BaseParser(object):
     __metaclass__ = abc.ABCMeta
 
+    def __init__(self):
+        self._resources = {
+            'instance': [],
+            'load_balancer': [],
+            'db': [],
+            'cdn': [],
+        }
+        self._config = {}
+
     @abc.abstractmethod
     def parse(self, config):
         raise NotImplementedError
+
+
+__all__ = [
+    BaseParser
+]
