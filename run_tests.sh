@@ -13,9 +13,12 @@ test -d ${VENV} || ${TOOLS}/install_venv.sh
 source ${VENV}/bin/activate
 
 echo "Running unit tests ..."
+
 nosetests -v --cover-html \
 	     --cover-html-dir=coverage --cover-inclusive \
-	     --cover-erase "$@" || ret=$(($ret|$?))
+	     --cover-erase --cover-min-percentage=90 \
+	     --failure-detail --no-byte-compile \
+	     "$@" || ret=$(($ret|$?))
 
 echo "Running pep8 tests ..."
 pep8 --show-source pmcf || ret=$(($ret|$?))
