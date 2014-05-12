@@ -11,3 +11,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+import abc
+
+
+class BaseParser(object):
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def parse(self, config):
+        raise NotImplementedError

@@ -14,9 +14,10 @@
 
 import yaml
 from pmcf import exceptions
+from pmcf.parsers import BaseParser
 
 
-class YamlParser(object):
+class YamlParser(BaseParser):
     def parse(self, config):
         try:
             return yaml.load(config)
