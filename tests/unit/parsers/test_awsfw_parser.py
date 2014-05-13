@@ -34,16 +34,28 @@ class TestParser(object):
     def teardown_class(cls):
         pass
 
+    def test__listify_string(self):
+        parser = awsfw_parser.AWSFWParser()
+        data = 'foo'
+        assert_equals(parser._listify(data), ['foo'])
+
+    def test__listify_list(self):
+        parser = awsfw_parser.AWSFWParser()
+        data = ['foo']
+        assert_equals(parser._listify(data), data)
+
     def test_parse_valid_config(self):
         struct = {
-            'foo': {
-                'bar': [1, 'three'],
-                'baz': True
+            'resources': {
+                'instance': [],
+                'loadbalancer': [],
+                'db': [],
+                'cdn': []
             }
         }
 
         config = ''
-        with open('data/su2c-v2.xml') as fd:
+        with open('data/ais-stage-farm.xml') as fd:
             config = fd.read()
 
         parser = awsfw_parser.AWSFWParser()

@@ -19,13 +19,16 @@ class BaseParser(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
-        self._resources = {
-            'instance': [],
-            'load_balancer': [],
-            'db': [],
-            'cdn': [],
+        self._stack = {
+            'resources': {
+                'instance': [],
+                'secgroup': [],
+                'load_balancer': [],
+                'db': [],
+                'cdn': [],
+            },
+            'config': {}
         }
-        self._config = {}
 
     @abc.abstractmethod
     def parse(self, config):

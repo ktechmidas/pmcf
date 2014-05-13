@@ -12,9 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import netaddr
+import xmltodict
+
 from pmcf import exceptions
 from pmcf.parsers import BaseParser
-import xmltodict
 
 
 class AWSFWParser(BaseParser):
@@ -42,41 +44,90 @@ class AWSFWParser(BaseParser):
             hc['path'] = path
         return hc
 
-    def build_ds(self, ds):
-        elbs = self._listify(ds['ELB'])
+    def build_lbs(self, farmname, elbs):
         for idx, elb in enumerate(elbs):
             lb = {}
             lb['listener'] = []
             for listener in self._listify(elbs[idx]['listener']):
-                hc = listener.get('healthCheck',
-                                  listener['protocol'] + ':' +
-                                  listener['port'])
-                lb['listener'].append({
+                hc = listener.get('healthCheck')
+                if hc:
+                    lb['healthcheck'] = self._build_hc(hc)
+                lstnr = {
                     'protocol': listener['protocol'],
                     'lb_port': listener['port'],
                     'instance_port': listener['instancePort'],
-                    'health_check': self._build_hc(hc),
-                })
-            self._resources['load_balancer'].append(lb)
+                }
+                if listener['protocol'].upper() == 'HTTPS':
+                    if not listener.get('sslCert'):
+                        raise exceptions.PropertyException('an HTTPS listener '
+                                                           'needs an sslCert')
+                    else:
+                        lstnr['sslCert'] = listener['sslCert']
+                lb['listener'].append(lstnr)
+            if lb.get('healthcheck', None) is None:
+                raise exceptions.PropertyException('a loadbalancer needs '
+                                                   'a healthCheck parameter')
 
-        instances = self._listify(ds['instances'])
+            self._stack['resources']['load_balancer'].append(lb)
+
+    def build_fw(self, inst_name, rules):
+        fwrules = []
+        for rule in rules:
+            r = {
+                'from_port': rule['port'],
+                'to_port': rule['port'],
+                'protocol': rule['protocol'],
+                'dest_cidr': None
+            }
+            try:
+                netaddr.IPNetwork(rule['source'])
+                r['source_cidr'] = rule['source']
+                r['source_group'] = None
+            except netaddr.AddrFormatError:
+                r['source_cidr'] = None
+                r['source_group'] = rule['source']
+            fwrules.append(r)
+        self._stack['resources']['secgroup'].append({
+            'name': inst_name,
+            'rules': fwrules
+        })
+
+    def build_instances(self, farmname, instances):
         for idx, instance in enumerate(instances):
             inst = {}
+            inst['name'] = farmname + '-' + instance['tier']
             inst['image'] = instance['amiId']
             inst['type'] = instance['size']
             inst['count'] = instance['count']
+            inst['sg'] = []
             if instance.get('role') and instance.get('app'):
                 inst['provisioner'] = 'awsfw_standalone'
                 inst['apps'] = self._listify(instance['app'])
                 inst['roles'] = self._listify(instance['role'])
+            else:
+                inst['provisioner'] = instance['provisioner']
+            if instance.get('firewall'):
+                self.build_fw(inst['name'],
+                              self._listify(instance['firewall']['rule']))
+                inst['sg'].append(inst['name'])
+            if not instance.get('noDefaultSG'):
+                inst['sg'].append('default')
 
-            self._resources['instance'].append(inst)
+            self._stack['resources']['instance'].append(inst)
+
+    def build_ds(self, ds):
+        if ds.get('ELB'):
+            self.build_lbs(ds['farmName'], self._listify(ds['ELB']))
+        if ds.get('instances'):
+            self.build_instances(ds['farmName'],
+                                 self._listify(ds['instances']))
 
     def parse(self, config):
         data = xmltodict.parse(config)
+        print data
         self.build_ds(data['c4farm'])
-        print self._resources
-        return self._resources
+        print self._stack
+        return self._stack
 
 
 __all__ = [
