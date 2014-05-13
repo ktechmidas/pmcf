@@ -20,20 +20,6 @@ from pmcf.exceptions import ParserFailure
 
 class TestParser(object):
 
-    def setup(self):
-        pass
-
-    def teardown(self):
-        pass
-
-    @classmethod
-    def setup_class(cls):
-        pass
-
-    @classmethod
-    def teardown_class(cls):
-        pass
-
     def test__listify_string(self):
         parser = awsfw_parser.AWSFWParser()
         data = 'foo'
