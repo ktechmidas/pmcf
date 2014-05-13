@@ -29,7 +29,11 @@ class AWSFWParser(BaseParser):
 
     @staticmethod
     def _build_hc(hc_xml):
-        (protocol, rest) = hc_xml.split(':')
+        try:
+            (protocol, rest) = hc_xml.split(':')
+        except ValueError:
+            raise exceptions.ParserFailure('Unable to parse healthcheck '
+                                           'property')
         if protocol.upper() in ['HTTP', 'HTTPS']:
             port = rest.split('/')[0]
             path = rest[len(port):]
@@ -59,14 +63,14 @@ class AWSFWParser(BaseParser):
                 }
                 if listener['protocol'].upper() == 'HTTPS':
                     if not listener.get('sslCert'):
-                        raise exceptions.PropertyException('an HTTPS listener '
-                                                           'needs an sslCert')
+                        raise exceptions.ParserFailure('an HTTPS listener '
+                                                       'needs an sslCert')
                     else:
                         lstnr['sslCert'] = listener['sslCert']
                 lb['listener'].append(lstnr)
             if lb.get('healthcheck', None) is None:
-                raise exceptions.PropertyException('a loadbalancer needs '
-                                                   'a healthCheck parameter')
+                raise exceptions.ParserFailure('a loadbalancer needs '
+                                               'a healthCheck parameter')
 
             self._stack['resources']['load_balancer'].append(lb)
 
