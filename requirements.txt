@@ -1,3 +1,4 @@
 troposphere>=0.5.0
 PyYAML
 xmltodict
+netaddr
