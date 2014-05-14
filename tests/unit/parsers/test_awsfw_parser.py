@@ -267,6 +267,24 @@ class TestParser(object):
         parser.build_fw('test', rdata)
         assert_equals(parser._stack['resources']['secgroup'], rules)
 
+    def test_parse_valid_config_provisioner_puppet(self):
+        parser = awsfw_parser.AWSFWParser()
+        struct = {
+            'resources': {
+                'instance': [],
+                'load_balancer': [],
+                'db': [],
+                'cdn': []
+            }
+        }
+
+        with open('data/ais-stage-farm-puppet.xml') as fd:
+            config = fd.read()
+
+        data = parser.parse(config)
+        # FIXME: Just to get a check in
+        assert_equals(data, data)
+
     def test_parse_valid_config(self):
         parser = awsfw_parser.AWSFWParser()
         struct = {
@@ -278,7 +296,6 @@ class TestParser(object):
             }
         }
 
-        config = ''
         with open('data/ais-stage-farm.xml') as fd:
             config = fd.read()
 

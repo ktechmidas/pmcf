@@ -111,7 +111,7 @@ class AWSFWParser(BaseParser):
             inst['sg'] = []
             if instance.get('role') and instance.get('app'):
                 inst['provisioner'] = {
-                    'name': 'awsfw_standalone',
+                    'type': 'awsfw_standalone',
                     'args': {
                         'apps': self._listify(instance['app']),
                         'roles': self._listify(instance['role'])
