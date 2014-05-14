@@ -81,14 +81,11 @@ class AWSFWParser(BaseParser):
                 'from_port': rule['port'],
                 'to_port': rule['port'],
                 'protocol': rule['protocol'],
-                'dest_cidr': None
             }
             try:
                 netaddr.IPNetwork(rule['source'])
                 r['source_cidr'] = rule['source']
-                r['source_group'] = None
             except netaddr.AddrFormatError:
-                r['source_cidr'] = None
                 r['source_group'] = rule['source']
             fwrules.append(r)
         self._stack['resources']['secgroup'].append({

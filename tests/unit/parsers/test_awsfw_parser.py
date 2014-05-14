@@ -231,6 +231,42 @@ class TestParser(object):
         parser.build_lbs('test', lbdata)
         assert_equals(parser._stack['resources']['load_balancer'], data)
 
+    def test_build_fw_valid(self):
+        parser = awsfw_parser.AWSFWParser()
+        rules = [
+            {
+                'name': 'test',
+                'rules': [
+                    {
+                        'from_port': '22',
+                        'to_port': '22',
+                        'protocol': 'tcp',
+                        'source_group': 'womble'
+                    },
+                    {
+                        'from_port': '80',
+                        'to_port': '80',
+                        'protocol': 'tcp',
+                        'source_cidr': '10.1.2.0/24'
+                    }
+                ]
+            }
+        ]
+        rdata = [
+            {
+                'port': '22',
+                'protocol': 'tcp',
+                'source': 'womble',
+            },
+            {
+                'port': '80',
+                'protocol': 'tcp',
+                'source': '10.1.2.0/24',
+            }
+        ]
+        parser.build_fw('test', rdata)
+        assert_equals(parser._stack['resources']['secgroup'], rules)
+
     def test_parse_valid_config(self):
         parser = awsfw_parser.AWSFWParser()
         struct = {
