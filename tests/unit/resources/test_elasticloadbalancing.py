@@ -22,6 +22,66 @@ from tests.unit.resources import TestResource
 
 class TestELBResource(TestResource):
 
+    def test_access_logging_policy_invalid_no_enabled(self):
+        alp = elb.AccessLoggingPolicy(
+            "test",
+        )
+        assert_raises(PropertyException, alp.JSONrepr)
+
+    def test_access_logging_policy_invalid_no_emit_interval(self):
+        alp = elb.AccessLoggingPolicy(
+            "test",
+            Enabled=True,
+            S3BucketName='testme-123',
+            S3BucketPrefix='logs/dev',
+        )
+        assert_raises(PropertyException, alp.JSONrepr)
+
+    def test_access_logging_policy_invalid_no_bucket_name(self):
+        alp = elb.AccessLoggingPolicy(
+            "test",
+            Enabled=True,
+            EmitInterval=5,
+            S3BucketPrefix='logs/dev',
+        )
+        assert_raises(PropertyException, alp.JSONrepr)
+
+    def test_access_logging_policy_invalid_bad_emit_interval(self):
+        alp = elb.AccessLoggingPolicy(
+            "test",
+            Enabled=True,
+            EmitInterval=7,
+            S3BucketName='testme-123',
+            S3BucketPrefix='logs/dev',
+        )
+        assert_raises(PropertyException, alp.JSONrepr)
+
+    def test_access_logging_policy_valid_enabled(self):
+        data = {
+            'EmitInterval': 5,
+            'Enabled': 'true',
+            'S3BucketName': 'testme-123',
+            'S3BucketPrefix': 'logs/dev'
+        }
+        alp = elb.AccessLoggingPolicy(
+            "test",
+            Enabled=True,
+            EmitInterval=5,
+            S3BucketName='testme-123',
+            S3BucketPrefix='logs/dev',
+        )
+        assert_equals(self._data_for_resource(alp), data)
+
+    def test_access_logging_policy_valid_disabled(self):
+        data = {
+            'Enabled': 'false',
+        }
+        alp = elb.AccessLoggingPolicy(
+            "test",
+            Enabled=False,
+        )
+        assert_equals(self._data_for_resource(alp), data)
+
     def test_app_cookie_stickiness_policy_invalid_no_policy(self):
         acsp = elb.AppCookieStickinessPolicy(
             "test",

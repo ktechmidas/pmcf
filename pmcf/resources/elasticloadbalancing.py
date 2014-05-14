@@ -17,7 +17,31 @@
 
 from troposphere import elasticloadbalancing as elb
 
+from pmcf.resources.helpers import elasticloadbalancing
 from pmcf.utils import error
+
+
+class AccessLoggingPolicy(elasticloadbalancing.AccessLoggingPolicy):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            error(self, e.message)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+
+        if self.properties['Enabled'] == 'false':
+            return True
+
+        if len(set(self.properties.keys()).intersection(
+               set(['EmitInterval', 'S3BucketName']))) != 2:
+            error(self, 'Must specify EmitInterval and S3BucketName')
+
+        if self.properties['EmitInterval'] not in [5, 60]:
+            error(self, 'EmitInterval must be either 5 or 60')
+
+        return True
 
 
 class AppCookieStickinessPolicy(elb.AppCookieStickinessPolicy):
@@ -89,7 +113,7 @@ class ConnectionDrainingPolicy(elb.ConnectionDrainingPolicy):
             error(self, e.message)
 
 
-class LoadBalancer(elb.LoadBalancer):
+class LoadBalancer(elasticloadbalancing.LoadBalancer):
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
