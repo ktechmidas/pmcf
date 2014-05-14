@@ -110,26 +110,56 @@ class AWSFWParser(BaseParser):
             inst['count'] = instance['count']
             inst['sg'] = []
             if instance.get('role') and instance.get('app'):
-                inst['provisioner'] = 'awsfw_standalone'
-                inst['apps'] = self._listify(instance['app'])
-                inst['roles'] = self._listify(instance['role'])
+                inst['provisioner'] = {
+                    'name': 'awsfw_standalone',
+                    'args': {
+                        'apps': self._listify(instance['app']),
+                        'roles': self._listify(instance['role'])
+                    }
+                }
             else:
                 inst['provisioner'] = instance['provisioner']
             if instance.get('firewall'):
                 self.build_fw(inst['name'],
                               self._listify(instance['firewall']['rule']))
                 inst['sg'].append(inst['name'])
-            if not instance.get('noDefaultSG'):
-                inst['sg'].append('default')
 
             self._stack['resources']['instance'].append(inst)
 
     def build_ds(self, ds):
+
+        name_parts = ds['farmName'].split('-')
+        self._stack['config'] = {
+            'name': name_parts[0],
+            'stage': name_parts[1],
+            'strategy': 'BLUEGREEN',
+            'version': name_parts[2],
+        }
+        if ds.get('farmOwner'):
+            self._stack['config']['owner'] = ds['farmOwner']
+
         if ds.get('ELB'):
             self.build_lbs(ds['farmName'], self._listify(ds['ELB']))
         if ds.get('instances'):
             self.build_instances(ds['farmName'],
                                  self._listify(ds['instances']))
+        if len(self._stack['resources']['instance']) == 0:
+            raise exceptions.ParserFailure('Bad stack: no instances')
+
+        for instance in self._stack['resources']['instance']:
+            if ds.get('key'):
+                instance['sshKey'] = ds['key']
+            if ds.get('cloudwatch'):
+                instance['monitoring'] = ds['cloudwatch']
+            if ds.get('appBucket'):
+                instance['provisioner']['args']['appBucket'] = ds['appBucket']
+            if ds.get('roleBucket'):
+                instance['provisioner']['args']['roleBucket'] = ds['appBucket']
+            # The XML declaration <noDefaultSG/> becomes:
+            # { 'noDefaultSG': None } so a normal
+            # if ds.get('noDefaultSG') returns 'None' which evaluates to false
+            if ds.get('noDefaultSG', 'nothere') == 'nothere':
+                instance['sg'].append('default')
 
     def parse(self, config):
         data = xmltodict.parse(config)
