@@ -270,11 +270,142 @@ class TestParser(object):
     def test_parse_valid_config_provisioner_puppet(self):
         parser = awsfw_parser.AWSFWParser()
         struct = {
+            'config': {
+                'name': u'ais',
+                'stage': u'stage',
+                'strategy': 'BLUEGREEN',
+                'version': u'v2p54',
+                'owner': 'gis-channel4@piksel.com'
+            },
             'resources': {
-                'instance': [],
-                'load_balancer': [],
+                'cdn': [],
                 'db': [],
-                'cdn': []
+                'instance': [
+                    {
+                        'count': u'6',
+                        'image': u'ami-e97f849e',
+                        'monitoring': u'false',
+                        'name': u'ais-stage-v2p54-02-app',
+                        'provisioner': {
+                            'args': {
+                                'appBucket': u'aws-c4-003358414754',
+                                'apps': ['ais'],
+                                'roleBucket': u'aws-c4-003358414754',
+                                'roles': ['app']
+                            },
+                            'type': u'puppet'
+                        },
+                        'sg': [u'ais-stage-v2p54-02-app', 'default'],
+                        'sshKey': u'ioko-pml',
+                        'type': u'm1.large'
+                    }
+                ],
+                'load_balancer': [
+                    {
+                        'healthcheck': {
+                            'port': u'80',
+                            'protocol': u'TCP'
+                        },
+                        'listener': [
+                            {
+                                'instance_port': u'80',
+                                'lb_port': u'80',
+                                'protocol': u'HTTP'
+                            },
+                            {
+                                'instance_port': u'80',
+                                'lb_port': u'443',
+                                'protocol': u'HTTPS',
+                                'sslCert': u'test'
+                            }
+                        ]
+                    }
+                ],
+                'secgroup': [
+                    {
+                        'name': u'ais-stage-v2p54-02-app',
+                        'rules': [
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'54.246.118.174/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'62.82.81.73/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.244.197.164/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.244.197.190/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_group': u'jump-server-sg',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'5666',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'5666'
+                            },
+                            {
+                                'from_port': u'161',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'161'
+                            },
+                            {
+                                'from_port': u'161',
+                                'protocol': u'udp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'161'
+                            },
+                            {
+                                'from_port': u'-1',
+                                'protocol': u'icmp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'-1'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'46.137.169.193/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'80',
+                                'protocol': u'tcp',
+                                'source_cidr': u'0.0.0.0/0',
+                                'to_port': u'80'
+                            },
+                            {
+                                'from_port': u'443',
+                                'protocol': u'tcp',
+                                'source_cidr': u'0.0.0.0/0',
+                                'to_port': u'443'
+                            }
+                        ]
+                    }
+                ]
             }
         }
 
@@ -283,16 +414,155 @@ class TestParser(object):
 
         data = parser.parse(config)
         # FIXME: Just to get a check in
-        assert_equals(data, data)
+        assert_equals(data, struct)
 
     def test_parse_valid_config(self):
         parser = awsfw_parser.AWSFWParser()
         struct = {
+            'config': {
+                'name': u'ais',
+                'stage': u'stage',
+                'strategy': 'BLUEGREEN',
+                'version': u'v2p54'},
             'resources': {
-                'instance': [],
-                'load_balancer': [],
+                'cdn': [],
                 'db': [],
-                'cdn': []
+                'instance': [
+                    {
+                        'count': u'6',
+                        'image': u'ami-e97f849e',
+                        'monitoring': u'false',
+                        'name': u'ais-stage-v2p54-02-app',
+                        'provisioner': {
+                            'args': {
+                                'appBucket': u'aws-c4-003358414754',
+                                'apps': [
+                                    u'ais-jetty/v2.54-02',
+                                    u'ais-nginx/v1.23',
+                                    u'c4-devaccess'
+                                ],
+                                'roleBucket': u'aws-c4-003358414754',
+                                'roles': [
+                                    u'jetty',
+                                    u'nginx-latest/v1.5',
+                                    u'nagiosclient/v1.5',
+                                    u'snmpd/v1.2',
+                                    u'cloudwatch-monitoring/v1'
+                                ]
+                            },
+                            'type': 'awsfw_standalone'
+                        },
+                        'sg': [u'ais-stage-v2p54-02-app'],
+                        'sshKey': u'ioko-pml',
+                        'type': u'm1.large'
+                    }
+                ],
+                'load_balancer': [
+                    {
+                        'healthcheck': {
+                            'port': u'80',
+                            'protocol': u'TCP'
+                        },
+                        'listener': [
+                            {
+                                'instance_port': u'80',
+                                'lb_port': u'80',
+                                'protocol': u'HTTP'
+                            },
+                            {
+                                'instance_port': u'80',
+                                'lb_port': u'443',
+                                'protocol': u'HTTPS',
+                                'sslCert': u'test'
+                            }
+                        ]
+                    }
+                ],
+                'secgroup': [
+                    {
+                        'name': u'ais-stage-v2p54-02-app',
+                        'rules': [
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'54.246.118.174/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'62.82.81.73/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.244.197.164/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.244.197.190/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_group': u'jump-server-sg',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'5666',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'5666'
+                            },
+                            {
+                                'from_port': u'161',
+                                'protocol': u'tcp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'161'
+                            },
+                            {
+                                'from_port': u'161',
+                                'protocol': u'udp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'161'
+                            },
+                            {
+                                'from_port': u'-1',
+                                'protocol': u'icmp',
+                                'source_cidr': u'83.98.0.0/17',
+                                'to_port': u'-1'
+                            },
+                            {
+                                'from_port': u'22',
+                                'protocol': u'tcp',
+                                'source_cidr': u'46.137.169.193/32',
+                                'to_port': u'22'
+                            },
+                            {
+                                'from_port': u'80',
+                                'protocol': u'tcp',
+                                'source_cidr': u'0.0.0.0/0',
+                                'to_port': u'80'
+                            },
+                            {
+                                'from_port': u'443',
+                                'protocol': u'tcp',
+                                'source_cidr': u'0.0.0.0/0',
+                                'to_port': u'443'
+                            }
+                        ]
+                    }
+                ]
             }
         }
 
@@ -301,4 +571,4 @@ class TestParser(object):
 
         data = parser.parse(config)
         # FIXME: Just to get a check in
-        assert_equals(data, data)
+        assert_equals(data, struct)

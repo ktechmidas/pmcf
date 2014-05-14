@@ -118,7 +118,15 @@ class AWSFWParser(BaseParser):
                     }
                 }
             else:
-                inst['provisioner'] = instance['provisioner']
+                inst['provisioner'] = {
+                    'type': instance['provisioner']['type'],
+                    'args': {
+                        'apps': self._listify(
+                            instance['provisioner']['args']['app']),
+                        'roles': self._listify(
+                            instance['provisioner']['args']['role'])
+                    }
+                }
             if instance.get('firewall'):
                 self.build_fw(inst['name'],
                               self._listify(instance['firewall']['rule']))

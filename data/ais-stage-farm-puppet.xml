@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <c4farm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="lib/c4farm.xsd">
 	<farmName>ais-stage-v2p54-02</farmName>
+	<farmOwner>gis-channel4@piksel.com</farmOwner>
 	<key>ioko-pml</key>
 	<dnskey>ais</dnskey>
 	<dnssecret>test</dnssecret>
@@ -22,13 +23,12 @@
                 <protocol>HTTPS</protocol>
                 <port>443</port>
                 <instancePort>80</instancePort>
-		<sslCert>arn%3Aaws%3Aiam%3A%3A003358414754%3Aserver-certificate%2Faisstage-34937</sslCert>
+		<sslCert>test</sslCert>
             </listener>
         </ELB>
 	<cloudwatch>false</cloudwatch>
 	<roleBucket>aws-c4-003358414754</roleBucket>
 	<appBucket>aws-c4-003358414754</appBucket>
-        <noDefaultSG/>
 	<instances>
 		<tier>app</tier>
                 <availabilityZone>eu-west-1a</availabilityZone> 
@@ -41,8 +41,8 @@
 		<provisioner>
 			<type>puppet</type>
 			<args>
-				<roles>app</roles>
-				<apps>ais</apps>
+				<role>app</role>
+				<app>ais</app>
 			</args>
 		</provisioner>
                 <elb>app</elb>
