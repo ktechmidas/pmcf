@@ -69,6 +69,13 @@ class AWSFWParser(BaseParser):
                     else:
                         lstnr['sslCert'] = urllib.unquote(listener['sslCert'])
                 lb['listener'].append(lstnr)
+            if elb.get('elb-logging'):
+                log_policy = {
+                    'emit_interval': elbs[idx]['elb-logging']['emitinterval'],
+                    's3bucket': elbs[idx]['elb-logging']['s3bucket'],
+                    's3prefix': elbs[idx]['elb-logging']['prefix'],
+                    'enabled': True,
+                }
             if lb.get('healthcheck', None) is None:
                 raise exceptions.ParserFailure('a loadbalancer needs '
                                                'a healthCheck parameter')
