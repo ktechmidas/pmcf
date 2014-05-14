@@ -1,4 +1,4 @@
-troposphere>=0.5.0
 PyYAML
-xmltodict
 netaddr
+troposphere>=0.5.0
+xmltodict
