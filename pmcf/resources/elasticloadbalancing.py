@@ -129,6 +129,7 @@ class LoadBalancer(elasticloadbalancing.LoadBalancer):
 
 
 __all__ = [
+    AccessLoggingPolicy,
     AppCookieStickinessPolicy,
     ConnectionDrainingPolicy,
     HealthCheck,

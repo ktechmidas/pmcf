@@ -46,3 +46,9 @@ class LoadBalancer(AWSObject):
         'SecurityGroups': (list, False),
         'Subnets': (list, False),
     }
+
+
+__all__ = [
+    AccessLoggingPolicy,
+    LoadBalancer
+]
