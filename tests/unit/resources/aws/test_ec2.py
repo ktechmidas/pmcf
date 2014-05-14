@@ -15,7 +15,7 @@
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.exceptions import PropertyException
-from pmcf.resources import ec2
+from pmcf.resources.aws import ec2
 
 from tests.unit.resources import TestResource
 

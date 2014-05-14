@@ -15,7 +15,7 @@
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.exceptions import PropertyException
-from pmcf.resources import elasticloadbalancing as elb
+from pmcf.resources.aws import elasticloadbalancing as elb
 
 from tests.unit.resources import TestResource
 

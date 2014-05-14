@@ -17,7 +17,7 @@
 
 from troposphere import elasticloadbalancing as elb
 
-from pmcf.resources.helpers import elasticloadbalancing
+from pmcf.resources.aws.helpers import elasticloadbalancing
 from pmcf.utils import error
 
 
