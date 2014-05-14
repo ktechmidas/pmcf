@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import urllib
 import netaddr
 import xmltodict
 
@@ -66,7 +67,7 @@ class AWSFWParser(BaseParser):
                         raise exceptions.ParserFailure('an HTTPS listener '
                                                        'needs an sslCert')
                     else:
-                        lstnr['sslCert'] = listener['sslCert']
+                        lstnr['sslCert'] = urllib.unquote(listener['sslCert'])
                 lb['listener'].append(lstnr)
             if lb.get('healthcheck', None) is None:
                 raise exceptions.ParserFailure('a loadbalancer needs '
