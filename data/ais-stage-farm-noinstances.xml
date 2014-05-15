@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<c4farm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="lib/c4farm.xsd">
+	<farmName>ais-stage-v2p54-02</farmName>
+	<key>ioko-pml</key>
+	<dnskey>ais</dnskey>
+	<dnssecret>test</dnssecret>
+        <ELB>
+            <suffix>app</suffix>
+            <cname>www</cname>
+            <elb-logging>
+                <emitinterval>60</emitinterval>
+                <s3bucket>c4-elb-logs</s3bucket>
+                <prefix>stage%2Fais</prefix>
+            </elb-logging>
+            <listener>
+                <protocol>HTTP</protocol>
+                <port>80</port>
+                <instancePort>80</instancePort>
+                <healthCheck>TCP:80</healthCheck>
+            </listener>
+            <listener>
+                <protocol>HTTPS</protocol>
+                <port>443</port>
+                <instancePort>80</instancePort>
+		<sslCert>test</sslCert>
+            </listener>
+        </ELB>
+	<cloudwatch>false</cloudwatch>
+	<roleBucket>aws-c4-003358414754</roleBucket>
+	<appBucket>aws-c4-003358414754</appBucket>
+        <noDefaultSG/>
+</c4farm>
