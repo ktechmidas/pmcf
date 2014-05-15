@@ -21,7 +21,7 @@ from troposphere.elasticloadbalancing import \
 class AccessLoggingPolicy(AWSProperty):
     props = {
         'Enabled': (boolean, True),
-        'EmitInterval': (positive_integer, False),
+        'EmitInterval': (int, False),
         'S3BucketName': (basestring, False),
         'S3BucketPrefix': (basestring, False),
     }
