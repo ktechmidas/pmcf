@@ -28,6 +28,16 @@ class TestException(object):
         except exceptions.ParserFailure, e:
             assert_equals(e.message, "Error parsing input: " + msg)
 
+    def test_raise_policy_error(self):
+        def raiser(message):
+            raise exceptions.PolicyException(message)
+
+        msg = 'test message'
+        try:
+            raiser(msg)
+        except exceptions.PolicyException, e:
+            assert_equals(e.message, "Policy violation: " + msg)
+
     def test_raise_property_error(self):
         def raiser(message):
             raise exceptions.PropertyException(message)

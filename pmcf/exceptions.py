@@ -20,6 +20,13 @@ class ParserFailure(Exception):
         self.message = full_message
 
 
+class PolicyException(Exception):
+    def __init__(self, message):
+        full_message = ("Policy violation: %s" % message)
+        super(PolicyException, self).__init__(full_message)
+        self.message = full_message
+
+
 class PropertyException(Exception):
     def __init__(self, message):
         full_message = ("Error in resource properties: %s" % message)
@@ -36,6 +43,7 @@ class ProvisionerException(Exception):
 
 __all__ = [
     ParserFailure,
+    PolicyException,
     PropertyException,
     ProvisionerException
 ]
