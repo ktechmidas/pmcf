@@ -22,6 +22,9 @@ import zlib
 class BaseProvisioner(object):
     __metaclass__ = abc.ABCMeta
 
+    def __init__(self):
+        self.boundary = '===============4206204907479218652=='
+
     @abc.abstractmethod
     def userdata(self, config):
         raise NotImplementedError
@@ -34,10 +37,10 @@ class BaseProvisioner(object):
         return message
 
     def make_skeleton(self):
-        return MIMEMultipart(boundary='===============4206204907479218652==')
+        return MIMEMultipart(boundary=self.boundary)
 
     def resize(self, ud):
-        return zlib.compress(str(ud), 9).encode('base64', 'strict')
+        return zlib.compress(ud.as_string(), 9).encode('base64', 'strict')
 
 
 __all__ = [
