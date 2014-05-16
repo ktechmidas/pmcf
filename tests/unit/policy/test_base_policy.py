@@ -27,3 +27,73 @@ class TestBasePolicy(object):
     def test_return_on_no_policy(self):
         policy = BasePolicy()
         assert_equals(True, policy.validate_resource('wombat', {}))
+
+    def test_instance_policy_violation(self):
+        data = {
+            "count": "6",
+            "monitoring": "false",
+            "name": "ais-stage-v2p54-02-app",
+            "provisioner": {
+                "args": {
+                    "roleBucket": "aws-c4-003358414754",
+                    "appBucket": "aws-c4-003358414754",
+                    "apps": [
+                        "ais-jetty/v2.54-02",
+                        "ais-nginx/v1.23",
+                        "c4-devaccess"
+                    ],
+                    "roles": [
+                        "jetty",
+                        "nginx-latest/v1.5",
+                        "nagiosclient/v1.5",
+                        "snmpd/v1.2",
+                        "cloudwatch-monitoring/v1"
+                    ]
+                },
+                "name": "awsfw_standalone"
+            },
+            "sg": [
+                "ais-stage-v2p54-02-app"
+            ],
+            "image": "ami-e97f849e",
+            "type": "m2.xlarge",
+            "sshKey": "ioko-pml"
+        }
+
+        policy = BasePolicy(json_file='etc/policy-instance.json')
+        assert_raises(PolicyException,
+                      policy.validate_resource, 'instance', data)
+
+    def test_instance_load_default(self):
+        data = {
+            "count": "6",
+            "monitoring": "false",
+            "name": "ais-stage-v2p54-02-app",
+            "provisioner": {
+                "args": {
+                    "roleBucket": "aws-c4-003358414754",
+                    "appBucket": "aws-c4-003358414754",
+                    "apps": [
+                        "ais-jetty/v2.54-02",
+                        "ais-nginx/v1.23",
+                        "c4-devaccess"
+                    ],
+                    "roles": [
+                        "jetty",
+                        "nginx-latest/v1.5",
+                        "nagiosclient/v1.5",
+                        "snmpd/v1.2",
+                        "cloudwatch-monitoring/v1"
+                    ]
+                },
+                "name": "awsfw_standalone"
+            },
+            "sg": [
+                "ais-stage-v2p54-02-app"
+            ],
+            "sshKey": "ioko-pml"
+        }
+
+        policy = BasePolicy(json_file='etc/policy-instance.json')
+        policy.validate_resource('instance', data)
+        assert_equals(data['type'], 'm1.medium')

@@ -31,8 +31,8 @@ class BasePolicy(object):
                 resource_data[key] = policy[key]['default']
             if policy[key].get('constraints'):
                 if resource_data[key] not in policy[key]['constraints']:
-                    raise PolicyException('Data type %s with value %s not '
-                                          'allowed for %s',
+                    raise PolicyException("Data field `%s' with value `%s' "
+                                          "not allowed for `%s'" %
                                           (key, resource_data[key],
                                            resource_type))
         return True

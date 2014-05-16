@@ -1,0 +1,14 @@
+{
+    "instance": {
+        "image": {
+            "default": "ami-e97f849e"
+        },
+        "type": {
+            "default": "m1.medium",
+            "constraints": ["m1.small", "m1.medium"]
+        },
+        "sshKey": {
+            "default": "ioko-pml"
+        }
+    }
+}
