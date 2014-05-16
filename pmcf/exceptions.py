@@ -30,7 +30,7 @@ class PropertyException(Exception):
 class ProvisionerException(Exception):
     def __init__(self, message):
         full_message = ("Error during provisioning: %s" % message)
-        super(PropertyException, self).__init__(full_message)
+        super(ProvisionerException, self).__init__(full_message)
         self.message = full_message
 
 

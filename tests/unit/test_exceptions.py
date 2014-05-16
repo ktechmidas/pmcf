@@ -37,3 +37,13 @@ class TestException(object):
             raiser(msg)
         except exceptions.PropertyException, e:
             assert_equals(e.message, "Error in resource properties: " + msg)
+
+    def test_raise_provisioning_error(self):
+        def raiser(message):
+            raise exceptions.ProvisionerException(message)
+
+        msg = 'test message'
+        try:
+            raiser(msg)
+        except exceptions.ProvisionerException, e:
+            assert_equals(e.message, "Error during provisioning: " + msg)
