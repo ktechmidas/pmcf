@@ -39,9 +39,7 @@ MIME-Version: 1.0
 --%s--""" % (self.provisioner.boundary,
              self.provisioner.boundary,
              self.provisioner.boundary)
-        provisioner = BaseProvisioner()
         data = self.provisioner.make_skeleton()
-        print data
         assert_equals(data.as_string(), expected)
 
     def test_add_data_output(self):
@@ -61,7 +59,6 @@ foo=bar
         test_data = 'foo=bar'
         data = self.provisioner.make_skeleton()
         data = self.provisioner.add_data(data, test_data, 'plain', 'test')
-        print data.as_string()
         assert_equals(data.as_string(), expected)
 
     def test_resize(self):
@@ -72,9 +69,6 @@ hAYIsuxpwqbUlR+5gTA7476VpckmTbJdkmf5Ll1tN+vUOaPOp/PRXjFE8lzo1SJRytp/0B/k/uua
 UYxSrfeugvDnf2sfCJJi/A==
 """
         test_data = 'foo=bar'
-        provisioner = BaseProvisioner()
         data = self.provisioner.make_skeleton()
         data = self.provisioner.add_data(data, test_data, 'plain', 'test')
         data = self.provisioner.resize(data)
-        print data
-        assert_equals('\n' + data, expected)
