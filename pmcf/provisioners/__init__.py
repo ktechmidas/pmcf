@@ -13,6 +13,10 @@
 #    under the License.
 
 import abc
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import sys
+import zlib
 
 
 class BaseProvisioner(object):
@@ -21,6 +25,19 @@ class BaseProvisioner(object):
     @abc.abstractmethod
     def userdata(self, config):
         raise NotImplementedError
+
+    def add_data(self, message, part, part_type, filename):
+        sub_message = MIMEText(part, part_type, sys.getdefaultencoding())
+        sub_message.add_header('Content-Disposition',
+                               'attachment; filename="%s"' % (filename))
+        message.attach(sub_message)
+        return message
+
+    def make_skeleton(self):
+        return MIMEMultipart(boundary='===============4206204907479218652==')
+
+    def resize(self, ud):
+        return zlib.compress(str(ud), 9).encode('base64', 'strict')
 
 
 __all__ = [

@@ -1,0 +1,812 @@
+#!/bin/bash
+# -------------------------------------------------------------------------------------------
+
+# vim: set ts=4:
+
+# This is the standalone installer for the AWS Framework taken from the initial ec2
+# init script used to automate this deployment into the cloud.
+
+# The standalone installers use is to employ the same installer logic to non-cloud
+# instances, such as platform based dedicated servers and similar.
+
+# stdin	 - user data.
+
+# Usage:
+#
+# The following options can be passed to the script
+#	-a $app.tgz				: Can be passed multiple times
+#	-r $role.tgz			: Can be passed multiple times
+#	-s $sandbox_location	: The directory to sandbox all operations under
+# 	-v 						: Increase the verbosity by 1
+#	-d 						: Do not attempt to redirect any output to LOG_STD*
+#
+# It will also parse stdin (expecting the userdata format used within the AWS framework)
+# for roles/rolebucket, apps/appbucket, and similar which will influence the above. This is
+# for use within the ec2 init script.
+
+# -------------------------------------------------------------------------------------------
+
+#set -x
+
+# variables
+# -------------------------------------------------------------------------------------------
+LOG_DIR=${LOG_DIR:-"/var/log/"}
+LOG_STDOUT=${LOG_STDOUT:-"${LOG_DIR}/ec2-stdout.log"}
+LOG_STDERR=${LOG_STDERR:-"${LOG_DIR}/ec2-stderr.log"}
+TMP_DOWNLOAD_DIR=${EC2_FETCH_TMP:-"/var/tmp/awsfw"}
+SANDBOX_DIR="/"
+WAIT_SECONDS=${WAIT_SECONDS:-"30"}
+S3_URL_APPEND=".s3.amazonaws.com/" # Alter this very carefully!
+
+# bins
+AWK=${AWK:-"awk"}
+CURL=${CURL:-"curl"}
+S3CURL=${S3CURL:-"/usr/local/lib/s3curl.pl"}
+LSB_RELEASE=${LSB_RELEASE:-"lsb_release"}
+TR=${TR:-"tr"}
+TAR=${TAR:-"tar"}
+GREP=${GREP:-"grep"}
+MD5SUM=${MD5SUM:-"md5sum"}
+
+# Abstracted bins
+FETCH_PROG="${FETCH_PROG:-${CURL}}"
+S3_FETCH_PROG="${S3_FETCH_PROG:-${S3CURL}}"
+FETCH_OPTIONS="${FETCH_OPTIONS:-"-s"}"
+
+# role-package vars
+ROLE_PACKAGE_FILE=${ROLE_PACKAGE_FILE:-"role-packages"}
+SYS_ARCH=$(uname -m)
+
+# role-repo vars
+ROLE_REPO_FILE=${ROLE_REPO_FILE:-"role-repos"}
+SYS_ARCH=$(uname -m)
+CODENAME=$(lsb_release -c -s)
+
+# verbosity
+DEBUG_VERBOSITY=1
+
+# Preserve stdout/stderr
+exec 6>&1	# Save stdout as &6
+exec 7>&2	# Save stderr as &7
+
+# -------------------------------------------------------------------------------------------
+
+function canonicalize-filename {
+	readlink -m ${1}
+}
+
+# pkg distro specific helper functions
+function get-lsb-distributor() {
+	# Fetches the distribution name from lsb-release and returns via stdout
+
+	${LSB_RELEASE} -d | $AWK '{print $2}' | ${TR} '[:upper:]' '[:lower:]'
+}
+
+function is-distro() {
+	# Compare the provided distribution string ($1) with the current distribution
+	# if there is a match, return 0 else return 1
+
+	IS_DIST=${1}
+	RUNNING_DIST=$(get-lsb-distributor)
+	[[ ${RUNNING_DIST/*${IS_DIST}*/YES} == "YES" ]] && return 0 || return 1
+}
+
+function dpkg-is-installed() {
+	# Call dpkg-query to work out if a package is already installed
+
+	dpkg-query -W --showformat '${Status}' ${1} | ${GREP} -qv -e not-installed -e deinstall
+}
+
+# distro specific values
+if is-distro "redhat" || is-distro "centos" || is-distro "fedora"; then
+	PKG_INST="rpm -Uvh"
+	PKG_CHECK="rpm -q"
+	PKG_UPDATE="yum update"
+	REPO_INST="yum -y install"
+elif is-distro "ubuntu"; then
+	PKG_INST="gdebi -n"
+	export DEBIAN_FRONTEND=noninteractive
+	PKG_CHECK="dpkg-is-installed"
+	PKG_UPDATE="aptitude -y update"
+	REPO_INST="aptitude -y install"
+    APT_KEY_ADD="apt-key adv --keyserver"
+    REPO_DIR="/etc/apt/sources.list.d/"
+else
+	debug "EE: Distribution: $(get-lsb-distributor) is not supported."
+	exit 1
+fi
+
+function exists-in-array() {
+    match=${1}
+    array=${*}
+
+    for element in ${array[@]:1}; do
+        [[ ${match} == ${element} ]] && return 0
+    done
+    return 1
+}
+
+
+# -------------------------------------------------------------------------------------------
+
+function pkg_update() {
+	echo "II: Updating cached package information..."
+	${PKG_UPDATE}
+	echo "II: Complete."
+}
+
+function urlencode() {
+	# urlencode all passed arguments and write out to stdout
+
+	T_URL="${@}"
+	OLANG=${LANG}
+	LANG=C
+
+	while [[ "${T_URL}" =~ ^([0-9a-zA-Z/:_\.\-]*)([^0-9a-zA-Z/:_\.\-])(.*) ]] ; do
+		echo -n "${BASH_REMATCH[1]}"
+		printf "%%%X" "'${BASH_REMATCH[2]}'"
+		T_URL="${BASH_REMATCH[3]}"
+	done
+
+	echo -n "${T_URL}"
+	LANG=${OLANG}
+	unset T_URL
+	unset OLANG
+}
+
+function urldecode() {
+	# urldecode all passed arguments and write to stdout
+
+	T_URL="${@}"
+	i=0
+	OLANG=${LANG}
+	LANG=C
+
+	while [[ "${i}" -lt ${#T_URL} ]]; do
+		c0=${T_URL:${i}:1}
+		if [[ "x${c0}" = "x%" ]]; then
+			c1=${T_URL:$(( ${i} + 1 )):1}
+			c2=${T_URL:$(( ${i} + 2 )):1}
+			eval echo -n "\$'\x${c1}${c2}'"
+			i=$(( ${i} + 3 ))
+		else
+			echo -n "${c0}"
+			i=$(( ${i} + 1 ))
+		fi
+	done
+
+	LANG=${OLANG}
+	unset OLANG
+	unset T_URL
+	unset i
+}
+
+function is_numeric() {
+	# check if the passed argument is a numeric
+
+    [[ "${1}" -eq "${1}" ]] > /dev/null 2>&1
+    return $?
+}
+
+function debug() {
+	# Write out all passed arguments to stderr
+	# if the first argument is a numeric, compare it against DEBUG_VERBOSITY
+	# if DEBUG_VERBOSITY is greater than or equal to the passed argument, write to stderr
+	# else ignore
+
+	T_DBG_LVL=1
+	if is_numeric ${1}; then
+		T_DBG_LVL=${1}
+		shift
+	fi
+
+	[[ ${DEBUG_VERBOSITY} -ge ${T_DBG_LVL} ]] && echo -e "${@}" >&2
+	unset T_DBG_LVL
+}
+
+function fetch-remote-file() {
+	# Obtain the remote file using either CURL or S3CURL
+	# and download it to a temporary location.
+	# If successful return 0 and print the downloaded file location to stdout
+	# if it failed, return 1 and print nothing.
+
+	mkdir -p ${SANDBOX_DIR}/${TMP_DOWNLOAD_DIR}
+	T_F_PROG=${FETCH_PROG}
+	T_F_OPTIONS="${FETCH_OPTIONS}"
+
+	T_URL_HANDLER=$(echo ${1//:*} | tr '[:upper:]' '[:lower:]')
+	if [[ ${T_URL_HANDLER} == "s3" ]]; then
+		T_F_URL=${1:5}
+		T_F_BUCKET=${T_F_URL%:*}
+		T_F_PATH=${T_F_URL/*:}
+
+		T_F_OUTFILE=${T_F_BUCKET}_${T_F_PATH//\//_}
+		T_F_URL="https://${T_F_BUCKET}${S3_URL_APPEND}${T_F_PATH}"
+		T_F_PROG="${S3_FETCH_PROG}"
+		T_F_OPTIONS=" --id ${AWS_ACCESS_KEY_ID} --key ${AWS_SECRET_ACCESS_KEY} -- ${FETCH_OPTIONS}"
+
+		unset T_F_BUCKET
+		unset T_F_PATH
+	else
+		T_F_URL=${1}
+		T_F_PATH=${T_F_URL/*:\/\/}
+		T_F_OUTFILE=${T_F_PATH//\//_}
+	fi
+
+	#URL_ENCODE
+	T_F_URL=$(urlencode ${T_F_URL})
+
+	T_F_OUTFILE="${SANDBOX_DIR}/${TMP_DOWNLOAD_DIR}/${T_F_OUTFILE}"
+	T_F_OPTIONS+=" -o ${T_F_OUTFILE}"
+	debug "II: executing download... "
+	debug 2 "II: \t( ${T_F_PROG} ${T_F_OPTIONS} ${T_F_URL})"
+	${T_F_PROG} ${T_F_OPTIONS} ${T_F_URL}
+	if [[ $? -eq 0 ]]; then
+		echo ${T_F_OUTFILE}
+		return 0
+	else
+		return 1
+	fi
+
+	unset T_F_URL
+	unset T_F_PROG
+	unset T_F_OPTIONS
+	unset T_F_OUTFILE
+	return 0
+}
+
+function parse-and-export-stdin() {
+	# If we have somethign passed on stdin (in the userdata format of:
+	# 'param1=value1:param2=value2:' and so on then parse that input and 
+	# export the variable pairs so they are present in the local environment.
+	# It is important that it includes the trailing :
+
+	[ ! -f /tmp/awsfw_vars ] || . /tmp/awsfw_vars
+}
+
+function register-role() {
+	# Add a new role to the role array. It is assumed to be the location of the
+	# bundle on disk
+
+	C_R_BUNDLE=${#P_R_BUNDLE[@]}
+	C_R_BUNDLE=$(( ${C_R_BUNDLE} + 1 ));
+	P_R_BUNDLE[${C_R_BUNDLE}]=$(canonicalize-filename ${@});
+}
+
+function register-app() {
+	# Add a new app to the app array. It is assumed to be the location of the
+	# bundle on disk
+
+	C_A_BUNDLE=${#P_A_BUNDLE[@]}
+	C_A_BUNDLE=$(( ${C_A_BUNDLE} + 1 ));
+	P_A_BUNDLE[${C_A_BUNDLE}]=$(canonicalize-filename ${@});
+}
+
+function test-write() {
+	# Attempt to write a file to the passed directory
+	# It completes this by generating a random filename
+	# if it for some reason already exists, exit the application
+	# if it completes, return 0
+	# if it fails, return 1
+
+	F_RANDOM=${1}/.test-file-${RANDOM}${RANDOM}${RANDOM}
+	if [[ -e ${F_RANDOM} ]]; then
+		debug "EE: Temporary file $(canonicalize-filename ${F_RANDOM}) already exists\!"
+		exit 1;
+	fi
+
+	if $(touch ${F_RANDOM} >/dev/null 2>&1); then
+		rm -f ${F_RANDOM}
+		return 0
+	fi
+
+	return 1
+}
+
+function redirect-logging() {
+	# This is used to re-route logging to a different file for the benefits of logging
+	# output persistantly.	
+	# It takes no arguments, and just works on envionrment variables:
+	# $LOG_STDOUT
+	# $LOG_STDERR
+
+	LOG_STDOUT_DIR_CHECK=${LOG_STDOUT%\/*}
+	LOG_STDERR_DIR_CHECK=${LOG_STDERR%\/*}
+
+	[[ ! -d ${LOG_STDOUT_DIR_CHECK} ]] && mkdir -p ${LOG_STDOUT_DIR_CHECK}
+	[[ ! -d ${LOG_STDERR_DIR_CHECK} ]] && mkdir -p ${LOG_STDERR_DIR_CHECK}
+
+	# stdout
+	if test-write ${LOG_STDOUT_DIR_CHECK}; then
+		exec  >> ${LOG_STDOUT}	# Redirect stdout to log file
+	else
+		debug "WW: Unable to write to $(canonicalize-filename ${LOG_STDOUT_DIR_CHECK}), not resetting log redirection"
+	fi
+
+	# stderr
+	if test-write ${LOG_STDERR_DIR_CHECK}; then
+		exec 2>> ${LOG_STDERR}	# Redirect stderr to log file
+	else
+		debug "WW: Unable to write to $(canonicalize-filename ${LOG_STDERR_DIR_CHECK}), not resetting log redirection"
+	fi
+
+	unset LOG_STDOUT_DIR_CHECK
+	unset LOG_STDERR_DIR_CHECK
+}
+
+function reset-logging() {
+	# Early in the script execution we save the default stdout/stdin file descriptor.
+	# This reverts any modifications to stdin/stdout to the original definition.
+
+	exec  >&6	# Revert to fd1
+	exec 2>&7	# Revert to fd2
+}
+
+function set-sandbox() {
+	# This function takes no arguments, but attempts to set a SANDBOX_DIR variable 
+	# to a valid, writable directory which acts as a root for log files and installation.
+	# Once it completes, it will attempt to rebase the log location and start logging output
+	# to the new location.
+
+	debug "II: attempting to set sandbox directory to: $(canonicalize-filename ${1})"
+	if [[ ! -d ${1} ]]; then
+		debug "EE: ${1} is not a directory"
+		exit 1
+	elif $(test-write ${1}); then
+		SANDBOX_DIR=${1}
+		debug "II: sandbox directory set to $(canonicalize-filename ${SANDBOX_DIR})"
+		debug "II: rebasing LOG_DIR"
+		LOG_DIR="$(canonicalize-filename ${SANDBOX_DIR}/${LOG_DIR})"
+		LOG_STDOUT="${SANDBOX_DIR}/${LOG_STDOUT}"
+		LOG_STDERR="${SANDBOX_DIR}/${LOG_STDERR}"
+		debug 2 "II: LOG_STDOUT set to $(canonicalize-filename ${LOG_STDOUT})"
+		debug 2 "II: LOG_STDERR set to $(canonicalize-filename ${LOG_STDERR})"
+		debug "II: log directory rebased to ${LOG_DIR}, all further logging will be present there."
+		reset-logging
+		[[ -z ${NO_REDIRECT} ]] && redirect-logging
+		debug "II: log directory was rebased, logging continues..."
+	fi
+}
+
+function role-package-extract() {
+	# Parse the passed bundle (assumed to be a file location) for a role-packages file.
+	# If present, print its contents to stdout, and return 0
+	# else return 1
+
+	debug "II: Looking for role-package file (${ROLE_PACKAGE_FILE}) in ${1}..."
+	ROLE_PACKAGE=$(${TAR} -tf ${1} | ${GREP} ${ROLE_PACKAGE_FILE})
+	if [[ -n ${ROLE_PACKAGE} ]]; then
+		debug "II: located at ${ROLE_PACKAGE}."
+		debug "II: extracting package information..."
+		ROLE_PACKAGES=$(${TAR} -xf ${1} ${ROLE_PACKAGE} -O)
+		debug "II: complete."
+
+		pkg_update > ${LOG_STDERR}
+
+		echo "${ROLE_PACKAGES}" | grep -v ^#
+		return 0
+	fi
+	return 1
+}
+
+function role-repo-extract() {
+    # Parse the passed bundle (assumed to be a file location) for a role-packages file.
+    # If present, print its contents to stdout, and return 0
+    # else return 1
+
+    debug "II: Looking for role-repo file (${ROLE_REPO_FILE}) in ${1}..."
+    ROLE_REPO=$(${TAR} -tf ${1} | ${GREP} ${ROLE_REPO_FILE})
+    if [[ -n ${ROLE_REPO} ]]; then
+        debug "II: located at ${ROLE_REPO}."
+        debug "II: extracting repo information..."
+        ROLE_REPOS=$(${TAR} -xf ${1} ${ROLE_REPO} -O)
+        debug "II: complete."
+
+        echo "${ROLE_REPOS}" | grep -v ^#
+        return 0
+    fi
+    return 1
+}
+
+
+function role-repo-handler() {
+
+T_ROLE_FILE=${1}
+
+    for line in $(role-repo-extract ${T_ROLE_FILE}); do
+        OIFS=${IFS} ; IFS="|"
+        ARG=( ${line} )
+        IFS=${OIFS}
+        REPO_NAME=${ARG[0]}
+        REPO_URI=${ARG[1]}
+        REPO_KEY=${ARG[2]}
+        REPO_TYPE=${ARG[3]}
+        REPO_KEYSERVER=${ARG[4]}
+        REPO_COMPONENTS=${ARG[5]}
+        REPO_INCLUSION=${ARG[6]}
+        REPO_CODENAME=${ARG[7]}
+             
+        #Ability to override codename based on configuration file; otherwise use distro codename
+        [[ -z ${REPO_CODENAME} ]] && REPO_CODENAME=${CODENAME}
+                
+        #Currently only support APT-GET repo.  But at a later date could have functionality for Redhat YUM repos
+        if is-distro "ubuntu"; then
+
+            # Install REPO ADD
+            # Only add repo if codebase included in REPO_INCLUSION (which is an array); This is so that we can avoid issues of php5-fpm (Which is in 12.04 standard repo; but not 10.04).
+            # OR if INCLUSION has not been set.
+            if exists-in-array ${CODENAME} ${REPO_INCLUSION} || [[ -z ${REPO_INCLUSION} ]] ; then
+
+            #Check if the repo file exists already (if so exit)
+                if ! [ -e ${REPO_DIR}/${REPO_NAME}.list ]; then 
+
+                    echo "${REPO_TYPE} ${REPO_URI} ${REPO_CODENAME} ${REPO_COMPONENTS}" > ${REPO_DIR}/${REPO_NAME}.list
+                        
+                    # Install REPO KEY
+                    ${APT_KEY_ADD} ${REPO_KEYSERVER} --recv-keys ${REPO_KEY}
+
+                    if [[ $? -ne 0 ]]; then
+                        debug "II: Cannot install ${REPO_KEYSERVER} for ${REPO_NAME}" 
+                        exit 1
+                    fi
+
+                else
+                    debug "II: ${REPO_NAME}.list, already exists.. therefore skipping"
+                fi
+            else
+                debug "II: REPO is excluded from this codename"
+            fi 
+        fi
+    done
+
+
+unset T_ROLE_FILE
+
+}
+
+function role-package-handler() {
+	# Obtain the contents of the role-packages file and process it.
+	# This will read it line by line, splitting it out into fields for later reference.
+
+	# If the package architecture is null, or matching the local architecture
+	# look to install the package else ignore.
+
+	# If the package is already installed, log a message and move on.
+
+	# If the package to install has a PATH that starts in http, https, ftp or s3 then fetch
+	# the remote file to a local location and install via rpm or gdebi.
+
+	# If the package to install does not match the above, then look to install via vendor repos
+	# using aptitude or yum.
+
+	T_ROLE_FILE=${1}
+	T_PKG=""
+	T_PKG_MD5=""
+	T_PKG_MD5_LOCAL=""
+
+	for line in $(role-package-extract ${T_ROLE_FILE}); do
+		OIFS=${IFS} ; IFS="|"
+		ARG=( ${line} )
+		IFS=${OIFS}
+		PKG_NAME=${ARG[0]}
+		PKG_ARCH=${ARG[1]}
+		PKG_PATH=${ARG[2]}
+		PKG_FILE=${ARG[3]}
+		PKG_MD5=${PKG_FILE}.md5sum
+
+		# Install software
+		if [[ ${PKG_ARCH} == ${SYS_ARCH} || -z ${PKG_ARCH} ]]; then
+			${PKG_CHECK} ${PKG_NAME}
+			if [[ $? -eq 0 ]]; then
+				debug "[${T_ROLE_FILE}] ${PKG_NAME} is already installed."
+			else
+				# is the package to install remote?
+				if [[ ${PKG_PATH} =~ (http|ftp|https|s3):\/\/.* ]]; then
+					# Download md5 and package file
+					T_PKG="$(fetch-remote-file ${PKG_PATH}/${PKG_FILE})"
+					T_PKG_MD5="$(fetch-remote-file ${PKG_PATH}/${PKG_MD5})"
+
+					# If we got an MD5 sum
+					if [[ -e ${T_PKG_MD5} ]]; then
+						# fetch the md5 sum from the file (we only ever expect one line per file)
+						T_PKG_MD5=( $(<${T_PKG_MD5}) )
+						# fetch the local md5sum
+						T_PKG_MD5_LOCAL=( $(${MD5SUM} ${T_PKG}) )
+						# Compare. We don't fail if its incorrect - we just log it
+						[[ "${T_PKG_MD5[0]}" != "${T_PKG_MD5_LOCAL[0]}" ]] && debug "[${T_ROLE_FILE}] FAILED to verify MD5 for ${T_PKG_MD5}."
+					else
+						debug "II: [${T_ROLE_FILE}] No MD5 sum found for ${PKG_NAME}."
+					fi
+
+					# Now we install the local file
+					${PKG_INST} ${T_PKG}
+					if [[ $? -ne 0 ]]; then
+						debug "II: [${T_ROLE_FILE}] Failed to install ${T_PKG}."
+						exit 1
+					fi
+				else
+					# No its a repo-based package
+					${REPO_INST} ${PKG_NAME}
+					if [[ $? -ne 0 ]]; then
+						debug "II: [${T_ROLE_FILE}] Failed to install ${PKG_NAME}."
+						exit 1
+					fi
+				fi
+			fi
+		fi
+	done
+
+	unset T_PKG
+	unset T_PKG_MD5
+	unset T_PKG_MD5_LOCAL
+	unset T_ROLE_FILE
+}
+
+function unpack-and-eval() {
+	# This function takes two arguments, the bundle - which is assumed to be a valid bundle file
+	# and a file that should exist within that bundle should take on the form:
+	# "var=val\n".
+
+	T_BUNDLE=${1}
+	T_FILE=${2}
+	T_BUNDLE_TMP=${T_BUNDLE//\//_}
+	T_BUNDLE_TMP=${T_BUNDLE_TMP//\./}
+	T_BUNDLE_TMP=${T_BUNDLE_TMP//tgz/.tgz}
+	T_BUNDLE_TMP=${SANDBOX_DIR}/${TMP_DOWNLOAD_DIR}/${T_BUNDLE_TMP}
+
+	p_index=1
+	if [[ -z ${T_FILE} ]]; then
+		debug "EE: function unpack-and-eval( \$bundle <dir/file> )"
+		debug "EE: \tYou must specify both bundle and the file to extract and evaluate."
+		exit 1
+	fi
+
+	if [[ -z $(${TAR} -tf ${T_BUNDLE} | ${GREP} ${T_FILE}) ]]; then
+		debug 2 "WW: [${T_BUNDLE}] ${T_FILE} cannot be found within this bundle."
+		return 1
+		break
+	fi
+
+	debug "II: [${T_BUNDLE}] unpacking ${T_FILE}..."
+	mkdir -p ${T_BUNDLE_TMP}
+	${TAR} -C ${T_BUNDLE_TMP} --overwrite -xvpf ${T_BUNDLE} ${T_FILE}
+	if [[ -d ${T_BUNDLE_TMP}/${T_FILE} ]]; then
+		for script in ${T_BUNDLE_TMP}/${T_FILE}/*; do
+			if [[ -f ${script} ]]; then
+				debug "II: [${T_BUNDLE}] parsing ${script//*\/}..."
+				while read -s line; do
+					u_data[${p_index}]="${line}"
+					p_index=$(( ${p_index} + 1 ))
+				done < ${script}
+			fi
+		done
+	elif [[ -f ${T_BUNDLE_TMP}/${T_FILE} ]]; then
+		debug "II: [${T_BUNDLE}] parsing ${T_FILE}..."
+		while read -s line; do
+			u_data[${p_index}]="${line}"
+			p_index=$(( ${p_index} + 1 ))
+		done < ${T_BUNDLE_TMP}/${T_FILE}
+	fi
+
+	# Evaluate the passed parameters and turn them into environment variables
+	for ((udp=1; udp<=${#u_data[@]}; udp++)); do
+		eval export ${u_data[${udp}]}
+	done
+
+	unset script
+	unset u_data
+	unset udp
+	unset T_BUNDLE
+	unset T_FILE
+	unset T_BUNDLE_TMP
+
+	return 0
+}
+
+function unpack-and-exec() {
+	# This function takes two arguments, the bundle - which is assumed to be a valid bundle file
+	# and a scripts executable.
+
+	# The scripts executable takes the form of the file or directory name in the scripts/ directory
+	# of the bundle itself. It will extract its contents if available to a temporary location and
+	# then if the extracted content is an executable file, execute it directly or, in the case of
+	# a directory, execute its executable contents.
+
+	T_BUNDLE=${1}
+	T_PREPOST=${2}
+	T_BUNDLE_TMP=${T_BUNDLE//\//_}
+	T_BUNDLE_TMP=${T_BUNDLE_TMP//\./}
+	T_BUNDLE_TMP=${T_BUNDLE_TMP//tgz/.tgz}
+	T_BUNDLE_TMP=${SANDBOX_DIR}/${TMP_DOWNLOAD_DIR}/${T_BUNDLE_TMP}
+
+	# if [[ ${T_PREPOST} != "pre" && ${T_PREPOST} != "post" ]]; then
+	if [[ -z ${T_PREPOST} ]]; then
+		debug "EE: function unpack-and-exec( \$bundle <pre.d|post.d|preinstall|postinstall> )"
+		debug "EE: \tYou must specify both bundle and either pre or post arguments."
+		exit 1
+	fi
+
+	if [[ -z $(${TAR} --strip-components=1 -tf ${T_BUNDLE} | ${GREP} scripts/${T_PREPOST}) ]]; then
+		debug 2 "WW: [${T_BUNDLE}] ${T_PREPOST} cannot be found within this bundle."
+		return 1
+		break
+	fi
+
+	debug "II: [${T_BUNDLE}] unpacking ${T_PREPOST} scripts..."
+	mkdir -p ${T_BUNDLE_TMP}
+	${TAR} -C ${T_BUNDLE_TMP} --strip-components=1 --overwrite -xvpf ${T_BUNDLE} scripts/${T_PREPOST}
+	if [[ -d ${T_BUNDLE_TMP}/${T_PREPOST} ]]; then
+		for script in ${T_BUNDLE_TMP}/${T_PREPOST}/*; do
+			if [[ -x ${script} ]]; then
+				debug "II: [${T_BUNDLE}] executing ${script//*\/}..."
+				${script}
+			fi
+		done
+	elif [[ -x ${T_BUNDLE_TMP}/${T_PREPOST} ]]; then
+		debug "II: [${T_BUNDLE}] executing ${T_PREPOST}..."
+		${T_BUNDLE_TMP}/${T_PREPOST}
+	fi
+
+	unset script
+	unset T_BUNDLE
+	unset T_PREPOST
+	unset T_BUNDLE_TMP
+
+	return 0
+}
+
+function unpack-files() {
+	# This function takes the bundle - assumed to be a local bundle file, and extract the files/
+	# content if present. Unless SANDBOX_DIR is defined, it will write the contents relative to /
+
+	T_BUNDLE=${1}
+	T_OUTDIR="$(canonicalize-filename ${SANDBOX_DIR}/)"
+
+	if [[ -z $(${TAR} --strip-components=1 -tf ${T_BUNDLE} | ${GREP} files/) ]]; then
+		debug 2 "WW: [${T_BUNDLE}] files/ cannot be found within this bundle."
+		return 1
+		break
+	fi
+
+	debug "II: [${T_BUNDLE}] unpacking bundle contents to ${T_OUTDIR}"
+	${TAR} -C ${T_OUTDIR} --strip-components=1 --overwrite -xvpf ${T_BUNDLE} files/
+
+	unset T_OUTDIR
+	unset T_BUNDLE
+	return 0
+}
+
+function check-platform-environment() {
+	# The script assumes that platform_environment would typically be set. If it isn't, throw
+	# a warning/pause message to indicate this amd then continue.
+
+	if [[ -z ${platform_environment} ]]; then
+		debug "WW: IMPORTANT NOTICE..."
+		debug "WW: \t It is typical that there would be a platform_environment variable"
+		debug "WW: \t present within the execution environment with a value set matching"
+		debug "WW: \t a configured platform environment for the application."
+		debug "WW: "
+		debug "WW: \t An example of this might be platform_environment=\"test\"."
+		debug "WW: "
+		debug "WW: \t Typically speaking when it is not specified, it will default to \"prod\"."
+		debug "WW: "
+		debug "WW: \t It might be considered completely normal for this not to be set, in"
+		debug "WW: \t which case you can comfortably ignore this suspended warning."
+		debug "WW: "
+		debug "WW: \t If this is in error, please press CTRL+C (^C) now, to cancel this operation."
+		debug "WW: "
+		debug "WW: \t We will continue in ${WAIT_SECONDS} seconds..."
+		debug "WW: "
+		second=${WAIT_SECONDS}
+		echo -en "\a"
+		for ((second=${WAIT_SECONDS}; second>0; second--)); do
+			[[ ${second} -lt 100 ]] && second=" ${second}"
+			[[ ${second} -lt 10 ]]  && second=" ${second}"
+			echo -ne "\rWW: Time remaining: ${second}"
+			sleep 1
+		done
+		echo -ne "\n"
+		unset second
+	else
+		debug "II: Working with platform_environment: ${platform_environment}"
+	fi
+}
+
+function print-help() {
+	debug "Usage:"
+	debug "\t-a \$app.tgz\t\t: Can be passed multiple times"
+	debug "\t-r \$role.tgz\t\t: Can be passed multiple times"
+	debug "\t-s \$sandbox_location\t: The directory to sandbox all operations under"
+	debug "\t-v\t\t\t: Increase the verbosity by 1, can be passed multiple times."
+	debug "\t-d\t\t\t: Do not attempt to redirect any output to LOG_STD*"
+	debug
+	debug 1 "It will also parse stdin (expecting the userdata format used within the AWS framework) for roles/rolebucket, apps/appbucket, and similar which will influence the above. This is for use within the ec2 init script."
+	exit 1
+}
+
+# -------------------------------------------------------------------------------------------
+
+while getopts ":r:a:s:vdh" opt; do
+	case $opt in
+		r)  debug 2 "II: role bundle passed: ${OPTARG}";
+		    register-role ${OPTARG};;
+		a)  debug 2 "II: app bundle passed: ${OPTARG}";
+		    register-app ${OPTARG};;
+		s)  set-sandbox ${OPTARG};;
+		v)  DEBUG_VERBOSITY=$(( ${DEBUG_VERBOSITY} + 1 ));;
+		d)	NO_REDIRECT="true";;
+		h)	print-help;;
+		\?) debug "EE: Invalid option: -$OPTARG"; exit 1;;
+		:)  debug "EE: Option -$OPTARG requires an argument."; exit 1;;
+	esac
+done
+
+[[ -z ${NO_REDIRECT} ]] && redirect-logging
+parse-and-export-stdin
+check-platform-environment
+
+# Take $roles, $rolebucket, $apps, $appbucket
+# fetch {$role,$app}bucket:{roles,code}/{$role,$app}/{config,app}.tgz to a local path ${role,app}-bundle.tgz
+# add local role,app via register-role() register-app()
+for role in ${roles//,/ }; do
+	if [[ -n ${rolebucket} ]]; then
+		T_URL="s3://${rolebucket}:roles/${role}/config.tgz"
+		debug "II: fetching file ${T_URL}"
+		T_FILE=$(fetch-remote-file ${T_URL})
+		register-role ${T_FILE}
+		unset T_FILE
+		unset T_URL
+	else
+		debug "WW: role [${role}] has been specified, but rolebucket is undefined."
+	fi
+done
+
+for app in ${apps//,/ }; do
+	if [[ -n ${appbucket} ]]; then
+		T_URL="s3://${appbucket}:code/${app}/app.tgz"
+		debug "II: fetching file ${T_URL}"
+		T_FILE=$(fetch-remote-file ${T_URL})
+		register-app ${T_FILE}
+		unset T_FILE
+		unset T_URL
+	else
+		debug "WW: app [${app}] has been specified, but appbucket is undefined."
+	fi
+done
+
+debug "II: Working on:"
+debug "II: \troles [${P_R_BUNDLE[@]}]"
+debug "II: \tapps  [${P_A_BUNDLE[@]}]"
+
+# iterate through roles
+# - D get role-package
+# - D install packages as per role-packages contents
+# - unpack scripts
+# - execute pre.d scripts
+# - unpack files to / (does this need to be sandboxed? I think so!)
+# - execure post.d scripts
+for role in ${P_R_BUNDLE[@]}; do
+	debug "II: Processing role bundle: ${role}"
+    role-repo-handler ${role}
+	role-package-handler ${role}
+	unpack-and-exec ${role} preinstall
+	unpack-and-exec ${role} pre.d
+	unpack-files ${role}
+	unpack-and-exec ${role} post.d
+	unpack-and-exec ${role} postinstall
+done
+
+# iterate through apps
+# - unpack scripts
+# - execute pre.d scripts
+# - unpack files to / (does this need to be sandboxed? I think so!)
+# - execure post.d scripts
+for app in ${P_A_BUNDLE[@]}; do
+	debug "II: Processing app bundle: ${app}"
+	unpack-and-eval ${app} meta-data/app-env
+	unpack-and-exec ${app} preinstall
+	unpack-and-exec ${app} pre.d
+	unpack-files ${app}
+	unpack-and-exec ${app} post.d
+	unpack-and-exec ${app} postinstall
+done

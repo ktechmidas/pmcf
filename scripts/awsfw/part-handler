@@ -1,0 +1,17 @@
+def list_types():
+    # return a list of mime-types that are handled by this module
+    return(["text/awsfw-data"])
+
+def handle_part(data, ctype, filename, payload):
+    # data: the cloudinit object
+    # ctype: '__begin__', '__end__', or the specific mime-type of the part
+    # filename: the filename for the part, or dynamically generated part if
+    #           no filename is given attribute is present
+    # payload: the content of the part (empty for begin or end)
+    if ctype == "__begin__":
+       return
+    if ctype == "__end__":
+       return
+
+    with open('/tmp/awsfw_%s' % filename, 'w') as fd:
+        fd.print(payload)
