@@ -28,9 +28,11 @@ class AWSFWProvisioner(BaseProvisioner):
         for k, v in config.iteritems():
             awsfw_data += 'export %s=%s\n' % (k, v)
 
-        ud = self.add_data(ud, awsfw_data.format(**config),
-                           'awsfw-data', 'vars')
+        ud = self.add_data(ud, awsfw_data, 'awsfw-data', 'vars')
 
+        with open('scripts/awsfw/s3curl.pl') as fd:
+            ud = self.add_data(ud, fd.read(),
+                               'x-s3curl', 's3curl.pl')
         with open('scripts/awsfw/awsfw_standalone') as fd:
             ud = self.add_data(ud, fd.read(),
                                'x-shellscript', 'awsfw_standalone')
