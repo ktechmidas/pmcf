@@ -1,6 +1,6 @@
 def list_types():
     # return a list of mime-types that are handled by this module
-    return(["text/awsfw-data"])
+    return(["text/awsfw-data", "text/x-s3curl"])
 
 def handle_part(data, ctype, filename, payload):
     # data: the cloudinit object
@@ -13,5 +13,11 @@ def handle_part(data, ctype, filename, payload):
     if ctype == "__end__":
        return
 
-    with open('/tmp/awsfw_%s' % filename, 'w') as fd:
-        fd.print(payload)
+    if ctype == 'text/x-s3curl':
+        with open('/usr/local/lib/s3curl.pl', 'w') as fd:
+            fd.print(payload)
+        os.chmod('0755', '/usr/local/lib/s3curl.pl')
+
+    else:
+        with open('/tmp/awsfw_%s' % filename, 'w') as fd:
+            fd.print(payload)
