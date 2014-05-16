@@ -27,7 +27,15 @@ class PropertyException(Exception):
         self.message = full_message
 
 
+class ProvisionerException(Exception):
+    def __init__(self, message):
+        full_message = ("Error during provisioning: %s" % message)
+        super(PropertyException, self).__init__(full_message)
+        self.message = full_message
+
+
 __all__ = [
     ParserFailure,
-    PropertyException
+    PropertyException,
+    ProvisionerException
 ]

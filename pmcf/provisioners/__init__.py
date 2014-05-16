@@ -18,6 +18,8 @@ from email.mime.text import MIMEText
 import sys
 import zlib
 
+from pmcf.exceptions import ProvisionerException
+
 
 class BaseProvisioner(object):
     __metaclass__ = abc.ABCMeta
@@ -40,7 +42,10 @@ class BaseProvisioner(object):
         return MIMEMultipart(boundary=self.boundary)
 
     def resize(self, ud):
-        return zlib.compress(ud.as_string(), 9).encode('base64', 'strict')
+        data = zlib.compress(ud.as_string(), 9).encode('base64', 'strict')
+        if len(data) > 16384:
+            raise ProvisionException('userdata is too long')
+        return data
 
 
 __all__ = [
