@@ -28,6 +28,12 @@ class TestBasePolicy(object):
         policy = BasePolicy()
         assert_equals(True, policy.validate_resource('wombat', {}))
 
+    def test_no_policy_file(self):
+        assert_raises(PolicyException, BasePolicy, json_file='nonexistant')
+
+    def test_bad_policy_file(self):
+        assert_raises(PolicyException, BasePolicy, json_file='etc/bad.json')
+
     def test_instance_policy_violation(self):
         data = {
             "count": "6",

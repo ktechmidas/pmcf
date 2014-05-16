@@ -19,8 +19,12 @@ from pmcf.exceptions import PolicyException
 
 class BasePolicy(object):
     def __init__(self, json_file='etc/policy.json'):
-        with open(json_file) as fd:
-            self.json_policy = json.loads(fd.read())
+        try:
+            with open(json_file) as fd:
+                self.json_policy = json.loads(fd.read())
+        except (IOError, ValueError), e:
+            raise PolicyException("Can't load policy file %s: %s" %
+                                  (json_file, e))
 
     def validate_resource(self, resource_type, resource_data):
         if not self.json_policy.get(resource_type):
