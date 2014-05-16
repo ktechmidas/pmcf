@@ -15,6 +15,7 @@
 import urllib
 import netaddr
 import xmltodict
+from xml.parsers.expat import ExpatError
 
 from pmcf import exceptions
 from pmcf.parsers import BaseParser
@@ -170,10 +171,12 @@ class AWSFWParser(BaseParser):
                 instance['sg'].append('default')
 
     def parse(self, config):
-        data = xmltodict.parse(config)
-        print data
+        try:
+            data = xmltodict.parse(config)
+        except ExpatError, e:
+            raise exceptions.ParserFailure(e.message)
+
         self.build_ds(data['c4farm'])
-        print self._stack
         return self._stack
 
 

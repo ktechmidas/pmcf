@@ -421,6 +421,13 @@ class TestParser(object):
         data = parser.parse(config)
         assert_equals(data, struct)
 
+    def test_parse_invalid_config_raises(self):
+        parser = awsfw_parser.AWSFWParser()
+        with open('data/ais-stage-farm-broken.xml') as fd:
+            config = fd.read()
+
+        assert_raises(ParserFailure, parser.parse, config)
+
     def test_parse_valid_config(self):
         parser = awsfw_parser.AWSFWParser()
         struct = {
