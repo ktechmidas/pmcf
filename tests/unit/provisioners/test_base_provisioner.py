@@ -14,6 +14,7 @@
 
 from nose.tools import assert_equals, assert_raises
 
+from pmcf.exceptions import ProvisionerException
 from pmcf.provisioners import BaseProvisioner
 
 
@@ -29,6 +30,13 @@ class TestBaseProvisioner(object):
     def test_parse_raises(self):
         config = {}
         assert_raises(NotImplementedError, self.provisioner.userdata, config)
+
+    def test_userdata_too_long(self):
+        data = self.provisioner.make_skeleton()
+        with open('scripts/base/test_data') as fd:
+            ud = self.provisioner.add_data(data, fd.read(),
+                                           'x-binary', 'test_data')
+        assert_raises(ProvisionerException, self.provisioner.resize, data)
 
     def test_skeleton_output(self):
         expected = """Content-Type: multipart/mixed; boundary="%s"
