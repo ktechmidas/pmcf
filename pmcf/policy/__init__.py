@@ -18,7 +18,7 @@ from pmcf.exceptions import PolicyException
 
 
 class BasePolicy(object):
-    def __init__(self, json_file='etc/policy.json'):
+    def __init__(self, json_file='/etc/pmcf/policy.json'):
         try:
             with open(json_file) as fd:
                 self.json_policy = json.loads(fd.read())
