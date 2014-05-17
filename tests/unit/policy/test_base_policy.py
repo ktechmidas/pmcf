@@ -21,18 +21,20 @@ from pmcf.policy import BasePolicy
 class TestBasePolicy(object):
 
     def test_policy_file_load(self):
-        policy = BasePolicy()
+        policy = BasePolicy(json_file='tests/data/etc/policy.json')
         assert_equals(policy.json_policy, {})
 
     def test_return_on_no_policy(self):
-        policy = BasePolicy()
+        policy = BasePolicy(json_file='tests/data/etc/policy.json')
         assert_equals(True, policy.validate_resource('wombat', {}))
 
     def test_no_policy_file(self):
         assert_raises(PolicyException, BasePolicy, json_file='nonexistant')
 
     def test_bad_policy_file(self):
-        assert_raises(PolicyException, BasePolicy, json_file='etc/bad.json')
+        assert_raises(PolicyException,
+                      BasePolicy,
+                      json_file='tests/data/etc/bad.json')
 
     def test_instance_policy_violation(self):
         data = {
@@ -66,7 +68,7 @@ class TestBasePolicy(object):
             "sshKey": "ioko-pml"
         }
 
-        policy = BasePolicy(json_file='etc/policy-instance.json')
+        policy = BasePolicy(json_file='tests/data/etc/policy-instance.json')
         assert_raises(PolicyException,
                       policy.validate_resource, 'instance', data)
 
@@ -100,6 +102,6 @@ class TestBasePolicy(object):
             "sshKey": "ioko-pml"
         }
 
-        policy = BasePolicy(json_file='etc/policy-instance.json')
+        policy = BasePolicy(json_file='tests/data/etc/policy-instance.json')
         policy.validate_resource('instance', data)
         assert_equals(data['type'], 'm1.medium')

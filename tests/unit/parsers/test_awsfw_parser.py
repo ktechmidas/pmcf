@@ -269,7 +269,7 @@ class TestParser(object):
 
     def test_parse_invalid_config_no_instances(self):
         parser = awsfw_parser.AWSFWParser()
-        with open('data/ais-stage-farm-noinstances.xml') as fd:
+        with open('tests/data/awsfw/ais-stage-farm-noinstances.xml') as fd:
             config = fd.read()
         assert_raises(ParserFailure, parser.parse, config)
 
@@ -415,7 +415,7 @@ class TestParser(object):
             }
         }
 
-        with open('data/ais-stage-farm-puppet.xml') as fd:
+        with open('tests/data/awsfw/ais-stage-farm-puppet.xml') as fd:
             config = fd.read()
 
         data = parser.parse(config)
@@ -423,7 +423,7 @@ class TestParser(object):
 
     def test_parse_invalid_config_raises(self):
         parser = awsfw_parser.AWSFWParser()
-        with open('data/ais-stage-farm-broken.xml') as fd:
+        with open('tests/data/awsfw/ais-stage-farm-broken.xml') as fd:
             config = fd.read()
 
         assert_raises(ParserFailure, parser.parse, config)
@@ -578,7 +578,7 @@ class TestParser(object):
             }
         }
 
-        with open('data/ais-stage-farm.xml') as fd:
+        with open('tests/data/awsfw/ais-stage-farm.xml') as fd:
             config = fd.read()
 
         data = parser.parse(config)

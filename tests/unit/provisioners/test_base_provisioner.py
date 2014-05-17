@@ -33,7 +33,7 @@ class TestBaseProvisioner(object):
 
     def test_userdata_too_long(self):
         data = self.provisioner.make_skeleton()
-        with open('scripts/base/test_data') as fd:
+        with open('tests/data/userdata/test_data') as fd:
             ud = self.provisioner.add_data(data, fd.read(),
                                            'x-binary', 'test_data')
         assert_raises(ProvisionerException, self.provisioner.resize, data)
