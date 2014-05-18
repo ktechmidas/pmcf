@@ -13,11 +13,107 @@
 #    under the License.
 
 import argparse
+import ConfigParser
+
+from pmcf.data.template import DataTemplate
+from pmcf.resources.aws import ec2
+
+
+class PMCFCLI(object):
+    def __init__(self, args):
+        def my_import(module, klass):
+            mod = __import__(module, fromlist=[klass])
+            return getattr(mod, klass)
+
+        self.parser = my_import('pmcf.parsers', args['parser'])()
+        self.policy = my_import('pmcf.policy', args['policy'])(
+            json_file=args['policyfile']
+        )
+        self.provisioner = my_import('pmcf.provisioners', args['provisioner'])
+        self.args = args
+
+    def _run(self):
+        with open(self.args['stackfile']) as fd:
+            self.parser.parse(fd.read())
+        for k, v in self.parser._stack['resources'].iteritems():
+            for idx, res in enumerate(v):
+                data = self.parser._stack['resources'][k][idx]
+                self.policy.validate_resource(k, data)
+        print self.__dict__
 
 
 def main():
+    cfg = ConfigParser.ConfigParser()
     parser = argparse.ArgumentParser()
+    output_group = parser.add_mutually_exclusive_group()
+    output_group.add_argument("-v", "--verbose",
+                              help="set loglevel to verbose",
+                              default=False,
+                              action="store_true")
+    output_group.add_argument("-d", "--debug",
+                              help="set loglevel to debug",
+                              default=False,
+                              action="store_true")
+    output_group.add_argument("-q", "--quiet",
+                              help="set loglevel to quiet",
+                              default=False,
+                              action="store_true")
+    parser.add_argument("-p", "--profile",
+                        default='default',
+                        help="use config profile")
+    parser.add_argument("-P", "--policyfile",
+                        default='/etc/pmcf/policy.json',
+                        help="alternate policy file")
+    parser.add_argument("-c", "--configfile",
+                        default='/etc/pmcf/pmcf.conf',
+                        help="alternate config file")
+    parser.add_argument("-a", "--action",
+                        default='create',
+                        help="action (one of create, update, or delete)")
+    parser.add_argument("stackfile",
+                        help="path to stack (farm) definition file")
     args = parser.parse_args()
+    cfg.read(args.configfile)
+
+    profile_name = args.profile
+    if profile_name != 'default':
+        profile_name = "profile " + args.profile
+    if profile_name not in cfg.sections():
+        raise ValueError('bad profile %s' % args.profile)
+
+    options = {
+        'output': 'AWSCFNOutput',
+        'parser': 'AWSFWParser',
+        'policy': 'BasePolicy',
+        'provisioner': 'AWSFWProvisioner',
+        'verbose': args.verbose,
+        'debug': args.debug,
+        'quiet': args.quiet,
+        'policyfile': args.policyfile,
+        'stackfile': args.stackfile,
+    }
+
+    def get_from_section(cfg, section, option):
+        val = None
+        try:
+            val = cfg.get(section, option)
+            if val == -1:
+                val = None
+        except ConfigParser.NoOptionError:
+            pass
+        return val
+
+    for opt in options.keys():
+        options[opt] = get_from_section(cfg, profile_name, opt) or \
+            get_from_section(cfg, 'default', opt) or \
+            options[opt]
+
+    for opt in ['region', 'aws_access_key_id', 'aws_secret_access_key']:
+        options[opt] = get_from_section(cfg, profile_name, opt) or \
+            get_from_section(cfg, 'default', opt)
+
+    foo = PMCFCLI(options)
+    foo._run()
 
 if __name__ == '__main__':
     main()

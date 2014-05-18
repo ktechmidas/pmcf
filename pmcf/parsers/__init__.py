@@ -34,7 +34,9 @@ class BaseParser(object):
     def parse(self, config):
         raise NotImplementedError
 
+from pmcf.parsers.awsfw_parser import AWSFWParser
 
 __all__ = [
-    BaseParser
+    BaseParser,
+    AWSFWParser
 ]

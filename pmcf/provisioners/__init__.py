@@ -48,6 +48,8 @@ class BaseProvisioner(object):
         return data
 
 
+from pmcf.provisioners.awsfw import AWSFWProvisioner
 __all__ = [
-    BaseProvisioner
+    BaseProvisioner,
+    AWSFWProvisioner
 ]
