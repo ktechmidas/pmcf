@@ -303,7 +303,7 @@ class TestParser(object):
                         'count': u'6',
                         'image': u'ami-e97f849e',
                         'monitoring': u'false',
-                        'name': u'ais-stage-v2p54-02-app',
+                        'name': u'app',
                         'provisioner': {
                             'args': {
                                 'appBucket': u'aws-c4-003358414754',
@@ -313,7 +313,7 @@ class TestParser(object):
                             },
                             'type': u'puppet'
                         },
-                        'sg': [u'ais-stage-v2p54-02-app', 'default'],
+                        'sg': [u'app', 'default'],
                         'sshKey': u'ioko-pml',
                         'type': u'm1.large'
                     }
@@ -349,7 +349,7 @@ class TestParser(object):
                 ],
                 'secgroup': [
                     {
-                        'name': u'ais-stage-v2p54-02-app',
+                        'name': u'app',
                         'rules': [
                             {
                                 'from_port': u'22',
@@ -464,7 +464,7 @@ class TestParser(object):
                         'count': u'6',
                         'image': u'ami-e97f849e',
                         'monitoring': u'false',
-                        'name': u'ais-stage-v2p54-02-app',
+                        'name': u'app',
                         'provisioner': {
                             'args': {
                                 'appBucket': u'aws-c4-003358414754',
@@ -484,7 +484,7 @@ class TestParser(object):
                             },
                             'type': 'awsfw_standalone'
                         },
-                        'sg': [u'ais-stage-v2p54-02-app'],
+                        'sg': [u'app'],
                         'sshKey': u'ioko-pml',
                         'type': u'm1.large'
                     }
@@ -520,7 +520,7 @@ class TestParser(object):
                 ],
                 'secgroup': [
                     {
-                        'name': u'ais-stage-v2p54-02-app',
+                        'name': u'app',
                         'rules': [
                             {
                                 'from_port': u'22',
