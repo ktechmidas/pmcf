@@ -12,5 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from pmcf.resources.aws import autoscaling
 from pmcf.resources.aws import ec2
 from pmcf.resources.aws import elasticloadbalancing

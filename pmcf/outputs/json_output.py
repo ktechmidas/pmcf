@@ -66,19 +66,68 @@ class JSONOutput(BaseOutput):
             data.add_resource(lbs[name])
 
         config = {'foo': 'bar'}
+
+        sgs = {}
+        for sg in resources['secgroup']:
+            name = 'sg%s' % sg['name']
+            sgs[name] = ec2.SecurityGroup(
+                name,
+                GroupDescription='security group for %s' % sg['name'],
+                Tags=tags,
+            )
+            data.add_resource(sgs[name])
+
+            rules = []
+            for idx, rule in enumerate(sg['rules']):
+                rule_name = 'sg%s%02d' % (sg['name'], idx)
+                if rule.get('source_group'):
+                    data.add_resource(ec2.SecurityGroupIngress(
+                        rule_name,
+                        FromPort=rule['from_port'],
+                        ToPort=rule['to_port'],
+                        IpProtocol=rule['protocol'],
+                        SourceSecurityGroupName=rule['source_group'],
+                        GroupName=Ref(name)
+                    ))
+                else:
+                    data.add_resource(ec2.SecurityGroupIngress(
+                        rule_name,
+                        FromPort=rule['from_port'],
+                        ToPort=rule['to_port'],
+                        IpProtocol=rule['protocol'],
+                        CidrIp=rule['source_cidr'],
+                        GroupName=Ref(name)
+                    ))
+
         for inst in resources['instance']:
-            for c in range(1, int(inst['count'])):
-                data.add_resource(ec2.Instance(
-                    'test%02d' % c,
-                    IamInstanceProfile='awsfw-provisioner',
-                    ImageId=inst['image'],
-                    InstanceType=inst['type'],
-                    KeyName=inst['sshKey'],
-                    Monitoring=inst['monitoring'],
-                    SecurityGroups=inst['sg'],
-                    Tags=tags,
-                    UserData=provisioner.userdata(config)
-                ))
+            inst_sgs = [Ref(sgs['sg%s' % inst['name']])]
+            try:
+                inst['sg'].index('default')
+                inst_sgs.append('default')
+            except ValueError:
+                pass
+            lc = autoscaling.LaunchConfiguration(
+                'LC%s' % inst['name'],
+                IamInstanceProfile='awsfw-provisioner',
+                ImageId=inst['image'],
+                InstanceType=inst['type'],
+                KeyName=inst['sshKey'],
+                InstanceMonitoring=inst['monitoring'],
+                SecurityGroups=Ref(sgs['sg%s' % inst['name']]),
+                UserData=provisioner.userdata(config)
+            )
+            data.add_resource(lc)
+            data.add_resource(autoscaling.AutoScalingGroup(
+                'ASG%s' % inst['name'],
+                AvailabilityZones=[1, 2, 3],
+                DesiredCapacity=inst['count'],
+                LaunchConfigurationName=Ref(lc),
+                LoadBalancerNames=Ref(lbs['ELB%s' % inst['name']]),
+                MaxSize=inst['count'],
+                MinSize=inst['count'],
+                Tags=tags
+            ))
+
         return data.to_json()
 
     def run(self, data):
