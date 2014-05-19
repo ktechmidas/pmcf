@@ -16,6 +16,12 @@ from troposphere import autoscaling as asg
 
 from pmcf.utils import error
 
+EC2_INSTANCE_LAUNCH = "autoscaling:EC2_INSTANCE_LAUNCH"
+EC2_INSTANCE_LAUNCH_ERROR = "autoscaling:EC2_INSTANCE_LAUNCH_ERROR"
+EC2_INSTANCE_TERMINATE = "autoscaling:EC2_INSTANCE_TERMINATE"
+EC2_INSTANCE_TERMINATE_ERROR = "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+TEST_NOTIFICATION = "autoscaling:TEST_NOTIFICATION"
+
 
 class Tag(asg.Tag):
     pass
@@ -35,6 +41,13 @@ class AutoScalingGroup(asg.AutoScalingGroup):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('HealthCheckType', None):
+            if self.properties['HealthCheckType'] not in ['ELB', 'EC2']:
+                error(self, "HealthCheckType must be one of `ELB' or `EC2'")
+        return True
 
 
 class LaunchConfiguration(asg.LaunchConfiguration):
@@ -83,3 +96,21 @@ class BlockDeviceMapping(asg.BlockDeviceMapping):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+
+__all__ = [
+    EC2_INSTANCE_LAUNCH,
+    EC2_INSTANCE_LAUNCH_ERROR,
+    EC2_INSTANCE_TERMINATE,
+    EC2_INSTANCE_TERMINATE_ERROR,
+    TEST_NOTIFICATION,
+    AutoScalingGroup,
+    BlockDeviceMapping,
+    EBSBlockDevice,
+    LaunchConfiguration,
+    NotificationConfiguration,
+    ScalingPolicy,
+    ScheduledAction,
+    Tag,
+    Trigger,
+]
