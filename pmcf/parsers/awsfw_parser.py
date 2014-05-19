@@ -186,12 +186,14 @@ class AWSFWParser(BaseParser):
                 instance['sg'].append('default')
 
     def parse(self, config):
+        LOG.info('Start parsing farm config')
         try:
             data = xmltodict.parse(config)
         except ExpatError, e:
             raise ParserFailure(e.message)
 
         self.build_ds(data['c4farm'])
+        LOG.info('Finished parsing farm config')
         return self._stack
 
 
