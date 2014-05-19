@@ -13,6 +13,7 @@
 #    under the License.
 
 from troposphere import autoscaling as asg
+from pmcf.resources.aws.helpers import autoscaling
 
 from pmcf.utils import error
 
@@ -35,7 +36,33 @@ class NotificationConfiguration(asg.NotificationConfiguration):
             error(self, e.message)
 
 
-class AutoScalingGroup(asg.AutoScalingGroup):
+class MetricsCollection(autoscaling.MetricsCollection):
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            error(self, e.message)
+
+    def validate(self):
+        allowed_metrics = [
+            'GroupMinSize',
+            'GroupMaxSize',
+            'GroupDesiredCapacity',
+            'GroupInServiceInstances',
+            'GroupPendingInstances',
+            'GroupTerminatingInstances',
+            'GroupTotalInstances',
+        ]
+
+        if self.properties.get('Metrics'):
+            for metric in self.properties['Metrics']:
+                if metric not in allowed_metrics:
+                    error(self, 'Metric %s not known' % metric)
+
+        return True
+
+
+class AutoScalingGroup(autoscaling.AutoScalingGroup):
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -47,6 +74,12 @@ class AutoScalingGroup(asg.AutoScalingGroup):
         if self.properties.get('HealthCheckType', None):
             if self.properties['HealthCheckType'] not in ['ELB', 'EC2']:
                 error(self, "HealthCheckType must be one of `ELB' or `EC2'")
+
+        if len(set(self.properties.keys()).intersection(
+                set(['InstanceId', 'LaunchConfigurationName']))) != 1:
+            error(self, "Need to specify one of `InstanceId', "
+                        "`LaunchConfigurationName'")
+
         return True
 
 

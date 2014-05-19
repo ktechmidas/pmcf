@@ -20,7 +20,7 @@ from pmcf.resources.aws import autoscaling as asg
 from tests.unit.resources import TestResource
 
 
-class TestEc2Resource(TestResource):
+class TestASGResource(TestResource):
 
     def test_tag_valid(self):
         data = {'Key': 'foo', 'Value': 'bar', 'PropagateAtLaunch': False}
@@ -58,6 +58,19 @@ class TestEc2Resource(TestResource):
             NotificationTypes=[asg.TEST_NOTIFICATION]
         )
         assert_equals(self._data_for_resource(nc), data)
+
+    def test_autoscaling_group_invalid_no_lc(self):
+        a = asg.AutoScalingGroup(
+            "test",
+            AvailabilityZones=['a', 'b', 'c'],
+            Cooldown=30,
+            DesiredCapacity=1,
+            HealthCheckGracePeriod=5,
+            HealthCheckType='EC2',
+            MaxSize=2,
+            MinSize=1
+        )
+        assert_raises(PropertyException, a.JSONrepr)
 
     def test_autoscaling_group_invalid_no_sizes(self):
         a = asg.AutoScalingGroup(
