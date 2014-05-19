@@ -12,6 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import sys
+
+from pmcf.exceptions import PMCFException
 from pmcf.utils import import_from_string
 
 
@@ -23,13 +26,29 @@ class PMCFCLI(object):
             json_file=args['policyfile']
         )
         self.provisioner = import_from_string('pmcf.provisioners',
-                                              args['provisioner'])
+                                              args['provisioner'])()
+        self.output = import_from_string('pmcf.outputs',
+                                         args['output'])()
         self.args = args
 
-    def _run(self):
-        with open(self.args['stackfile']) as fd:
-            self.parser.parse(fd.read())
-        for k, v in self.parser._stack['resources'].iteritems():
-            for idx, res in enumerate(v):
-                data = self.parser._stack['resources'][k][idx]
-                self.policy.validate_resource(k, data)
+    def run(self):
+        try:
+            with open(self.args['stackfile']) as fd:
+                self.parser.parse(fd.read())
+            for k, v in self.parser._stack['resources'].iteritems():
+                for idx, res in enumerate(v):
+                    data = self.parser._stack['resources'][k][idx]
+                    self.policy.validate_resource(k, data)
+            data = self.output.add_resources(self.provisioner,
+                                             self.parser._stack['resources'],
+                                             self.parser._stack['config'])
+            self.output.run(data)
+            return False
+        except PMCFException, e:
+            print >> sys.stderr, e.message
+            return True
+
+
+__all__ = [
+    PMCFCLI,
+]

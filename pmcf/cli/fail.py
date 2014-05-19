@@ -12,12 +12,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from pmcf.cli.cmd import PMCFCLI
-from pmcf.cli.fail import FailCLI
-from pmcf.cli.noop import NoopCLI
+from pmcf.exceptions import PropertyException
+
+
+class FailCLI(object):
+
+    def __init__(self, args):
+        pass
+
+    def run(self):
+        raise PropertyException('Test assertion failure')
+
 
 __all__ = [
     FailCLI,
-    NoopCLI,
-    PMCFCLI,
 ]
