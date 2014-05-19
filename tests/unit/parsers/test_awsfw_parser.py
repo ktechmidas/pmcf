@@ -63,6 +63,7 @@ class TestParser(object):
                 'healthCheck': 'HTTP:80/healthcheck',
                 'protocol': 'HTTPS',
                 'port': '443',
+                'instance_protocol': u'HTTP',
                 'instancePort': 80,
             }
         }]
@@ -76,6 +77,7 @@ class TestParser(object):
                 'protocol': 'HTTP',
                 'port': '80',
                 'instancePort': 80,
+                'instance_protocol': u'HTTP',
             }
         }]
 
@@ -89,6 +91,7 @@ class TestParser(object):
                     'protocol': 'HTTP',
                     'port': '80',
                     'instancePort': 80,
+                    'instance_protocol': u'HTTP',
                 }
             },
             {
@@ -96,6 +99,7 @@ class TestParser(object):
                     'protocol': 'HTTP',
                     'port': '8080',
                     'instancePort': 80,
+                    'instance_protocol': u'HTTP',
                 }
             }
         ]
@@ -110,7 +114,8 @@ class TestParser(object):
                     {
                         'instance_port': 80,
                         'protocol': 'HTTP',
-                        'lb_port': '80'
+                        'lb_port': '80',
+                        'instance_protocol': 'HTTP',
                     }
                 ],
                 'healthcheck': {
@@ -126,6 +131,7 @@ class TestParser(object):
                 'protocol': 'HTTP',
                 'port': '80',
                 'instancePort': 80,
+                'instance_protocol': 'HTTP',
             }
         }]
         parser.build_lbs('test', lbdata)
@@ -140,7 +146,8 @@ class TestParser(object):
                         'instance_port': 80,
                         'sslCert': 'test',
                         'protocol': 'HTTPS',
-                        'lb_port': '80'
+                        'lb_port': '80',
+                        'instance_protocol': 'HTTP',
                     }
                 ],
                 'healthcheck': {
@@ -157,6 +164,7 @@ class TestParser(object):
                 'port': '80',
                 'instancePort': 80,
                 'sslCert': 'test',
+                'instance_protocol': 'HTTP',
             }
         }]
         parser.build_lbs('test', lbdata)
@@ -198,12 +206,14 @@ class TestParser(object):
                     {
                         'instance_port': 80,
                         'protocol': 'HTTP',
-                        'lb_port': '80'
+                        'lb_port': '80',
+                        'instance_protocol': 'HTTP',
                     },
                     {
                         'instance_port': 80,
                         'protocol': 'HTTP',
-                        'lb_port': '8080'
+                        'lb_port': '8080',
+                        'instance_protocol': 'HTTP',
                     }
                 ],
                 'healthcheck': {
@@ -220,11 +230,13 @@ class TestParser(object):
                     'protocol': 'HTTP',
                     'port': '80',
                     'instancePort': 80,
+                    'instance_protocol': 'HTTP',
                 },
                 {
                     'protocol': 'HTTP',
                     'port': '8080',
                     'instancePort': 80,
+                    'instance_protocol': 'HTTP',
                 }
             ]
         }]
@@ -316,15 +328,23 @@ class TestParser(object):
                             {
                                 'instance_port': u'80',
                                 'lb_port': u'80',
-                                'protocol': u'HTTP'
+                                'protocol': u'HTTP',
+                                'instance_protocol': 'HTTP',
                             },
                             {
                                 'instance_port': u'80',
                                 'lb_port': u'443',
                                 'protocol': u'HTTPS',
-                                'sslCert': u'test'
+                                'sslCert': u'test',
+                                'instance_protocol': 'HTTP',
                             }
-                        ]
+                        ],
+                        'logging': {
+                            's3bucket': u'c4-elb-logs',
+                            'emit_interval': u'60',
+                            'enabled': True,
+                            's3prefix': u'stage%2Fais'
+                        }
                     }
                 ],
                 'secgroup': [
@@ -479,15 +499,23 @@ class TestParser(object):
                             {
                                 'instance_port': u'80',
                                 'lb_port': u'80',
-                                'protocol': u'HTTP'
+                                'protocol': u'HTTP',
+                                'instance_protocol': u'HTTP',
                             },
                             {
                                 'instance_port': u'80',
                                 'lb_port': u'443',
                                 'protocol': u'HTTPS',
-                                'sslCert': u'test'
+                                'sslCert': u'test',
+                                'instance_protocol': u'HTTP',
                             }
-                        ]
+                        ],
+                        'logging': {
+                            's3bucket': u'c4-elb-logs',
+                            'emit_interval': u'60',
+                            'enabled': True,
+                            's3prefix': u'stage%2Fais'
+                        }
                     }
                 ],
                 'secgroup': [
