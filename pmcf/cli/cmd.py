@@ -17,6 +17,10 @@ import sys
 from pmcf.exceptions import PMCFException
 from pmcf.utils import import_from_string
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class PMCFCLI(object):
     def __init__(self, args):
@@ -45,7 +49,7 @@ class PMCFCLI(object):
             self.output.run(data)
             return False
         except PMCFException, e:
-            print >> sys.stderr, e.message
+            LOG.error(e.message)
             return True
 
 

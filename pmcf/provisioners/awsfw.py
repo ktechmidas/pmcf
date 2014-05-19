@@ -14,6 +14,10 @@
 
 from pmcf.provisioners.base_provisioner import BaseProvisioner
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class AWSFWProvisioner(BaseProvisioner):
 

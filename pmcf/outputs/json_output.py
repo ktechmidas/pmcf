@@ -17,6 +17,10 @@ from troposphere import Template
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import *
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class JSONOutput(BaseOutput):
 

@@ -18,6 +18,8 @@ import sys
 from pmcf.exceptions import PMCFException
 from pmcf.utils import import_from_string
 
+import logging
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -56,6 +58,36 @@ def main():
                         help="path to stack (farm) definition file")
     args = parser.parse_args()
 
+    # Log everything, and send it to stderr.
+    FORMAT = "[%(asctime)-15s] [%(levelname)s] %(message)s"
+
+    # Simple coloured output
+    logging.addLevelName(logging.DEBUG,
+                         "\033[1;32m %s \033[1;m"
+                         % logging.getLevelName(logging.DEBUG))
+    logging.addLevelName(logging.INFO,
+                         "\033[1;36m %s  \033[1;m"
+                         % logging.getLevelName(logging.INFO))
+    logging.addLevelName(logging.WARNING,
+                         "\033[1;33m%s\033[1;m"
+                         % logging.getLevelName(logging.WARNING))
+    logging.addLevelName(logging.ERROR,
+                         "\033[1;31m %s \033[1;m"
+                         % logging.getLevelName(logging.ERROR))
+
+    if args.debug:
+        lvl = logging.DEBUG
+    elif args.verbose:
+        lvl = logging.INFO
+    elif args.quiet:
+        lvl = logging.ERROR
+    else:
+        lvl = logging.WARNING
+
+    logging.basicConfig(format=FORMAT, level=lvl)
+
+    LOG = logging.getLogger(__name__)
+
     try:
         cfgkls = import_from_string('pmcf.config', args.configreader)
         cfg = cfgkls(args.configfile, args.profile, args)
@@ -65,7 +97,7 @@ def main():
         cli = clikls(options)
         return cli.run()
     except PMCFException, e:
-        print >> sys.stderr, e.message
+        LOG.error(e.message)
         return True
 
 if __name__ == '__main__':

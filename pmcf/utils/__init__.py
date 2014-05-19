@@ -15,6 +15,10 @@
 
 from pmcf.exceptions import PropertyException
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 def import_from_string(module, klass):
     try:

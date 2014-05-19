@@ -20,6 +20,10 @@ from xml.parsers.expat import ExpatError
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class AWSFWParser(BaseParser):
 

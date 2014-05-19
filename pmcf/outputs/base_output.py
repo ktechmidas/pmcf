@@ -14,6 +14,10 @@
 
 import abc
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class BaseOutput(object):
     __metaclass__ = abc.ABCMeta

@@ -20,6 +20,10 @@ import zlib
 
 from pmcf.exceptions import ProvisionerException
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class BaseProvisioner(object):
     __metaclass__ = abc.ABCMeta

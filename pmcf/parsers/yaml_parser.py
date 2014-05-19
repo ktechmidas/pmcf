@@ -16,6 +16,10 @@ import yaml
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class YamlParser(BaseParser):
     def parse(self, config):

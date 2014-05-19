@@ -17,6 +17,10 @@ import json
 from pmcf.exceptions import PolicyException
 from pmcf.policy.base_policy import BasePolicy
 
+import logging
+
+LOG = logging.getLogger(__name__)
+
 
 class JSONPolicy(BasePolicy):
     def __init__(self, json_file='/etc/pmcf/policy.json'):

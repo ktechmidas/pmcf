@@ -13,6 +13,9 @@
 #    under the License.
 
 import abc
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 class BaseParser(object):
