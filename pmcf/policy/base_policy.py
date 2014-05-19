@@ -12,34 +12,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import json
-
-from pmcf.exceptions import PolicyException
+import abc
 
 
 class BasePolicy(object):
-    def __init__(self, json_file='/etc/pmcf/policy.json'):
-        try:
-            with open(json_file) as fd:
-                self.json_policy = json.loads(fd.read())
-        except (IOError, ValueError), e:
-            raise PolicyException("Can't load policy file %s: %s" %
-                                  (json_file, e))
 
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
     def validate_resource(self, resource_type, resource_data):
-        if not self.json_policy.get(resource_type):
-            return True
-        policy = self.json_policy.get(resource_type)
-        for key in policy.keys():
-            if resource_data.get(key, None) is None:
-                resource_data[key] = policy[key]['default']
-            if policy[key].get('constraints'):
-                if resource_data[key] not in policy[key]['constraints']:
-                    raise PolicyException("Data field `%s' with value `%s' "
-                                          "not allowed for `%s'" %
-                                          (key, resource_data[key],
-                                           resource_type))
-        return True
+        raise NotImplementedError
 
 
 __all__ = [

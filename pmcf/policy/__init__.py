@@ -13,8 +13,10 @@
 #    under the License.
 
 from pmcf.policy.base_policy import BasePolicy
+from pmcf.policy.json_policy import JSONPolicy
 
 
 __all__ = [
     BasePolicy,
+    JSONPolicy,
 ]
