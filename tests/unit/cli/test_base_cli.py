@@ -29,7 +29,36 @@ class TestBaseCLI(object):
         assert_equals(False, main())
         sys.argv = old_argv
 
-    def test_main_fails_on_exception(self):
+    def test_verbose_main_succeeds(self):
+        old_argv = sys.argv
+        sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
+                    '-P', 'tests/data/etc/policy.json',
+                    '-p', 'c4', '-C', 'NoopConfig',
+                    '-r', 'NoopCLI', '-a', 'create', '-v',
+                    'tests/data/awsfw/ais-stage-farm.xml']
+        assert_equals(False, main())
+        sys.argv = old_argv
+
+    def test_debug_main_succeeds(self):
+        old_argv = sys.argv
+        sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
+                    '-P', 'tests/data/etc/policy.json',
+                    '-p', 'c4', '-C', 'NoopConfig',
+                    '-r', 'NoopCLI', '-a', 'create', '-d',
+                    'tests/data/awsfw/ais-stage-farm.xml']
+        assert_equals(False, main())
+        sys.argv = old_argv
+
+    def test_quiet_main_succeeds(self):
+        old_argv = sys.argv
+        sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
+                    '-P', 'tests/data/etc/policy.json',
+                    '-p', 'c4', '-C', 'NoopConfig',
+                    '-r', 'NoopCLI', '-a', 'create', '-q',
+                    'tests/data/awsfw/ais-stage-farm.xml']
+        assert_equals(False, main())
+        sys.argv = old_argv
+
         old_argv = sys.argv
         sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
                     '-P', 'tests/data/etc/policy.json',
