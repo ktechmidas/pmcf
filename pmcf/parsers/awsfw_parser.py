@@ -38,6 +38,7 @@ class AWSFWParser(BaseParser):
         try:
             (protocol, rest) = hc_xml.split(':')
         except ValueError:
+            LOG.debug('Expected PROTO:port[/path]')
             raise ParserFailure('Unable to parse healthcheck property')
         if protocol.upper() in ['HTTP', 'HTTPS']:
             port = rest.split('/')[0]
@@ -51,6 +52,7 @@ class AWSFWParser(BaseParser):
         }
         if path:
             hc['path'] = path
+        LOG.debug('Found healthcheck: %s' % hc)
         return hc
 
     def build_lbs(self, farmname, elbs):
@@ -72,6 +74,12 @@ class AWSFWParser(BaseParser):
                                             'sslCert')
                     else:
                         lstnr['sslCert'] = urllib.unquote(listener['sslCert'])
+                if listener.get('instance_protocol'):
+                    lstnr['instance_protocol'] = listener['instance_protocol']
+                else:
+                    if listener['protocol'].upper() in ['HTTP', 'HTTPS']:
+                        lstnr['instance_protocol'] = 'HTTP'
+                LOG.debug('Found listener: %s' % lstnr)
                 lb['listener'].append(lstnr)
             if elb.get('elb-logging'):
                 log_policy = {
@@ -80,6 +88,8 @@ class AWSFWParser(BaseParser):
                     's3prefix': elbs[idx]['elb-logging']['prefix'],
                     'enabled': True,
                 }
+                LOG.debug('Found log_policy: %s' % log_policy)
+                lb['logging'] = log_policy
             if lb.get('healthcheck', None) is None:
                 raise ParserFailure('a loadbalancer needs a healthCheck '
                                     'parameter')
@@ -99,6 +109,7 @@ class AWSFWParser(BaseParser):
                 r['source_cidr'] = rule['source']
             except netaddr.AddrFormatError:
                 r['source_group'] = rule['source']
+            LOG.debug('Found firewall rule: %s' % r)
             fwrules.append(r)
         self._stack['resources']['secgroup'].append({
             'name': inst_name,
@@ -136,6 +147,7 @@ class AWSFWParser(BaseParser):
                               self._listify(instance['firewall']['rule']))
                 inst['sg'].append(inst['name'])
 
+            LOG.debug('Found instance: %s' % inst)
             self._stack['resources']['instance'].append(inst)
 
     def build_ds(self, ds):
@@ -170,7 +182,7 @@ class AWSFWParser(BaseParser):
             # The XML declaration <noDefaultSG/> becomes:
             # { 'noDefaultSG': None } so a normal
             # if ds.get('noDefaultSG') returns 'None' which evaluates to false
-            if ds.get('noDefaultSG', 'nothere') == 'nothere':
+            if ds.get('noDefaultSG', 'missing') == 'missing':
                 instance['sg'].append('default')
 
     def parse(self, config):
