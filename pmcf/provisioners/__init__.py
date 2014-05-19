@@ -12,44 +12,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import abc
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import sys
-import zlib
-
-from pmcf.exceptions import ProvisionerException
-
-
-class BaseProvisioner(object):
-    __metaclass__ = abc.ABCMeta
-
-    def __init__(self):
-        self.boundary = '===============4206204907479218652=='
-
-    @abc.abstractmethod
-    def userdata(self, config):
-        raise NotImplementedError
-
-    def add_data(self, message, part, part_type, filename):
-        sub_message = MIMEText(part, part_type, sys.getdefaultencoding())
-        sub_message.add_header('Content-Disposition',
-                               'attachment; filename="%s"' % (filename))
-        message.attach(sub_message)
-        return message
-
-    def make_skeleton(self):
-        return MIMEMultipart(boundary=self.boundary)
-
-    def resize(self, ud):
-        data = zlib.compress(ud.as_string(), 9).encode('base64', 'strict')
-        if len(data) > 16384:
-            raise ProvisionerException('userdata is too long')
-        return data
-
-
 from pmcf.provisioners.awsfw import AWSFWProvisioner
+from pmcf.provisioners.base_provisioner import BaseProvisioner
+
 __all__ = [
+    AWSFWProvisioner,
     BaseProvisioner,
-    AWSFWProvisioner
 ]

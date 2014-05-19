@@ -14,7 +14,7 @@
 
 import yaml
 from pmcf import exceptions
-from pmcf.parsers import BaseParser
+from pmcf.parsers.base_parser import BaseParser
 
 
 class YamlParser(BaseParser):

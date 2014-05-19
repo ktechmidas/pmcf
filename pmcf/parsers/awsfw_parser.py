@@ -18,7 +18,7 @@ import xmltodict
 from xml.parsers.expat import ExpatError
 
 from pmcf import exceptions
-from pmcf.parsers import BaseParser
+from pmcf.parsers.base_parser import BaseParser
 
 
 class AWSFWParser(BaseParser):

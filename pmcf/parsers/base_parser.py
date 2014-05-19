@@ -12,12 +12,29 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from pmcf.parsers.awsfw_parser import AWSFWParser
-from pmcf.parsers.base_parser import BaseParser
-from pmcf.parsers.yaml_parser import YamlParser
+import abc
+
+
+class BaseParser(object):
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self):
+        self._stack = {
+            'resources': {
+                'instance': [],
+                'secgroup': [],
+                'load_balancer': [],
+                'db': [],
+                'cdn': [],
+            },
+            'config': {}
+        }
+
+    @abc.abstractmethod
+    def parse(self, config):
+        raise NotImplementedError
+
 
 __all__ = [
     BaseParser,
-    AWSFWParser,
-    YamlParser,
 ]
