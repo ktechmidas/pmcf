@@ -119,7 +119,7 @@ class AWSFWParser(BaseParser):
     def build_instances(self, farmname, instances):
         for idx, instance in enumerate(instances):
             inst = {}
-            inst['name'] = farmname + '-' + instance['tier']
+            inst['name'] = instance['tier']
             inst['image'] = instance['amiId']
             inst['type'] = instance['size']
             inst['count'] = instance['count']
