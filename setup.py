@@ -13,7 +13,7 @@ setup(
     test_suite="nose.collector",
     entry_points = {
         'console_scripts': [
-            'pmcf = pmcf.cli:main',
+            'pmcf = pmcf.cli.cli:main',
         ],
     },
 )
