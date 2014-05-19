@@ -555,5 +555,5 @@ __all__ = [
     VPNConnection,
     VPNConnectionRoute,
     VPNGateway,
-    VPNGatewayRoutePropagation
+    VPNGatewayRoutePropagation,
 ]

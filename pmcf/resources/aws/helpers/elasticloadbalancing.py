@@ -50,5 +50,5 @@ class LoadBalancer(AWSObject):
 
 __all__ = [
     AccessLoggingPolicy,
-    LoadBalancer
+    LoadBalancer,
 ]
