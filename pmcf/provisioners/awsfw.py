@@ -41,5 +41,5 @@ class AWSFWProvisioner(BaseProvisioner):
 
 
 __all__ = [
-    AWSFWProvisioner
+    AWSFWProvisioner,
 ]

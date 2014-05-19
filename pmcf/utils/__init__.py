@@ -17,8 +17,11 @@ from pmcf.exceptions import PropertyException
 
 
 def import_from_string(module, klass):
-    mod = __import__(module, fromlist=[klass])
-    return getattr(mod, klass)
+    try:
+        mod = __import__(module, fromlist=[klass])
+        return getattr(mod, klass)
+    except AttributeError, e:
+        raise PropertyException(e.message)
 
 
 def error(resource, msg):
