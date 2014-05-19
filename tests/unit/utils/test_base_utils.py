@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 from pmcf import exceptions
 from pmcf import utils
 
@@ -26,3 +26,11 @@ class TestUtils(object):
         except exceptions.PropertyException, e:
             assert_equals(e.message, "Error in resource properties: " + msg +
                                      " in type <unknown type>")
+
+    def test_import_from_string_no_module(self):
+        assert_raises(ImportError, utils.import_from_string, 'foo', 'bar')
+
+    def test_import_from_string_success(self):
+        kls = utils.import_from_string('pmcf.parsers', 'BaseParser')
+        from pmcf.parsers import BaseParser
+        assert_equals(BaseParser, kls)

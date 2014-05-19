@@ -13,13 +13,12 @@
 #    under the License.
 
 import json
-
-from pmcf.data.template import DataTemplate
+from troposphere import Template
 
 
 class TestResource(object):
 
     def _data_for_resource(self, data):
-        t = DataTemplate()
+        t = Template()
         t.add_resource(data)
         return json.loads(t.to_json())['Resources']['test']

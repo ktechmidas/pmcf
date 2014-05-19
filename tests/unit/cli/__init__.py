@@ -11,22 +11,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-from nose.tools import assert_raises
-
-from pmcf.policy import BasePolicy
-
-
-class TestBasePolicy(object):
-    def __init__(self):
-        self.policy = None
-
-    def setup(self):
-        #  HACK alert: have to empty this so we can instantiate the class
-        BasePolicy.__abstractmethods__ = set()
-        self.policy = BasePolicy()
-
-    def test_validate_resources_raises(self):
-        assert_raises(NotImplementedError,
-                      self.policy.validate_resource,
-                      None, {})

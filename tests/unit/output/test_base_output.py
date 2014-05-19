@@ -14,19 +14,22 @@
 
 from nose.tools import assert_raises
 
-from pmcf.policy import BasePolicy
+from pmcf.outputs import BaseOutput
 
 
-class TestBasePolicy(object):
+class TestBaseParser(object):
+
     def __init__(self):
-        self.policy = None
+        self.output = None
 
     def setup(self):
         #  HACK alert: have to empty this so we can instantiate the class
-        BasePolicy.__abstractmethods__ = set()
-        self.policy = BasePolicy()
+        BaseOutput.__abstractmethods__ = set()
+        self.output = BaseOutput()
 
-    def test_validate_resources_raises(self):
-        assert_raises(NotImplementedError,
-                      self.policy.validate_resource,
-                      None, {})
+    def test_add_resources_raises(self):
+        assert_raises(NotImplementedError, self.output.add_resources,
+                      None, {}, {})
+
+    def test_run_raises(self):
+        assert_raises(NotImplementedError, self.output.run, {})
