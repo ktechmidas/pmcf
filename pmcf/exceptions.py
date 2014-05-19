@@ -13,28 +13,32 @@
 #    under the License.
 
 
-class ParserFailure(Exception):
+class PMCFException(Exception):
+    pass
+
+
+class ParserFailure(PMCFException):
     def __init__(self, message):
         full_message = ("Error parsing input: %s" % message)
         super(ParserFailure, self).__init__(full_message)
         self.message = full_message
 
 
-class PolicyException(Exception):
+class PolicyException(PMCFException):
     def __init__(self, message):
         full_message = ("Policy violation: %s" % message)
         super(PolicyException, self).__init__(full_message)
         self.message = full_message
 
 
-class PropertyException(Exception):
+class PropertyException(PMCFException):
     def __init__(self, message):
         full_message = ("Error in resource properties: %s" % message)
         super(PropertyException, self).__init__(full_message)
         self.message = full_message
 
 
-class ProvisionerException(Exception):
+class ProvisionerException(PMCFException):
     def __init__(self, message):
         full_message = ("Error during provisioning: %s" % message)
         super(ProvisionerException, self).__init__(full_message)
@@ -43,6 +47,7 @@ class ProvisionerException(Exception):
 
 __all__ = [
     ParserFailure,
+    PMCFException,
     PolicyException,
     PropertyException,
     ProvisionerException
