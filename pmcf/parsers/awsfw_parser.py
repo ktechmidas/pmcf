@@ -17,7 +17,7 @@ import netaddr
 import xmltodict
 from xml.parsers.expat import ExpatError
 
-from pmcf import exceptions
+from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
 
 
@@ -34,8 +34,7 @@ class AWSFWParser(BaseParser):
         try:
             (protocol, rest) = hc_xml.split(':')
         except ValueError:
-            raise exceptions.ParserFailure('Unable to parse healthcheck '
-                                           'property')
+            raise ParserFailure('Unable to parse healthcheck property')
         if protocol.upper() in ['HTTP', 'HTTPS']:
             port = rest.split('/')[0]
             path = rest[len(port):]
@@ -65,8 +64,8 @@ class AWSFWParser(BaseParser):
                 }
                 if listener['protocol'].upper() == 'HTTPS':
                     if not listener.get('sslCert'):
-                        raise exceptions.ParserFailure('an HTTPS listener '
-                                                       'needs an sslCert')
+                        raise ParserFailure('an HTTPS listener needs an '
+                                            'sslCert')
                     else:
                         lstnr['sslCert'] = urllib.unquote(listener['sslCert'])
                 lb['listener'].append(lstnr)
@@ -78,8 +77,8 @@ class AWSFWParser(BaseParser):
                     'enabled': True,
                 }
             if lb.get('healthcheck', None) is None:
-                raise exceptions.ParserFailure('a loadbalancer needs '
-                                               'a healthCheck parameter')
+                raise ParserFailure('a loadbalancer needs a healthCheck '
+                                    'parameter')
 
             self._stack['resources']['load_balancer'].append(lb)
 
@@ -153,7 +152,7 @@ class AWSFWParser(BaseParser):
             self.build_instances(ds['farmName'],
                                  self._listify(ds['instances']))
         if len(self._stack['resources']['instance']) == 0:
-            raise exceptions.ParserFailure('Bad stack: no instances')
+            raise ParserFailure('Bad stack: no instances')
 
         for instance in self._stack['resources']['instance']:
             if ds.get('key'):
@@ -174,12 +173,12 @@ class AWSFWParser(BaseParser):
         try:
             data = xmltodict.parse(config)
         except ExpatError, e:
-            raise exceptions.ParserFailure(e.message)
+            raise ParserFailure(e.message)
 
         self.build_ds(data['c4farm'])
         return self._stack
 
 
 __all__ = [
-    AWSFWParser
+    AWSFWParser,
 ]

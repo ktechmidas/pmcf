@@ -13,7 +13,7 @@
 #    under the License.
 
 import yaml
-from pmcf import exceptions
+from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
 
 
@@ -22,9 +22,9 @@ class YamlParser(BaseParser):
         try:
             return yaml.load(config)
         except Exception, e:
-            raise exceptions.ParserFailure(e)
+            raise ParserFailure(e)
 
 
 __all__ = [
-    YamlParser
+    YamlParser,
 ]
