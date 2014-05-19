@@ -122,7 +122,8 @@ class TestParser(object):
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
                     'port': '80'
-                }
+                },
+                'name': 'test',
             }
         ]
         lbdata = [{
@@ -150,6 +151,7 @@ class TestParser(object):
                         'instance_protocol': 'HTTP',
                     }
                 ],
+                'name': 'test',
                 'healthcheck': {
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
@@ -181,6 +183,7 @@ class TestParser(object):
                         'lb_port': '80'
                     }
                 ],
+                'name': 'test',
                 'healthcheck': {
                     'protocol': 'TCP',
                     'port': '80'
@@ -220,7 +223,8 @@ class TestParser(object):
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
                     'port': '80'
-                }
+                },
+                'name': 'test'
             }
         ]
         lbdata = [{
@@ -324,6 +328,7 @@ class TestParser(object):
                             'port': u'80',
                             'protocol': u'TCP'
                         },
+                        'name': 'app',
                         'listener': [
                             {
                                 'instance_port': u'80',
@@ -495,6 +500,7 @@ class TestParser(object):
                             'port': u'80',
                             'protocol': u'TCP'
                         },
+                        'name': 'app',
                         'listener': [
                             {
                                 'instance_port': u'80',

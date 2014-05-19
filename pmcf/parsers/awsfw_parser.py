@@ -94,6 +94,11 @@ class AWSFWParser(BaseParser):
                 raise ParserFailure('a loadbalancer needs a healthCheck '
                                     'parameter')
 
+            LOG.debug('Found loadbalancer: %s' % lb)
+            if elb.get('suffix'):
+                lb['name'] = elb['suffix']
+            else:
+                lb['name'] = farmname.replace('-', '')
             self._stack['resources']['load_balancer'].append(lb)
 
     def build_fw(self, inst_name, rules):
