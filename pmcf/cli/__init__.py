@@ -15,31 +15,7 @@
 import argparse
 import ConfigParser
 
-from pmcf.data.template import DataTemplate
-from pmcf.resources.aws import ec2
-
-
-class PMCFCLI(object):
-    def __init__(self, args):
-        def my_import(module, klass):
-            mod = __import__(module, fromlist=[klass])
-            return getattr(mod, klass)
-
-        self.parser = my_import('pmcf.parsers', args['parser'])()
-        self.policy = my_import('pmcf.policy', args['policy'])(
-            json_file=args['policyfile']
-        )
-        self.provisioner = my_import('pmcf.provisioners', args['provisioner'])
-        self.args = args
-
-    def _run(self):
-        with open(self.args['stackfile']) as fd:
-            self.parser.parse(fd.read())
-        for k, v in self.parser._stack['resources'].iteritems():
-            for idx, res in enumerate(v):
-                data = self.parser._stack['resources'][k][idx]
-                self.policy.validate_resource(k, data)
-        print self.__dict__
+from pmcf.cli.cmd import PMCFCLI
 
 
 def main():

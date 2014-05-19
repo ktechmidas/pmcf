@@ -16,6 +16,11 @@
 from pmcf.exceptions import PropertyException
 
 
+def import_from_string(module, klass):
+    mod = __import__(module, fromlist=[klass])
+    return getattr(mod, klass)
+
+
 def error(resource, msg):
     res_type = getattr(resource, 'type', '<unknown type>')
     msg += ' in type %s' % res_type
@@ -27,5 +32,6 @@ def error(resource, msg):
 
 
 __all__ = [
-    error
+    error,
+    import_from_string,
 ]
