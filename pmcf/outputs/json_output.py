@@ -130,9 +130,9 @@ class JSONOutput(BaseOutput):
             data.add_resource(asg)
 
         LOG.info('Finished building template')
-        indent=None
+        indent = None
         if LOG.isEnabledFor(logging.DEBUG):
-            indent=4
+            indent = 4
         return data.to_json(indent=indent)
 
     def run(self, data):
