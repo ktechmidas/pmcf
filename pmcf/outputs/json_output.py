@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from troposphere import Ref, Template
+from troposphere import GetAZs, Ref, Template
 
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import *
@@ -67,7 +67,7 @@ class JSONOutput(BaseOutput):
             LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])
 
-        config = {'foo': 'bar'}
+        cfg = {'foo': 'bar'}
 
         sgs = {}
         for sg in resources['secgroup']:
@@ -112,19 +112,26 @@ class JSONOutput(BaseOutput):
                 KeyName=inst['sshKey'],
                 InstanceMonitoring=inst['monitoring'],
                 SecurityGroups=Ref(sgs['sg%s' % inst['name']]),
-                UserData=provisioner.userdata(config)
+                UserData=provisioner.userdata(cfg)
             )
             LOG.debug('Adding lc: %s' % lc.JSONrepr())
             data.add_resource(lc)
+            asgtags = []
+            for tagkey in ['name', 'stage', 'version']:
+                asgtags.append(autoscaling.Tag(
+                    key=tagkey,
+                    value=config[tagkey],
+                    propogate=True,
+                ))
             asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
-                AvailabilityZones=[1, 2, 3],
+                AvailabilityZones=GetAZs(''),
                 DesiredCapacity=inst['count'],
                 LaunchConfigurationName=Ref(lc),
                 LoadBalancerNames=Ref(lbs['ELB%s' % inst['name']]),
                 MaxSize=inst['count'],
                 MinSize=inst['count'],
-                Tags=tags
+                Tags=asgtags
             )
             LOG.debug('Adding asg: %s' % asg.JSONrepr())
             data.add_resource(asg)
