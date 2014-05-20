@@ -33,9 +33,6 @@ class AWSFWProvisioner(BaseProvisioner):
 
         ud = self.add_data(ud, awsfw_data, 'vars')
 
-        with open('scripts/awsfw/s3curl.pl') as fd:
-            ud = self.add_data(ud, fd.read(), 's3curl.pl')
-
         with open('scripts/awsfw/awsfw_standalone') as fd:
             ud = self.add_data(ud, fd.read(), 'awsfw_standalone')
 

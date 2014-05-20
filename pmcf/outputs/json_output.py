@@ -113,7 +113,7 @@ class JSONOutput(BaseOutput):
                 KeyName=inst['sshKey'],
                 InstanceMonitoring=inst['monitoring'],
                 SecurityGroups=inst_sgs,
-                UserData=Base64(Join(ud, ''))
+                UserData=Base64(ud)
             )
             LOG.debug('Adding lc: %s' % lc.JSONrepr())
             data.add_resource(lc)

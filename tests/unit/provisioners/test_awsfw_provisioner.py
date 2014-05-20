@@ -41,7 +41,7 @@ class TestAWSFWProvisioner(object):
 
     def test_userdata_contains_expected_files(self):
         expected_files = ['part-handler', 'vars',
-                          's3curl.pl', 'awsfw_standalone']
+                          'awsfw_standalone']
 
         fnames = []
         for part in self.message.walk():

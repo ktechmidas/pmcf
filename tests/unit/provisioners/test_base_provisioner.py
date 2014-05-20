@@ -32,7 +32,10 @@ class TestBaseProvisioner(object):
         assert_raises(NotImplementedError, self.provisioner.userdata, config)
 
     def test_userdata_too_long(self):
-        pass
+        data = self.provisioner.make_skeleton()
+        with open('tests/data/userdata/test_data') as fd:
+            ud = self.provisioner.add_data(data, fd.read(), 'test_data')
+        assert_raises(ProvisionerException, self.provisioner.resize, data)
 
     def test_skeleton_output(self):
         expected = """Content-Type: multipart/mixed; boundary="%s"

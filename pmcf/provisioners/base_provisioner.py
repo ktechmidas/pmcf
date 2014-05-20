@@ -55,8 +55,8 @@ class BaseProvisioner(object):
 
     def resize(self, ud):
         data = ud.as_string()
-        # if len(data) > 16384:
-        #    raise ProvisionerException('userdata is too long')
+        if len(data) > 16384:
+            raise ProvisionerException('userdata is too long')
         return data
 
 
