@@ -12,17 +12,18 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import time
 from troposphere import autoscaling as asg
 from troposphere import UpdatePolicy
-from pmcf.resources.aws.helpers import autoscaling
 
+from pmcf.resources.aws.helpers import autoscaling
 from pmcf.utils import error
 
-EC2_INSTANCE_LAUNCH = "autoscaling:EC2_INSTANCE_LAUNCH"
-EC2_INSTANCE_LAUNCH_ERROR = "autoscaling:EC2_INSTANCE_LAUNCH_ERROR"
-EC2_INSTANCE_TERMINATE = "autoscaling:EC2_INSTANCE_TERMINATE"
-EC2_INSTANCE_TERMINATE_ERROR = "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
-TEST_NOTIFICATION = "autoscaling:TEST_NOTIFICATION"
+EC2_INSTANCE_LAUNCH = asg.EC2_INSTANCE_LAUNCH
+EC2_INSTANCE_LAUNCH_ERROR = asg.EC2_INSTANCE_LAUNCH_ERROR
+EC2_INSTANCE_TERMINATE = asg.EC2_INSTANCE_TERMINATE
+EC2_INSTANCE_TERMINATE_ERROR = asg.EC2_INSTANCE_TERMINATE_ERROR
+TEST_NOTIFICATION = asg.TEST_NOTIFICATION
 
 
 class Tag(asg.Tag):
@@ -49,6 +50,7 @@ class MetricsCollection(autoscaling.MetricsCollection):
             error(self, e.message)
 
     def validate(self):
+        super(self.__class__, self).validate()
         allowed_metrics = [
             'GroupMinSize',
             'GroupMaxSize',
@@ -103,6 +105,17 @@ class ScalingPolicy(asg.ScalingPolicy):
         except ValueError, e:
             error(self, e.message)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        valid_adj_types = [
+            'ChangeInCapacity',
+            'ExactCapacity',
+            'PercentChangeInCapacity',
+        ]
+        if self.properties['AdjustmentType'] not in valid_adj_types:
+            error(self, 'AdjustmentType must be one of %s' %
+                  ', '.join(valid_adj_types))
+
 
 class ScheduledAction(asg.ScheduledAction):
     def JSONrepr(self):
@@ -110,6 +123,30 @@ class ScheduledAction(asg.ScheduledAction):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+        tm_fmt = "%Y-%m-%dT%H:%M:%SZ"
+        cron_valid = [
+            range(0, 8),
+            range(1, 13),
+            range(1, 32),
+            range(0, 24),
+            range(0, 60)
+        ]
+        recurrence = self.properties['Recurrence'].split()
+        for idx, item in enumerate(recurrence):
+            if item == '*':
+                continue
+            if int(item) not in cron_valid[idx]:
+                error(self, "Invalid cron spec: %s not in range %d-%d or *" %
+                      (item, cron_valid[idx][0], cron_valid[idx][-2]))
+
+        for item in ['StartTime', 'EndTime']:
+            try:
+                struct_time = time.strptime(self.properties[item], tm_fmt)
+            except ValueError:
+                error(self, '%s invalid date, must match %s' % (item, tm_fmt))
 
 
 class Trigger(asg.Trigger):
@@ -127,6 +164,12 @@ class EBSBlockDevice(asg.EBSBlockDevice):
         except ValueError, e:
             error(self, e.message)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['SnapshotId', 'VolumeSize']))) != 1:
+            error(self, "Need to specify one of `SnapshotId', `VolumeSize'")
+
 
 class BlockDeviceMapping(asg.BlockDeviceMapping):
     def JSONrepr(self):
@@ -134,6 +177,12 @@ class BlockDeviceMapping(asg.BlockDeviceMapping):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(self.properties.keys()).intersection(
+                set(['Ebs', 'VirtualName']))) != 1:
+            error(self, "Need to specify one of `Ebs', `VirtualName'")
 
 
 __all__ = [
