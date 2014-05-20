@@ -25,6 +25,7 @@ LOG = logging.getLogger(__name__)
 class JSONOutput(BaseOutput):
 
     def add_resources(self, provisioner, resources, config):
+        LOG.info('Start building template')
         data = Template()
         tags = []
         for tagkey in ['name', 'stage', 'version']:
@@ -63,41 +64,38 @@ class JSONOutput(BaseOutput):
                 ),
                 Listeners=listeners
             )
+            LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])
 
         config = {'foo': 'bar'}
 
         sgs = {}
         for sg in resources['secgroup']:
-            name = 'sg%s' % sg['name']
-            sgs[name] = ec2.SecurityGroup(
-                name,
-                GroupDescription='security group for %s' % sg['name'],
-                Tags=tags,
-            )
-            data.add_resource(sgs[name])
-
             rules = []
+            name = 'sg%s' % sg['name']
             for idx, rule in enumerate(sg['rules']):
-                rule_name = 'sg%s%02d' % (sg['name'], idx)
                 if rule.get('source_group'):
-                    data.add_resource(ec2.SecurityGroupIngress(
-                        rule_name,
+                    rules.append(ec2.SecurityGroupRule(
                         FromPort=rule['from_port'],
                         ToPort=rule['to_port'],
                         IpProtocol=rule['protocol'],
                         SourceSecurityGroupName=rule['source_group'],
-                        GroupName=Ref(name)
                     ))
                 else:
-                    data.add_resource(ec2.SecurityGroupIngress(
-                        rule_name,
+                    rules.append(ec2.SecurityGroupRule(
                         FromPort=rule['from_port'],
                         ToPort=rule['to_port'],
                         IpProtocol=rule['protocol'],
                         CidrIp=rule['source_cidr'],
-                        GroupName=Ref(name)
                     ))
+            sgs[name] = ec2.SecurityGroup(
+                name,
+                GroupDescription='security group for %s' % sg['name'],
+                SecurityGroupIngress=rules,
+                Tags=tags,
+            )
+            LOG.debug('Adding sg: %s' % sgs[name].JSONrepr())
+            data.add_resource(sgs[name])
 
         for inst in resources['instance']:
             inst_sgs = [Ref(sgs['sg%s' % inst['name']])]
@@ -116,8 +114,9 @@ class JSONOutput(BaseOutput):
                 SecurityGroups=Ref(sgs['sg%s' % inst['name']]),
                 UserData=provisioner.userdata(config)
             )
+            LOG.debug('Adding lc: %s' % lc.JSONrepr())
             data.add_resource(lc)
-            data.add_resource(autoscaling.AutoScalingGroup(
+            asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
                 AvailabilityZones=[1, 2, 3],
                 DesiredCapacity=inst['count'],
@@ -126,12 +125,17 @@ class JSONOutput(BaseOutput):
                 MaxSize=inst['count'],
                 MinSize=inst['count'],
                 Tags=tags
-            ))
+            )
+            LOG.debug('Adding asg: %s' % asg.JSONrepr())
+            data.add_resource(asg)
 
+        LOG.info('Finished building template')
         return data.to_json()
 
     def run(self, data):
+        LOG.info('Start running data')
         print data
+        LOG.info('Finished running data')
 
 
 __all__ = [
