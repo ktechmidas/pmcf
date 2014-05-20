@@ -136,3 +136,29 @@ class TestASGResource(TestResource):
             MinSize=1
         )
         assert_equals(self._data_for_resource(a), data)
+
+    def test_metric_collection_invalid_no_granularity(self):
+        mc = asg.MetricsCollection(
+            "test"
+        )
+        assert_raises(PropertyException, mc.JSONrepr)
+
+    def test_metric_collection_invalid_bad_metric(self):
+        mc = asg.MetricsCollection(
+            "test",
+            Granularity='1m',
+            Metrics=['NotAMetric']
+        )
+        assert_raises(PropertyException, mc.JSONrepr)
+
+    def test_metric_collection_valid(self):
+        data = {
+            'Granularity': '1m',
+            'Metrics': ['GroupMinSize', 'GroupMaxSize']
+        }
+        mc = asg.MetricsCollection(
+            "test",
+            Granularity='1m',
+            Metrics=['GroupMinSize', 'GroupMaxSize']
+        )
+        assert_equals(self._data_for_resource(mc), data)

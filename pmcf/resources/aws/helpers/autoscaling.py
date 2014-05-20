@@ -34,7 +34,7 @@ class AutoScalingGroup(AWSObject):
         'HealthCheckGracePeriod': (int, False),
         'HealthCheckType': (basestring, False),
         'InstanceId': (basestring, False),
-        'LaunchConfigurationName': (basestring, True),
+        'LaunchConfigurationName': (basestring, False),
         'LoadBalancerNames': (list, False),
         'MetricsCollection': (list, False),
         'MaxSize': (positive_integer, True),
