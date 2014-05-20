@@ -14,7 +14,8 @@
 
 import email
 from nose.tools import assert_equals, assert_raises
-import zlib
+import gzip
+import StringIO
 
 from pmcf.provisioners.awsfw import AWSFWProvisioner
 
@@ -30,8 +31,13 @@ class TestAWSFWProvisioner(object):
 
     def setup(self):
         awsfwp = AWSFWProvisioner()
-        data = awsfwp.userdata(self.config).decode('base64')
-        self.message = email.message_from_string(zlib.decompress(data))
+        data = awsfwp.userdata(self.config)
+        self.message = email.message_from_string(data)
+
+    def _decode(self, data):
+        stringio = StringIO.StringIO(data)
+        decompressedFile = gzip.GzipFile(fileobj=stringio)
+        return decompressedFile.read()
 
     def test_userdata_contains_expected_files(self):
         expected_files = ['part-handler', 'vars',
@@ -56,7 +62,9 @@ class TestAWSFWProvisioner(object):
                 # export foo=bar
                 # into
                 # { 'foo': 'bar' }
-                for line in part.get_payload(decode=True).split('\n'):
+                print part.get_payload(decode=True)
+                data = self._decode(part.get_payload(decode=True))
+                for line in data.split('\n'):
                     if line == '':
                         continue
                     key, val = line.split('=')
