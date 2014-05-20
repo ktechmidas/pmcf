@@ -15,8 +15,10 @@
 import abc
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+import StringIO
 import sys
-import zlib
+import gzip
 
 from pmcf.exceptions import ProvisionerException
 
@@ -35,8 +37,14 @@ class BaseProvisioner(object):
     def userdata(self, config):
         raise NotImplementedError
 
-    def add_data(self, message, part, part_type, filename):
-        sub_message = MIMEText(part, part_type, sys.getdefaultencoding())
+    def add_data(self, message, part, filename):
+        stringio = StringIO.StringIO()
+        gz_file = gzip.GzipFile(filename=filename, fileobj=stringio,
+                                compresslevel=9, mode='w')
+        gz_file.write(part)
+        gz_file.close()
+        data = stringio.getvalue()
+        sub_message = MIMEApplication(data, 'x-gzip')
         sub_message.add_header('Content-Disposition',
                                'attachment; filename="%s"' % (filename))
         message.attach(sub_message)
@@ -46,9 +54,9 @@ class BaseProvisioner(object):
         return MIMEMultipart(boundary=self.boundary)
 
     def resize(self, ud):
-        data = zlib.compress(ud.as_string(), 9).encode('base64', 'strict')
-        if len(data) > 16384:
-            raise ProvisionerException('userdata is too long')
+        data = ud.as_string()
+        # if len(data) > 16384:
+        #    raise ProvisionerException('userdata is too long')
         return data
 
 

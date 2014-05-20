@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from troposphere import GetAZs, Ref, Template
+from troposphere import Base64, GetAZs, Join, Ref, Template
 
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import *
@@ -30,7 +30,7 @@ class JSONOutput(BaseOutput):
         tags = []
         for tagkey in ['name', 'stage', 'version']:
             tags.append(ec2.Tag(
-                key=tagkey,
+                key=tagkey.title(),
                 value=config[tagkey]
             ))
 
@@ -54,12 +54,13 @@ class JSONOutput(BaseOutput):
             lbs[name] = elasticloadbalancing.LoadBalancer(
                 "ELB" + lb['name'],
                 CrossZone=True,
+                AvailabilityZones=GetAZs(''),
                 HealthCheck=elasticloadbalancing.HealthCheck(
                     'test',
                     HealthyThreshold=3,
                     Interval=5,
                     Target=lb_hc_tgt,
-                    Timeout=5,
+                    Timeout=2,
                     UnhealthyThreshold=3
                 ),
                 Listeners=listeners
@@ -104,22 +105,22 @@ class JSONOutput(BaseOutput):
                 inst_sgs.append('default')
             except ValueError:
                 pass
+            ud = provisioner.userdata(cfg)
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
-                IamInstanceProfile='awsfw-provisioner',
                 ImageId=inst['image'],
                 InstanceType=inst['type'],
                 KeyName=inst['sshKey'],
                 InstanceMonitoring=inst['monitoring'],
-                SecurityGroups=Ref(sgs['sg%s' % inst['name']]),
-                UserData=provisioner.userdata(cfg)
+                SecurityGroups=inst_sgs,
+                UserData=Base64(Join(ud, ''))
             )
             LOG.debug('Adding lc: %s' % lc.JSONrepr())
             data.add_resource(lc)
             asgtags = []
             for tagkey in ['name', 'stage', 'version']:
                 asgtags.append(autoscaling.Tag(
-                    key=tagkey,
+                    key=tagkey.title(),
                     value=config[tagkey],
                     propogate=True,
                 ))
@@ -128,7 +129,7 @@ class JSONOutput(BaseOutput):
                 AvailabilityZones=GetAZs(''),
                 DesiredCapacity=inst['count'],
                 LaunchConfigurationName=Ref(lc),
-                LoadBalancerNames=Ref(lbs['ELB%s' % inst['name']]),
+                LoadBalancerNames=[Ref(lbs['ELB%s' % inst['name']])],
                 MaxSize=inst['count'],
                 MinSize=inst['count'],
                 Tags=asgtags

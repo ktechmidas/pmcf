@@ -25,21 +25,19 @@ class AWSFWProvisioner(BaseProvisioner):
         ud = self.make_skeleton()
 
         with open('scripts/awsfw/part-handler') as fd:
-            ud = self.add_data(ud, fd.read(),
-                               'part-handler', 'part-handler')
+            ud = self.add_data(ud, fd.read(), 'part-handler')
 
         awsfw_data = ''
         for k, v in config.iteritems():
             awsfw_data += 'export %s=%s\n' % (k, v)
 
-        ud = self.add_data(ud, awsfw_data, 'awsfw-data', 'vars')
+        ud = self.add_data(ud, awsfw_data, 'vars')
 
         with open('scripts/awsfw/s3curl.pl') as fd:
-            ud = self.add_data(ud, fd.read(),
-                               'x-s3curl', 's3curl.pl')
+            ud = self.add_data(ud, fd.read(), 's3curl.pl')
+
         with open('scripts/awsfw/awsfw_standalone') as fd:
-            ud = self.add_data(ud, fd.read(),
-                               'x-shellscript', 'awsfw_standalone')
+            ud = self.add_data(ud, fd.read(), 'awsfw_standalone')
 
         return self.resize(ud)
 
