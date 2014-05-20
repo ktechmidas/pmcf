@@ -13,6 +13,7 @@
 #    under the License.
 
 from troposphere import autoscaling as asg
+from troposphere import UpdatePolicy
 from pmcf.resources.aws.helpers import autoscaling
 
 from pmcf.utils import error
@@ -25,6 +26,10 @@ TEST_NOTIFICATION = "autoscaling:TEST_NOTIFICATION"
 
 
 class Tag(asg.Tag):
+    pass
+
+
+class UpdatePolicy(UpdatePolicy):
     pass
 
 

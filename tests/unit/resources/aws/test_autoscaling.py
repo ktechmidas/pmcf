@@ -110,6 +110,26 @@ class TestASGResource(TestResource):
         )
         assert_raises(PropertyException, a.JSONrepr)
 
+    def test_autoscaling_group_invalid_bad_update_policy(self):
+        a = asg.AutoScalingGroup(
+            "test",
+            AvailabilityZones=['a', 'b', 'c'],
+            Cooldown=30,
+            DesiredCapacity=1,
+            HealthCheckGracePeriod=5,
+            HealthCheckType='BadPanda',
+            LaunchConfigurationName='MyLC',
+            UpdatePolicy=asg.UpdatePolicy(
+                'AutoScalingRollingUpdate',
+                MaxBatchSize='2',
+                MinInstancesInService='3',
+                PauseTime='PT5M'
+            ),
+            MaxSize=2,
+            MinSize=1
+        )
+        assert_raises(PropertyException, a.JSONrepr)
+
     def test_autoscaling_group_valid(self):
         data = {
             'Properties': {
