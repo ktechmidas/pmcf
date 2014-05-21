@@ -35,8 +35,8 @@
 		<role>cloudwatch-monitoring/v1</role>
 		<cname>app</cname>
 		<count>1</count>
-		<amiId>ami-6ac2a85a</amiId>
-		<size>t1.micro</size>
+		<amiId>ami-0bceb93b</amiId>
+		<size>m1.medium</size>
 		<app>ais-jetty/v2.54-02</app>
 		<app>ais-nginx/v1.23</app>
                 <app>c4-devaccess</app>

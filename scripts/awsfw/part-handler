@@ -1,4 +1,6 @@
 #part-handler
+import os
+
 def list_types():
     # return a list of mime-types that are handled by this module
     return(["text/plain", "text/awsfw-data", "text/x-s3curl"])
@@ -17,7 +19,7 @@ def handle_part(data, ctype, filename, payload):
     if ctype == 'text/x-s3curl':
         with open('/usr/local/lib/s3curl.pl', 'w') as fd:
             fd.write(payload)
-        os.chmod('0755', '/usr/local/lib/s3curl.pl')
+        os.chmod('/usr/local/lib/s3curl.pl', 0755)
 
     else:
         with open('/tmp/awsfw_%s' % filename, 'w') as fd:

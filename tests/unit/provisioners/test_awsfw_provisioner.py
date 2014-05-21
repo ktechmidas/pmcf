@@ -40,8 +40,7 @@ class TestAWSFWProvisioner(object):
         return decompressedFile.read()
 
     def test_userdata_contains_expected_files(self):
-        expected_files = ['part-handler', 'vars',
-                          'awsfw_standalone']
+        expected_files = ['part-handler', 's3curl.pl', 'bootstrap.sh', 'vars']
 
         fnames = []
         for part in self.message.walk():
