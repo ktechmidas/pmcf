@@ -12,15 +12,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import urllib
+import logging
 import netaddr
+import os
+import urllib
 import xmltodict
 from xml.parsers.expat import ExpatError
 
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
 
-import logging
 
 LOG = logging.getLogger(__name__)
 
@@ -198,6 +199,7 @@ class AWSFWParser(BaseParser):
             raise ParserFailure(e.message)
 
         self.build_ds(data['c4farm'])
+        LOG.debug('stack: %s' % self._stack)
         LOG.info('Finished parsing farm config')
         return self._stack
 

@@ -12,8 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from troposphere import Base64, GetAZs, Join, Ref, Template
+from troposphere import Base64, GetAZs, Ref, Template
 
+from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import *
 
@@ -68,8 +69,6 @@ class JSONOutput(BaseOutput):
             LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])
 
-        cfg = {'foo': 'bar'}
-
         sgs = {}
         for sg in resources['secgroup']:
             rules = []
@@ -99,6 +98,27 @@ class JSONOutput(BaseOutput):
             data.add_resource(sgs[name])
 
         for inst in resources['instance']:
+            if inst['provisioner']['type'] != 'awsfw_standalone':
+                raise ProvisionerException('wrong provisoner in config: %s' %
+                                           inst['provisioner']['type'])
+
+            cfg = {
+                'roles': ','.join(inst['provisioner']['args']['roles']),
+                'rolebucket': inst['provisioner']['args']['roleBucket'],
+                'apps': ','.join(inst['provisioner']['args']['apps']),
+                'appbucket': inst['provisioner']['args']['appBucket'],
+                'instantiatedby': 'create-farm',
+                'platform_environment': config['stage'],
+            }
+
+            cred_mapping = {
+                'access': 'AWS_SECRET_ACCESS_KEY',
+                'secret': 'AWS_ACCESS_KEY_ID',
+            }
+            for k, v in cred_mapping.iteritems():
+                if config.get(k, None):
+                    cfg[v] = config[k]
+
             inst_sgs = [Ref(sgs['sg%s' % inst['name']])]
             try:
                 inst['sg'].index('default')
@@ -106,6 +126,7 @@ class JSONOutput(BaseOutput):
             except ValueError:
                 pass
             ud = provisioner.userdata(cfg)
+            LOG.debug('userdata: %s' % ud)
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 ImageId=inst['image'],
