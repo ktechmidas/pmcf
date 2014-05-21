@@ -13,6 +13,7 @@
 #    under the License.
 
 from pmcf.outputs.base_output import BaseOutput
+from pmcf.outputs.cloudformation import AWSCFNOutput
 from pmcf.outputs.json_output import JSONOutput
 
 

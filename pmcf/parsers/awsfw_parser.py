@@ -165,6 +165,9 @@ class AWSFWParser(BaseParser):
             'strategy': 'BLUEGREEN',
             'version': name_parts[2],
         }
+        #  If instances need credentials, add to the config dict:
+        #    'access': 'FILLMEIN',
+        #    'secret': 'FILLMEIN',
         if ds.get('farmOwner'):
             self._stack['config']['owner'] = ds['farmOwner']
 

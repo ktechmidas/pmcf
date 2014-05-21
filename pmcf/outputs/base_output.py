@@ -27,7 +27,7 @@ class BaseOutput(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def run(self, data):
+    def run(self, data, metadata={}):
         raise NotImplementedError
 
 

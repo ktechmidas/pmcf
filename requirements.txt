@@ -1,3 +1,4 @@
+boto
 PyYAML
 netaddr
 troposphere>=0.5.0

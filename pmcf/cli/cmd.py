@@ -12,12 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
+import os
 import sys
 
 from pmcf.exceptions import PMCFException
 from pmcf.utils import import_from_string
-
-import logging
 
 LOG = logging.getLogger(__name__)
 
@@ -45,7 +45,14 @@ class PMCFCLI(object):
             data = self.output.add_resources(self.provisioner,
                                              self.parser._stack['resources'],
                                              self.parser._stack['config'])
-            self.output.run(data)
+
+            metadata = {
+                'access': os.environ['AWS_ACCESS_KEY_ID'],
+                'secret': os.environ['AWS_SECRET_ACCESS_KEY'],
+                'region': 'us-west-2',
+                'name': self.parser._stack['config']['name']
+            }
+            self.output.run(data, metadata)
             return False
         except PMCFException, e:
             LOG.error(e.message)
