@@ -37,8 +37,7 @@ class PMCFCLI(object):
 
     def run(self):
         try:
-            with open(self.args['stackfile']) as fd:
-                self.parser.parse(fd.read())
+            self.parser.parse_file(self.args['stackfile'])
             for k, v in self.parser._stack['resources'].iteritems():
                 for idx, res in enumerate(v):
                     data = self.parser._stack['resources'][k][idx]

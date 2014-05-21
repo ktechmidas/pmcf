@@ -15,6 +15,8 @@
 import abc
 import logging
 
+from pmcf.exceptions import ParserFailure
+
 LOG = logging.getLogger(__name__)
 
 
@@ -36,6 +38,13 @@ class BaseParser(object):
     @abc.abstractmethod
     def parse(self, config):
         raise NotImplementedError
+
+    def parse_file(self, fname):
+        try:
+            with open(fname) as fd:
+                self.parse(fd.read())
+        except IOError, e:
+            raise ParserFailure(str(e))
 
 
 __all__ = [
