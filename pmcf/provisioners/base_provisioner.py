@@ -16,9 +16,10 @@ import abc
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
+import gzip
+import os
 import StringIO
 import sys
-import gzip
 
 from pmcf.exceptions import ProvisionerException
 
@@ -37,14 +38,23 @@ class BaseProvisioner(object):
     def userdata(self, config):
         raise NotImplementedError
 
-    def add_data(self, message, part, filename):
-        stringio = StringIO.StringIO()
-        gz_file = gzip.GzipFile(filename=filename, fileobj=stringio,
-                                compresslevel=9, mode='w')
-        gz_file.write(part)
-        gz_file.close()
-        data = stringio.getvalue()
-        sub_message = MIMEApplication(data, 'x-gzip')
+    def add_file(self, ud, filename, ftype='plain', compress=True):
+        fname = os.path.basename(filename)
+        with open(filename) as fd:
+            return self.add_data(ud, fd.read(), fname, ftype, compress)
+
+    def add_data(self, message, part, filename, ftype='plain', compress=True):
+        if compress:
+            stringio = StringIO.StringIO()
+            gz_file = gzip.GzipFile(filename=filename, fileobj=stringio,
+                                    compresslevel=9, mode='w')
+            gz_file.write(part)
+            gz_file.close()
+            data = stringio.getvalue()
+            sub_message = MIMEApplication(data, 'x-gzip')
+        else:
+            sub_message = MIMEText(part, ftype, sys.getdefaultencoding())
+
         sub_message.add_header('Content-Disposition',
                                'attachment; filename="%s"' % (filename))
         message.attach(sub_message)

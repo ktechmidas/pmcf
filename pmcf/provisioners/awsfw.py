@@ -24,17 +24,15 @@ class AWSFWProvisioner(BaseProvisioner):
     def userdata(self, config):
         ud = self.make_skeleton()
 
-        with open('scripts/awsfw/part-handler') as fd:
-            ud = self.add_data(ud, fd.read(), 'part-handler')
+        ud = self.add_file(ud, 'scripts/awsfw/part-handler')
+        ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl', 'x-s3curl', False)
+        ud = self.add_file(ud, 'scripts/awsfw/bootstrap.sh', compress=True)
 
         awsfw_data = ''
         for k, v in config.iteritems():
             awsfw_data += 'export %s=%s\n' % (k, v)
 
         ud = self.add_data(ud, awsfw_data, 'vars')
-
-        with open('scripts/awsfw/awsfw_standalone') as fd:
-            ud = self.add_data(ud, fd.read(), 'awsfw_standalone')
 
         return self.resize(ud)
 
