@@ -56,11 +56,10 @@ class JSONOutput(BaseOutput):
                 listeners.append(elasticloadbalancing.Listener(**kwargs))
 
             name = "ELB" + lb['name']
-            lbs[name] = elasticloadbalancing.LoadBalancer(
-                "ELB" + lb['name'],
-                CrossZone=True,
-                AvailabilityZones=GetAZs(''),
-                HealthCheck=elasticloadbalancing.HealthCheck(
+            elb = {
+                'CrossZone': True,
+                'AvailabilityZones': GetAZs(''),
+                'HealthCheck': elasticloadbalancing.HealthCheck(
                     'test',
                     HealthyThreshold=3,
                     Interval=5,
@@ -68,7 +67,20 @@ class JSONOutput(BaseOutput):
                     Timeout=2,
                     UnhealthyThreshold=3
                 ),
-                Listeners=listeners
+                'Listeners': listeners
+            }
+            if lb.get('logging'):
+                eap = elasticloadbalancing.AccessLoggingPolicy(
+                    name,
+                    EmitInterval=int(lb['logging']['emit_interval']),
+                    Enabled=lb['logging']['enabled'],
+                    S3BucketName=lb['logging']['s3bucket'],
+                    S3BucketPrefix=lb['logging']['s3prefix'],
+                )
+                elb['AccessLoggingPolicy'] = eap
+            lbs[name] = elasticloadbalancing.LoadBalancer(
+                name,
+                **elb
             )
             LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])
