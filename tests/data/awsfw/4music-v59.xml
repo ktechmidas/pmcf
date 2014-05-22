@@ -34,7 +34,7 @@
 	            <dbBackupRetain>2</dbBackupRetain>
 	        </volume>
 		<count>1</count>
-		<amiId>ami-91d1d7e5</amiId>
+		<amiId>ami-0bceb93b</amiId>
 		<size>m1.medium</size>
 		<app>4music/v59/db</app>
 		<additional_user_data>mysql_localonly=false:mysql_host=dbmaster01:mysql_user=4music:mysql_db=4music:mysql_passwd=OhbahghaepepaengooRiche3biephee5Dee6cohtaingaefai1it4ohcoro1:config_file=/mnt/www/www.4music.com/htdocs/application/config/database.php:</additional_user_data>
@@ -50,7 +50,7 @@
         <role>tx-mon</role>
 		<cname>dbslave</cname>
 		<count>2</count>
-		<amiId>ami-91d1d7e5</amiId>
+		<amiId>ami-0bceb93b</amiId>
 		<size>m1.small</size>
         <app>4music/v59/db</app>
 	</instances>
@@ -65,7 +65,7 @@
         <role>00stdbuild</role>
 		<cname>solr</cname>
 		<count>2</count>
-        <amiId>ami-91d1d7e5</amiId>
+		<amiId>ami-0bceb93b</amiId>
         <size>c1.medium</size>
 		<app>4music/v59/solr</app>
 		<app>4music/v59/web</app>
@@ -80,7 +80,7 @@
         <role>tx-mon</role>
 		<cname>web</cname>
 		<count>3</count>
-        <amiId>ami-91d1d7e5</amiId>
+		<amiId>ami-0bceb93b</amiId>
 		<size>c1.medium</size>
 		<app>4music/v59/web</app>
 		<app>4music/v59/99-fix-order</app>
@@ -97,7 +97,7 @@
         <role>tx-mon</role>
 		<cname>adm</cname>
 		<count>1</count>
-        <amiId>ami-91d1d7e5</amiId>
+		<amiId>ami-0bceb93b</amiId>
 		<size>m1.small</size>
 		<app>4music/v59/web</app>
 		<app>4music/v59/99-fix-order</app>
