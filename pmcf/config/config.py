@@ -72,9 +72,6 @@ class PMCFConfig(object):
         options.update(default_options)
         options.update(profile_options)
         options.update(cli_options)
-        for opt in self.options.keys():
-            if options.get(opt, 'missing') == 'missing':
-                options[opt] = None
 
         return options
 
@@ -82,8 +79,6 @@ class PMCFConfig(object):
         val = None
         try:
             val = self.cfg.get(section, option)
-            if val == -1:
-                val = None
         except ConfigParser.NoOptionError:
             pass
         return val
