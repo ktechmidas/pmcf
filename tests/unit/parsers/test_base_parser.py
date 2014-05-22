@@ -14,6 +14,7 @@
 
 from nose.tools import assert_raises
 
+from pmcf.exceptions import ParserFailure
 from pmcf.parsers import BaseParser
 
 
@@ -38,3 +39,8 @@ class TestBaseParser(object):
         BaseParser.__abstractmethods__ = set()
         parser = BaseParser()
         assert_raises(NotImplementedError, parser.parse, config)
+
+    def test_parse_file_missing_file_raises(self):
+        BaseParser.__abstractmethods__ = set()
+        parser = BaseParser()
+        assert_raises(ParserFailure, parser.parse_file, 'missing')
