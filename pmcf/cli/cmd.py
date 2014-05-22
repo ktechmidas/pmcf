@@ -36,7 +36,7 @@ class PMCFCLI(object):
 
     def run(self):
         try:
-            self.parser.parse_file(self.args['stackfile'])
+            self.parser.parse_file(self.args['stackfile'], self.args)
             for k, v in self.parser._stack['resources'].iteritems():
                 for idx, res in enumerate(v):
                     data = self.parser._stack['resources'][k][idx]
@@ -46,8 +46,8 @@ class PMCFCLI(object):
                                              self.parser._stack['config'])
 
             metadata = {
-                'access': self.args['instance_accesskey'],
-                'secret': self.args['instance_secretkey'],
+                'access': self.args['accesskey'],
+                'secret': self.args['secretkey'],
                 'region': 'us-west-2',
                 'name': self.parser._stack['config']['name']
             }

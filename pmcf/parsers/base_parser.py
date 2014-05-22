@@ -36,13 +36,13 @@ class BaseParser(object):
         }
 
     @abc.abstractmethod
-    def parse(self, config):
+    def parse(self, config, args={}):
         raise NotImplementedError
 
-    def parse_file(self, fname):
+    def parse_file(self, fname, args={}):
         try:
             with open(fname) as fd:
-                self.parse(fd.read())
+                self.parse(fd.read(), args)
         except IOError, e:
             raise ParserFailure(str(e))
 

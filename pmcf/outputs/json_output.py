@@ -112,8 +112,8 @@ class JSONOutput(BaseOutput):
             }
 
             cred_mapping = {
-                'access': 'AWS_ACCESS_KEY_ID',
-                'secret': 'AWS_SECRET_ACCESS_KEY',
+                'instance_access': 'AWS_ACCESS_KEY_ID',
+                'instance_secret': 'AWS_SECRET_ACCESS_KEY',
             }
             for k, v in cred_mapping.iteritems():
                 if config.get(k, None):
@@ -168,6 +168,7 @@ class JSONOutput(BaseOutput):
         LOG.info('Start running data')
         print data
         LOG.info('Finished running data')
+        return True
 
 
 __all__ = [

@@ -52,6 +52,8 @@ class TestCliCmd(object):
             'output': 'JSONOutput',
             'verbose': False,
             'stackfile': 'tests/data/awsfw/ais-stage-farm.xml',
+            'accesskey': '1234',
+            'secretkey': '3456',
             'instance_accesskey': '1234',
             'instance_secretkey': '3456',
         }

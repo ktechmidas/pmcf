@@ -156,7 +156,7 @@ class AWSFWParser(BaseParser):
             LOG.debug('Found instance: %s' % inst)
             self._stack['resources']['instance'].append(inst)
 
-    def build_ds(self, ds):
+    def build_ds(self, ds, args={}):
 
         name_parts = ds['farmName'].split('-')
         self._stack['config'] = {
@@ -165,9 +165,14 @@ class AWSFWParser(BaseParser):
             'strategy': 'BLUEGREEN',
             'version': name_parts[2],
         }
-        #  If instances need credentials, add to the config dict:
-        #    'access': 'FILLMEIN',
-        #    'secret': 'FILLMEIN',
+        if args.get('accesskey') and args.get('secretkey'):
+            self._stack['config']['access'] = args['accesskey']
+            self._stack['config']['secret'] = args['secretkey']
+        if args.get('instance_accesskey') and args.get('instance_secretkey'):
+            self._stack['config']['instance_access'] =\
+                args['instance_accesskey']
+            self._stack['config']['instance_secret'] =\
+                args['instance_secretkey']
         if ds.get('farmOwner'):
             self._stack['config']['owner'] = ds['farmOwner']
 
@@ -194,14 +199,14 @@ class AWSFWParser(BaseParser):
             if ds.get('noDefaultSG', 'missing') == 'missing':
                 instance['sg'].append('default')
 
-    def parse(self, config):
+    def parse(self, config, args={}):
         LOG.info('Start parsing farm config')
         try:
             data = xmltodict.parse(config)
         except ExpatError, e:
             raise ParserFailure(e.message)
 
-        self.build_ds(data['c4farm'])
+        self.build_ds(data['c4farm'], args)
         LOG.debug('stack: %s' % self._stack)
         LOG.info('Finished parsing farm config')
         return self._stack

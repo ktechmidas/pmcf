@@ -22,7 +22,7 @@ LOG = logging.getLogger(__name__)
 
 
 class YamlParser(BaseParser):
-    def parse(self, config):
+    def parse(self, config, args={}):
         try:
             return yaml.load(config)
         except Exception, e:
