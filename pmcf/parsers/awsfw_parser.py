@@ -125,13 +125,16 @@ class AWSFWParser(BaseParser):
     def build_instances(self, farmname, instances):
         for idx, instance in enumerate(instances):
             inst = {}
-            inst['name'] = instance['tier']
+            if instance.get('cname'):
+                inst['name'] = instance['cname']
+            else:
+                inst['name'] = instance['tier']
             inst['image'] = instance['amiId']
             inst['type'] = instance['size']
             inst['count'] = instance['count']
             inst['sg'] = []
             inst['block_device'] = []
-            if instance.get('elb'):
+            if instance.get('elb', 'missing') != 'missing':
                 if len(self._stack['resources']['load_balancer']) == 1:
                     inst['lb'] =\
                         self._stack['resources']['load_balancer'][0]['name']
@@ -170,7 +173,7 @@ class AWSFWParser(BaseParser):
                         'size': vol['volumeSize'],
                         'device': vol['volumeDevice']
                     }
-                    inst['block_storage'].append(data)
+                    inst['block_device'].append(data)
 
             LOG.debug('Found instance: %s' % inst)
             self._stack['resources']['instance'].append(inst)

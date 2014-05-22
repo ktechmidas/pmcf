@@ -135,14 +135,15 @@ class JSONOutput(BaseOutput):
                 if config.get(k, None):
                     cfg[v] = config[k]
 
-            inst_sgs = [Ref(sgs['sg%s' % inst['name']])]
+            inst_sgs = []
+            if sgs.get('sg%s' % inst['name']):
+                inst_sgs.append(Ref(sgs['sg%s' % inst['name']]))
             try:
                 inst['sg'].index('default')
                 inst_sgs.append('default')
             except ValueError:
                 pass
             ud = provisioner.userdata(cfg)
-            LOG.debug('userdata: %s' % ud)
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 ImageId=inst['image'],
@@ -171,7 +172,7 @@ class JSONOutput(BaseOutput):
             }
             if inst.get('lb'):
                 asgargs['LoadBalancerNames'] = [
-                    Ref(lbs['ELB%s' % inst['name']])
+                    Ref(lbs["ELB" + inst['lb']])
                 ]
             asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
