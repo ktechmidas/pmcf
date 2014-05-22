@@ -13,7 +13,6 @@
 #    under the License.
 
 import logging
-import os
 import sys
 
 from pmcf.exceptions import PMCFException
@@ -47,8 +46,8 @@ class PMCFCLI(object):
                                              self.parser._stack['config'])
 
             metadata = {
-                'access': os.environ['AWS_ACCESS_KEY_ID'],
-                'secret': os.environ['AWS_SECRET_ACCESS_KEY'],
+                'access': self.args['instance_accesskey'],
+                'secret': self.args['instance_secretkey'],
                 'region': 'us-west-2',
                 'name': self.parser._stack['config']['name']
             }

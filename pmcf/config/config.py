@@ -41,6 +41,8 @@ class PMCFConfig(object):
             'stackfile': None,
             'accesskey': None,
             'secretkey': None,
+            'instance_accesskey': None,
+            'instance_secretkey': None,
             'region': None,
         }
 

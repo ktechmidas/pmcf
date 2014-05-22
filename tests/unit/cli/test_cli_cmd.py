@@ -52,6 +52,8 @@ class TestCliCmd(object):
             'output': 'JSONOutput',
             'verbose': False,
             'stackfile': 'tests/data/awsfw/ais-stage-farm.xml',
+            'instance_accesskey': '1234',
+            'instance_secretkey': '3456',
         }
         cli = PMCFCLI(options)
         assert_equals(False, cli.run())
