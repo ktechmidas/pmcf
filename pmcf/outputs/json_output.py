@@ -44,12 +44,16 @@ class JSONOutput(BaseOutput):
 
             listeners = []
             for listener in lb['listener']:
-                listeners.append(elasticloadbalancing.Listener(
-                    InstancePort=listener['instance_port'],
-                    InstanceProtocol=listener['protocol'],
-                    LoadBalancerPort=listener['lb_port'],
-                    Protocol=listener['protocol']
-                ))
+                kwargs = {
+                    'InstancePort': listener['instance_port'],
+                    'LoadBalancerPort': listener['lb_port'],
+                    'Protocol': listener['protocol']
+                }
+                if listener.get('instance_protocol'):
+                    kwargs['InstanceProtocol'] = listener['instance_protocol']
+                if listener.get('sslCert'):
+                    kwargs['SSLCertificateId'] = listener['sslCert']
+                listeners.append(elasticloadbalancing.Listener(**kwargs))
 
             name = "ELB" + lb['name']
             lbs[name] = elasticloadbalancing.LoadBalancer(
