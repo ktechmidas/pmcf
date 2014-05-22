@@ -18,6 +18,12 @@
                 <instancePort>80</instancePort>
                 <healthCheck>TCP:80</healthCheck>
             </listener>
+            <listener>
+                <protocol>HTTPS</protocol>
+                <port>443</port>
+                <instancePort>80</instancePort>
+		<sslCert>arn:aws:iam::289882289893:server-certificate/test</sslCert>
+            </listener>
         </ELB>
 	<cloudwatch>false</cloudwatch>
 	<roleBucket>aws-c4-003358414754</roleBucket>
@@ -34,9 +40,9 @@
                 <role>snmpd/v1.2</role>
 		<role>cloudwatch-monitoring/v1</role>
 		<cname>app</cname>
-		<count>1</count>
+		<count>3</count>
 		<amiId>ami-0bceb93b</amiId>
-		<size>m1.medium</size>
+		<size>m1.large</size>
 		<app>ais-jetty/v2.54-02</app>
 		<app>ais-nginx/v1.23</app>
                 <app>c4-devaccess</app>
