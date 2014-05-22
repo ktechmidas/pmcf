@@ -130,6 +130,16 @@ class AWSFWParser(BaseParser):
             inst['type'] = instance['size']
             inst['count'] = instance['count']
             inst['sg'] = []
+            if instance.get('elb'):
+                if len(self._stack['resources']['load_balancer']) == 1:
+                    inst['lb'] =\
+                        self._stack['resources']['load_balancer'][0]['name']
+                elif len(self._stack['resources']['load_balancer']) > 1:
+                    if instance['elb'] is not None:
+                        inst['lb'] = instance['elb']
+                    else:
+                        raise ParserFailure('Bad stack: unclear loadbalancer '
+                                            'to instance declaration')
             if instance.get('role') and instance.get('app'):
                 inst['provisioner'] = {
                     'type': 'awsfw_standalone',

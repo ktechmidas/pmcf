@@ -308,6 +308,7 @@ class TestParser(object):
                         'image': u'ami-e97f849e',
                         'monitoring': u'false',
                         'name': u'app',
+                        'lb': u'app',
                         'provisioner': {
                             'args': {
                                 'appBucket': u'aws-c4-003358414754',
@@ -470,6 +471,7 @@ class TestParser(object):
                         'image': u'ami-e97f849e',
                         'monitoring': u'false',
                         'name': u'app',
+                        'lb': u'app',
                         'provisioner': {
                             'args': {
                                 'appBucket': u'aws-c4-003358414754',

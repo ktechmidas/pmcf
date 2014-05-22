@@ -161,15 +161,21 @@ class JSONOutput(BaseOutput):
                     value=config[tagkey],
                     propogate=True,
                 ))
+            asgargs = {
+                'AvailabilityZones': GetAZs(''),
+                'DesiredCapacity': inst['count'],
+                'LaunchConfigurationName': Ref(lc),
+                'MaxSize': inst['count'],
+                'MinSize': inst['count'],
+                'Tags': asgtags
+            }
+            if inst.get('lb'):
+                asgargs['LoadBalancerNames'] = [
+                    Ref(lbs['ELB%s' % inst['name']])
+                ]
             asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
-                AvailabilityZones=GetAZs(''),
-                DesiredCapacity=inst['count'],
-                LaunchConfigurationName=Ref(lc),
-                LoadBalancerNames=[Ref(lbs['ELB%s' % inst['name']])],
-                MaxSize=inst['count'],
-                MinSize=inst['count'],
-                Tags=asgtags
+                **asgargs
             )
             LOG.debug('Adding asg: %s' % asg.JSONrepr())
             data.add_resource(asg)
