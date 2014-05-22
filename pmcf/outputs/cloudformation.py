@@ -38,7 +38,12 @@ class AWSCFNOutput(JSONOutput):
         if cfn is None:
             raise ProvisionerException("Can't find a valid region")
 
-        cfn.create_stack(metadata['name'], data)
+        try:
+            cfn.create_stack(metadata['name'], data)
+        except e:
+            raise ProvisionerException(str(e))
+
+        return True
 
 
 __all__ = [

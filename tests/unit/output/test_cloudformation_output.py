@@ -13,10 +13,23 @@
 #    under the License.
 
 from boto.exception import BotoServerError
-from nose.tools import assert_raises
+import mock
+from nose.tools import assert_equals, assert_raises
 
 from pmcf.exceptions import ProvisionerException
 from pmcf.outputs import AWSCFNOutput
+
+
+def _mock_search_regions(svc):
+    class FakeRegion(object):
+        def __init__(self):
+            self.name = 'eu-west-1'
+            self.endpoint = 'http://localhost/'
+    return [FakeRegion()]
+
+
+def _mock_create_stack(obj, name, data):
+    pass
 
 
 class TestAWSCFNParser(object):
@@ -29,6 +42,9 @@ class TestAWSCFNParser(object):
         cfno = AWSCFNOutput()
         assert_raises(ProvisionerException, cfno.run, {}, {'region': 'nah'})
 
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
     def test_run_connects(self):
         # Really, I should be able to test I have a connection separately
         cfno = AWSCFNOutput()
@@ -38,4 +54,4 @@ class TestAWSCFNParser(object):
             'secret': '2345',
             'name': 'test'
         }
-        assert_raises(BotoServerError, cfno.run, {}, metadata)
+        assert_equals(cfno.run({}, metadata), True)
