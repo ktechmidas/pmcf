@@ -40,7 +40,7 @@ class AWSCFNOutput(JSONOutput):
 
         try:
             cfn.create_stack(metadata['name'], data)
-        except e:
+        except Exception, e:
             raise ProvisionerException(str(e))
 
         return True
