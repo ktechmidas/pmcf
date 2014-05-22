@@ -304,6 +304,7 @@ class TestParser(object):
                 'db': [],
                 'instance': [
                     {
+                        'block_device': [],
                         'count': u'6',
                         'image': u'ami-e97f849e',
                         'monitoring': u'false',
@@ -467,6 +468,7 @@ class TestParser(object):
                 'db': [],
                 'instance': [
                     {
+                        'block_device': [],
                         'count': u'6',
                         'image': u'ami-e97f849e',
                         'monitoring': u'false',

@@ -130,6 +130,7 @@ class AWSFWParser(BaseParser):
             inst['type'] = instance['size']
             inst['count'] = instance['count']
             inst['sg'] = []
+            inst['block_device'] = []
             if instance.get('elb'):
                 if len(self._stack['resources']['load_balancer']) == 1:
                     inst['lb'] =\
@@ -162,6 +163,14 @@ class AWSFWParser(BaseParser):
                 self.build_fw(inst['name'],
                               self._listify(instance['firewall']['rule']))
                 inst['sg'].append(inst['name'])
+
+            if instance.get('volume'):
+                for vol in self._listify(instance['volume']):
+                    data = {
+                        'size': vol['volumeSize'],
+                        'device': vol['volumeDevice']
+                    }
+                    inst['block_storage'].append(data)
 
             LOG.debug('Found instance: %s' % inst)
             self._stack['resources']['instance'].append(inst)
