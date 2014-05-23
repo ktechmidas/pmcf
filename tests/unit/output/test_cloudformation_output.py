@@ -32,6 +32,10 @@ def _mock_create_stack(obj, name, data):
     pass
 
 
+def _mock_create_stack_fails(obj, name, data):
+    raise ProvisionerException('I fail')
+
+
 class TestAWSCFNParser(object):
 
     def test_run_no_region_raises(self):
@@ -46,7 +50,6 @@ class TestAWSCFNParser(object):
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     def test_run_connects(self):
-        # Really, I should be able to test I have a connection separately
         cfno = AWSCFNOutput()
         metadata = {
             'region': 'eu-west-1',
@@ -55,3 +58,16 @@ class TestAWSCFNParser(object):
             'name': 'test'
         }
         assert_equals(cfno.run({}, metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack_fails)
+    def test_run_stack_fails(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test'
+        }
+        assert_raises(ProvisionerException, cfno.run, {}, metadata)
