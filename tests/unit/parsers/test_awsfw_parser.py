@@ -305,7 +305,7 @@ class TestParser(object):
                 'Farm': 'ais-stage-v2p54-02',
                 'ReviewDate': '2014-11-21',
                 'Project': 'ais',
-                'Owner': 'ais-stage-v2p54-02'
+                'Owner': 'gis-channel4@piksel.com'
             },
             'resources': {
                 'cdn': [],
@@ -358,7 +358,7 @@ class TestParser(object):
                             's3bucket': u'c4-elb-logs',
                             'emit_interval': u'60',
                             'enabled': True,
-                            's3prefix': u'stage%2Fais'
+                            's3prefix': u'stage/ais'
                         }
                     }
                 ],
@@ -454,8 +454,6 @@ class TestParser(object):
             config = fd.read()
 
         data = parser.parse(config)
-        print data
-        print struct
         assert_equals(data, struct)
 
     def test_parse_invalid_config_raises(self):
@@ -479,7 +477,7 @@ class TestParser(object):
                 'Farm': 'ais-stage-v2p54-02',
                 'ReviewDate': '2014-11-21',
                 'Project': 'ais',
-                'Owner': 'ais-stage-v2p54-02'
+                'Owner': 'gis-channel4@piksel.com'
             },
             'resources': {
                 'cdn': [],
@@ -542,7 +540,7 @@ class TestParser(object):
                             's3bucket': u'c4-elb-logs',
                             'emit_interval': u'60',
                             'enabled': True,
-                            's3prefix': u'stage%2Fais'
+                            's3prefix': u'stage/ais'
                         }
                     }
                 ],
