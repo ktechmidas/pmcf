@@ -28,12 +28,6 @@ class JSONOutput(BaseOutput):
     def add_resources(self, provisioner, resources, config):
         LOG.info('Start building template')
         data = Template()
-        tags = []
-        for tagkey in ['name', 'stage', 'version']:
-            tags.append(ec2.Tag(
-                key=tagkey.title(),
-                value=config[tagkey]
-            ))
 
         lbs = {}
         for lb in resources['load_balancer']:
@@ -108,7 +102,6 @@ class JSONOutput(BaseOutput):
                 name,
                 GroupDescription='security group for %s' % sg['name'],
                 SecurityGroupIngress=rules,
-                Tags=tags,
             )
             LOG.debug('Adding sg: %s' % sgs[name].JSONrepr())
             data.add_resource(sgs[name])
@@ -155,13 +148,13 @@ class JSONOutput(BaseOutput):
             )
             LOG.debug('Adding lc: %s' % lc.JSONrepr())
             data.add_resource(lc)
-            asgtags = []
-            for tagkey in ['name', 'stage', 'version']:
-                asgtags.append(autoscaling.Tag(
-                    key=tagkey.title(),
-                    value=config[tagkey],
+            asgtags = [
+                autoscaling.Tag(
+                    key='Name',
+                    value=config['name'] + '::' + inst['name'],
                     propogate=True,
-                ))
+                )
+            ]
             asgargs = {
                 'AvailabilityZones': GetAZs(''),
                 'DesiredCapacity': inst['count'],

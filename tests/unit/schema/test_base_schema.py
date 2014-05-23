@@ -28,6 +28,9 @@ class TestBaseSchema(object):
                 'config': {
                     'type': 'object'
                 },
+                'tags': {
+                    'type': 'object',
+                },
                 'resources': {
                     'type': 'object',
                     'properties': {

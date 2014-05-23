@@ -50,7 +50,8 @@ class PMCFCLI(object):
                     'access': self.args['accesskey'],
                     'secret': self.args['secretkey'],
                     'region': 'us-west-2',
-                    'name': self.parser._stack['config']['name']
+                    'name': self.parser._stack['config']['name'],
+                    'tags': self.parser._stack['tags']
                 }
             except KeyError, e:
                 raise ParserFailure(str(e))

@@ -28,11 +28,11 @@ def _mock_search_regions(svc):
     return [FakeRegion()]
 
 
-def _mock_create_stack(obj, name, data):
+def _mock_create_stack(obj, name, data, tags):
     pass
 
 
-def _mock_create_stack_fails(obj, name, data):
+def _mock_create_stack_fails(obj, name, data, tags):
     raise ProvisionerException('I fail')
 
 

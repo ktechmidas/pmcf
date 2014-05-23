@@ -299,6 +299,14 @@ class TestParser(object):
                 'version': u'v2p54',
                 'owner': 'gis-channel4@piksel.com'
             },
+            'tags': {
+                'Environment': 'stage',
+                'CodeVersion': 'v2p54',
+                'Farm': 'ais-stage-v2p54-02',
+                'ReviewDate': '2014-11-21',
+                'Project': 'ais',
+                'Owner': 'ais-stage-v2p54-02'
+            },
             'resources': {
                 'cdn': [],
                 'db': [],
@@ -446,6 +454,8 @@ class TestParser(object):
             config = fd.read()
 
         data = parser.parse(config)
+        print data
+        print struct
         assert_equals(data, struct)
 
     def test_parse_invalid_config_raises(self):
@@ -463,6 +473,14 @@ class TestParser(object):
                 'stage': u'stage',
                 'strategy': 'BLUEGREEN',
                 'version': u'v2p54'},
+            'tags': {
+                'Environment': 'stage',
+                'CodeVersion': 'v2p54',
+                'Farm': 'ais-stage-v2p54-02',
+                'ReviewDate': '2014-11-21',
+                'Project': 'ais',
+                'Owner': 'ais-stage-v2p54-02'
+            },
             'resources': {
                 'cdn': [],
                 'db': [],

@@ -32,6 +32,8 @@ properties:
                 type: array
             sec_group:
                 type: array
+    tags:
+        type: object
 required:
     - config
     - resources

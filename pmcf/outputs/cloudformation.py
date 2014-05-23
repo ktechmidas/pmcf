@@ -38,8 +38,12 @@ class AWSCFNOutput(JSONOutput):
         if cfn is None:
             raise ProvisionerException("Can't find a valid region")
 
+        tags = {}
+        if metadata.get('tags'):
+            tags = metadata['tags']
+
         try:
-            cfn.create_stack(metadata['name'], data)
+            cfn.create_stack(metadata['name'], data, tags=tags)
         except Exception, e:
             raise ProvisionerException(str(e))
 
