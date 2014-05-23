@@ -51,14 +51,14 @@ class BaseParser(object):
             raise ParserFailure(str(e))
 
     def validate(self):
-        LOG.debug('Start validation of stack')
+        LOG.info('Start validation of stack')
         try:
             jsonschema.validate(self._stack, yaml.load(base_schema))
             for instance in self._stack['resources']['instance']:
                 jsonschema.validate(instance, yaml.load(instance_schema))
         except jsonschema.exceptions.ValidationError, e:
             raise ParserFailure(str(e))
-        LOG.debug('Finished validation of stack')
+        LOG.info('Finished validation of stack')
 
 
 __all__ = [
