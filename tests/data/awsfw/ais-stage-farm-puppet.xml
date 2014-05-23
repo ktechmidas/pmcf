@@ -39,7 +39,7 @@
 		<amiId>ami-e97f849e</amiId>
 		<size>m1.large</size>
 		<provisioner>
-			<type>puppet</type>
+			<provider>puppet</provider>
 			<args>
 				<role>app</role>
 				<app>ais</app>

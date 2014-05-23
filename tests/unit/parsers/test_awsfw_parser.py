@@ -305,9 +305,9 @@ class TestParser(object):
                 'instance': [
                     {
                         'block_device': [],
-                        'count': u'6',
+                        'count': 6,
                         'image': u'ami-e97f849e',
-                        'monitoring': u'false',
+                        'monitoring': False,
                         'name': u'app',
                         'lb': u'app',
                         'provisioner': {
@@ -317,11 +317,11 @@ class TestParser(object):
                                 'roleBucket': u'aws-c4-003358414754',
                                 'roles': ['app']
                             },
-                            'type': u'puppet'
+                            'provider': u'puppet'
                         },
                         'sg': [u'app', 'default'],
                         'sshKey': u'ioko-pml',
-                        'type': u'm1.large'
+                        'size': u'm1.large'
                     }
                 ],
                 'load_balancer': [
@@ -469,9 +469,9 @@ class TestParser(object):
                 'instance': [
                     {
                         'block_device': [],
-                        'count': u'6',
+                        'count': 6,
                         'image': u'ami-e97f849e',
-                        'monitoring': u'false',
+                        'monitoring': False,
                         'name': u'app',
                         'lb': u'app',
                         'provisioner': {
@@ -491,11 +491,11 @@ class TestParser(object):
                                     u'cloudwatch-monitoring/v1'
                                 ]
                             },
-                            'type': 'awsfw_standalone'
+                            'provider': 'awsfw_standalone'
                         },
                         'sg': [u'app'],
                         'sshKey': u'ioko-pml',
-                        'type': u'm1.large'
+                        'size': u'm1.large'
                     }
                 ],
                 'load_balancer': [

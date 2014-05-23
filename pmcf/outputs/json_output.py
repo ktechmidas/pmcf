@@ -114,9 +114,9 @@ class JSONOutput(BaseOutput):
             data.add_resource(sgs[name])
 
         for inst in resources['instance']:
-            if inst['provisioner']['type'] != 'awsfw_standalone':
+            if inst['provisioner']['provider'] != 'awsfw_standalone':
                 raise ProvisionerException('wrong provisoner in config: %s' %
-                                           inst['provisioner']['type'])
+                                           inst['provisioner']['provider'])
 
             cfg = {
                 'roles': ','.join(inst['provisioner']['args']['roles']),
@@ -147,7 +147,7 @@ class JSONOutput(BaseOutput):
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 ImageId=inst['image'],
-                InstanceType=inst['type'],
+                InstanceType=inst['size'],
                 KeyName=inst['sshKey'],
                 InstanceMonitoring=inst['monitoring'],
                 SecurityGroups=inst_sgs,

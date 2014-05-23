@@ -15,7 +15,7 @@
 import logging
 import sys
 
-from pmcf.exceptions import PMCFException
+from pmcf.exceptions import ParserFailure, PMCFException
 from pmcf.utils import import_from_string
 
 LOG = logging.getLogger(__name__)
@@ -45,12 +45,15 @@ class PMCFCLI(object):
                                              self.parser._stack['resources'],
                                              self.parser._stack['config'])
 
-            metadata = {
-                'access': self.args['accesskey'],
-                'secret': self.args['secretkey'],
-                'region': 'us-west-2',
-                'name': self.parser._stack['config']['name']
-            }
+            try:
+                metadata = {
+                    'access': self.args['accesskey'],
+                    'secret': self.args['secretkey'],
+                    'region': 'us-west-2',
+                    'name': self.parser._stack['config']['name']
+                }
+            except KeyError, e:
+                raise ParserFailure(str(e))
             self.output.run(data, metadata)
             return False
         except PMCFException, e:

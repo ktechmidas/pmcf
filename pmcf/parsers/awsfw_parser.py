@@ -29,6 +29,10 @@ LOG = logging.getLogger(__name__)
 class AWSFWParser(BaseParser):
 
     @staticmethod
+    def _str_to_bool(string):
+        return string.lower() == 'true'
+
+    @staticmethod
     def _listify(data):
         if not isinstance(data, list):
             return [data]
@@ -130,8 +134,8 @@ class AWSFWParser(BaseParser):
             else:
                 inst['name'] = instance['tier']
             inst['image'] = instance['amiId']
-            inst['type'] = instance['size']
-            inst['count'] = instance['count']
+            inst['size'] = instance['size']
+            inst['count'] = int(instance['count'])
             inst['sg'] = []
             inst['block_device'] = []
             if instance.get('elb', 'missing') != 'missing':
@@ -146,7 +150,7 @@ class AWSFWParser(BaseParser):
                                             'to instance declaration')
             if instance.get('role') and instance.get('app'):
                 inst['provisioner'] = {
-                    'type': 'awsfw_standalone',
+                    'provider': 'awsfw_standalone',
                     'args': {
                         'apps': self._listify(instance['app']),
                         'roles': self._listify(instance['role'])
@@ -154,7 +158,7 @@ class AWSFWParser(BaseParser):
                 }
             else:
                 inst['provisioner'] = {
-                    'type': instance['provisioner']['type'],
+                    'provider': instance['provisioner']['provider'],
                     'args': {
                         'apps': self._listify(
                             instance['provisioner']['args']['app']),
@@ -210,7 +214,7 @@ class AWSFWParser(BaseParser):
             if ds.get('key'):
                 instance['sshKey'] = ds['key']
             if ds.get('cloudwatch'):
-                instance['monitoring'] = ds['cloudwatch']
+                instance['monitoring'] = self._str_to_bool(ds['cloudwatch'])
             if ds.get('appBucket'):
                 instance['provisioner']['args']['appBucket'] = ds['appBucket']
             if ds.get('roleBucket'):
@@ -229,6 +233,7 @@ class AWSFWParser(BaseParser):
             raise ParserFailure(e.message)
 
         self.build_ds(data['c4farm'], args)
+        self.validate()
         LOG.debug('stack: %s' % self._stack)
         LOG.info('Finished parsing farm config')
         return self._stack
