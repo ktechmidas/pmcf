@@ -61,7 +61,6 @@ class TestAWSFWProvisioner(object):
                 # export foo=bar
                 # into
                 # { 'foo': 'bar' }
-                print part.get_payload(decode=True)
                 data = self._decode(part.get_payload(decode=True))
                 for line in data.split('\n'):
                     if line == '':

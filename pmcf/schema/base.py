@@ -14,6 +14,7 @@
 
 
 schema = """
+$schema: http://json-schema.org/draft-04/schema#
 type: object
 properties:
     config:
@@ -31,6 +32,10 @@ properties:
                 type: array
             sec_group:
                 type: array
+required:
+    - config
+    - resources
+additionalProperties: false
 """
 
 __all__ = [

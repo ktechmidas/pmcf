@@ -14,16 +14,20 @@
 
 
 schema = """
+$schema: http://json-schema.org/draft-04/schema#
 type: object
 properties:
     block_device:
         type: array
     count:
         type: integer
+        minimum: 1
     image:
         type: string
     monitoring:
         type: boolean
+    lb:
+        type: string
     name:
         type: string
     provisioner:
@@ -39,8 +43,17 @@ properties:
         type: string
     size:
         type: string
+required:
+    - count
+    - image
+    - monitoring
+    - name
+    - provisioner
+    - sg
+    - sshKey
+    - size
+additionalProperties: false
 """
-
 
 __all__ = [
     schema

@@ -22,6 +22,7 @@ class TestBaseSchema(object):
 
     def test_schema_loads(self):
         schema_data = {
+            '$schema': 'http://json-schema.org/draft-04/schema#',
             'type': 'object',
             'properties': {
                 'config': {
@@ -47,7 +48,12 @@ class TestBaseSchema(object):
                         }
                     }
                 }
-            }
+            },
+            'required': [
+                'config',
+                'resources',
+            ],
+            'additionalProperties': False,
         }
         data = yaml.load(schema)
         assert_equals(data, schema_data)
