@@ -50,8 +50,8 @@ class TestParser(object):
                 baz: true
         """
         parser = yaml_parser.YamlParser()
-        data = parser.parse(config)
-        assert_equals(data, struct)
+        # FIXME: Pass valid config and actually validate
+        assert_raises(ParserFailure, parser.parse, config)
 
     def test_parse_invalid_config(self):
         config = """

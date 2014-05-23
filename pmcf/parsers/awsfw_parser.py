@@ -218,8 +218,6 @@ class AWSFWParser(BaseParser):
         if ds.get('instances'):
             self.build_instances(ds['farmName'],
                                  self._listify(ds['instances']))
-        if len(self._stack['resources']['instance']) == 0:
-            raise ParserFailure('Bad stack: no instances')
 
         for instance in self._stack['resources']['instance']:
             if ds.get('key'):

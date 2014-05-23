@@ -23,10 +23,35 @@ LOG = logging.getLogger(__name__)
 
 class YamlParser(BaseParser):
     def parse(self, config, args={}):
+
+        LOG.info('Start parsing config')
         try:
-            return yaml.load(config)
+            data = yaml.load(config)
         except Exception, e:
             raise ParserFailure(e)
+
+        try:
+            self._stack['config'] = {
+                'name': data['config']['name'],
+                'stage': args['stage']
+            }
+        except KeyError, e:
+            raise ParserFailure(e)
+
+        if args.get('accesskey') and args.get('secretkey'):
+            self._stack['config']['access'] = args['accesskey']
+            self._stack['config']['secret'] = args['secretkey']
+        if args.get('instance_accesskey') and args.get('instance_secretkey'):
+            self._stack['config']['instance_access'] =\
+                args['instance_accesskey']
+            self._stack['config']['instance_secret'] =\
+                args['instance_secretkey']
+        self._stack['resources'] = data['resources']
+
+        self.validate()
+        LOG.debug('stack: %s' % self._stack)
+        LOG.info('Finished parsing config')
+        return self._stack
 
 
 __all__ = [
