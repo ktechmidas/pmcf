@@ -7,11 +7,6 @@
         <ELB>
             <suffix>app</suffix>
             <cname>www</cname>
-            <elb-logging>
-                <emitinterval>60</emitinterval>
-                <s3bucket>c4-elb-logs</s3bucket>
-                <prefix>stage%2Fais</prefix>
-            </elb-logging>
             <listener>
                 <protocol>HTTP</protocol>
                 <port>80</port>

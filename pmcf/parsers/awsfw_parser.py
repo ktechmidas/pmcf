@@ -89,9 +89,9 @@ class AWSFWParser(BaseParser):
                 lb['listener'].append(lstnr)
             if elb.get('elb-logging'):
                 log_policy = {
-                    'emit_interval': elbs[idx]['elb-logging']['emitinterval'],
-                    's3bucket': elbs[idx]['elb-logging']['s3bucket'],
-                    's3prefix': elbs[idx]['elb-logging']['prefix'],
+                    'emit_interval': elb['elb-logging']['emitinterval'],
+                    's3bucket': urllib.unquote(elb['elb-logging']['s3bucket']),
+                    's3prefix': urllib.unquote(elb['elb-logging']['prefix']),
                     'enabled': True,
                 }
                 LOG.debug('Found log_policy: %s' % log_policy)
