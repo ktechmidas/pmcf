@@ -200,7 +200,7 @@ class AWSFWParser(BaseParser):
             'CodeVersion': name_parts[2],
             'Farm': ds['farmName'],
             'ReviewDate': review_date,
-            'Owner': ds.get('farmName', 'gis-channel4@piksel.com')
+            'Owner': ds.get('farmOwner', 'gis-channel4@piksel.com')
         }
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']
