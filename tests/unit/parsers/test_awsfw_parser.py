@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import datetime
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.parsers import awsfw_parser
@@ -291,6 +292,8 @@ class TestParser(object):
 
     def test_parse_valid_config_provisioner_puppet(self):
         parser = awsfw_parser.AWSFWParser()
+        review_date = (datetime.date.today() +
+                       datetime.timedelta(6*365/12)).isoformat()
         struct = {
             'config': {
                 'name': u'ais',
@@ -303,7 +306,7 @@ class TestParser(object):
                 'Environment': 'stage',
                 'CodeVersion': 'v2p54',
                 'Farm': 'ais-stage-v2p54-02',
-                'ReviewDate': '2014-11-21',
+                'ReviewDate': review_date,
                 'Project': 'ais',
                 'Owner': 'gis-channel4@piksel.com'
             },
@@ -465,6 +468,9 @@ class TestParser(object):
 
     def test_parse_valid_config(self):
         parser = awsfw_parser.AWSFWParser()
+        parser = awsfw_parser.AWSFWParser()
+        review_date = (datetime.date.today() +
+                       datetime.timedelta(6*365/12)).isoformat()
         struct = {
             'config': {
                 'name': u'ais',
@@ -475,7 +481,7 @@ class TestParser(object):
                 'Environment': 'stage',
                 'CodeVersion': 'v2p54',
                 'Farm': 'ais-stage-v2p54-02',
-                'ReviewDate': '2014-11-21',
+                'ReviewDate': review_date,
                 'Project': 'ais',
                 'Owner': 'gis-channel4@piksel.com'
             },
