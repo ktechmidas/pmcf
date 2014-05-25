@@ -61,6 +61,22 @@ class TestAWSCFNOutput(object):
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    def test_run_with_tags_connects(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'tags': {
+                'Name': 'test'
+            }
+        }
+        assert_equals(cfno.run({}, metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack_fails)
     def test_run_stack_fails(self):
         cfno = AWSCFNOutput()
