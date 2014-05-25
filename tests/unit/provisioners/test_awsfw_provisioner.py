@@ -43,7 +43,7 @@ class TestAWSFWProvisioner(object):
         assert_equals('awsfw_standalone', AWSFWProvisioner().provides())
 
     def test_userdata_contains_expected_files(self):
-        expected_files = ['part-handler', 's3curl.pl', 'bootstrap.sh', 'vars']
+        expected_files = ['part-handler', 's3curl.pl', 'vars', 'bootstrap.sh']
 
         fnames = []
         for part in self.message.walk():
