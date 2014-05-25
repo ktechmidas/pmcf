@@ -36,24 +36,145 @@ class TestParser(object):
 
     def test_parse_valid_config(self):
         struct = {
-            'foo': {
-                'bar': [1, 'three'],
-                'baz': True
+            'config': {
+                'name': 'ais',
+                'stage': 'stage',
+                'access': '1234',
+                'secret': '2345',
+                'instance_access': '12345',
+                'instance_secret': '23456'
+            },
+            'resources': {
+                'instance': [
+                    {
+                        'count': 3,
+                        'image': 'ami-0bceb93b',
+                        'lb': 'app',
+                        'monitoring': False,
+                        'name': 'app',
+                        'provisioner': {'provider': 'puppet'},
+                        'sg': ['app'],
+                        'size': 'm1.large',
+                        'sshKey': 'bootstrap'
+                    }
+                ],
+                'load_balancer': [
+                    {
+                        'healthcheck': {
+                            'port': 80,
+                            'protocol': 'TCP'
+                        },
+                        'listener': [
+                            {
+                                'instance_port': 80,
+                                'instance_protocol': 'HTTP',
+                                'lb_port': 80,
+                                'protocol': 'HTTP'
+                            },
+                            {
+                                'instance_port': 80,
+                                'instance_protocol': 'HTTP',
+                                'lb_port': 443,
+                                'protocol': 'HTTPS',
+                                'sslCert': 'test',
+                            }
+                        ],
+                        'name': 'app'
+                    }
+                ],
+                'secgroup': [
+                    {
+                        'name': 'app',
+                        'rules': [
+                            {
+                                'port': 22,
+                                'protocol': 'tcp',
+                                'source_cidr': '54.246.118.174/32'
+                            },
+                            {
+                                'port': 22,
+                                'protocol': 'tcp',
+                                'source_cidr': '62.82.81.73/32'
+                            },
+                            {
+                                'port': 22,
+                                'protocol': 'tcp',
+                                'source_cidr': '83.244.197.164/32'
+                            },
+                            {
+                                'port': 22,
+                                'protocol': 'tcp',
+                                'source_cidr': '83.244.197.190/32'
+                            },
+                            {
+                                'port': 22,
+                                'protocol': 'tcp',
+                                'source_cidr': '83.98.0.0/17'
+                            },
+                            {
+                                'port': 5666,
+                                'protocol': 'tcp',
+                                'source_cidr': '83.98.0.0/17'
+                            },
+                            {
+                                'port': 161,
+                                'protocol': 'tcp',
+                                'source_cidr': '83.98.0.0/17'
+                            },
+                            {
+                                'port': 161,
+                                'protocol': 'udp',
+                                'source_cidr': '83.98.0.0/17'
+                            },
+                            {
+                                'port': -1,
+                                'protocol': 'icmp',
+                                'source_cidr': '83.98.0.0/17'
+                            },
+                            {
+                                'port': 22,
+                                'protocol': 'tcp',
+                                'source_cidr': '46.137.169.193/32'
+                            },
+                            {
+                                'port': 80,
+                                'protocol': 'tcp',
+                                'source_cidr': '0.0.0.0/0'
+                            },
+                            {
+                                'port': 443,
+                                'protocol': 'tcp',
+                                'source_cidr': '0.0.0.0/0'
+                            }
+                        ]
+                    }
+                ]
             }
         }
 
-        config = """
-            foo:
-                bar:
-                  - 1
-                  - three
-                baz: true
-        """
+        args = {
+            'stage': 'stage',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
         parser = yaml_parser.YamlParser()
-        # FIXME: Pass valid config and actually validate
-        assert_raises(ParserFailure, parser.parse, config)
+        with open('tests/data/yaml/ais-test-farm.yaml') as fd:
+            data = parser.parse(fd.read(), args)
+        assert_equals(data, struct)
 
-    def test_parse_invalid_config(self):
+    def test_parse_invalid_args_raises(self):
+        parser = yaml_parser.YamlParser()
+        with open('tests/data/yaml/ais-test-farm.yaml') as fd:
+            assert_raises(ParserFailure, parser.parse, fd.read(), {})
+
+    def test_parse_invalid_config_raises(self):
+        parser = yaml_parser.YamlParser()
+        with open('tests/data/yaml/ais-test-bad-farm.yaml') as fd:
+            assert_raises(ParserFailure, parser.parse, fd.read(), {})
+
+    def test_parse_invalid_yaml_raises(self):
         config = """
             foo:
             - one

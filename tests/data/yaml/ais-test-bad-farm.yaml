@@ -1,0 +1,73 @@
+config:
+  name: ais
+  stages:
+      - dev
+      - stage
+      - qa
+      - prod
+resources:
+  load_balancer:
+    - name: app
+      listener:
+        - instance_port: 80
+          instance_protocol: HTTP
+          protocol: HTTP
+          lb_port: 80
+        - instance_port: 80
+          instance_protocol: HTTP
+          sslCert: test
+          protocol: HTTPS
+          lb_port: 443
+      healthcheck:
+        protocol: TCP
+        port: 80
+  instance:
+    - name: app
+      lb: app
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: puppet
+      monitoring: False
+      sg:
+        - app
+      size: m1.large
+  secgroup:
+    - name: app
+      rules:
+        - port: 22
+          protocol: tcp
+          source_cidr: 54.246.118.174/32
+        - port: 22
+          protocol: tcp
+          source_cidr: 62.82.81.73/32
+        - port: 22
+          protocol: tcp
+          source_cidr: 83.244.197.164/32
+        - port: 22
+          protocol: tcp
+          source_cidr: 83.244.197.190/32
+        - port: 22
+          protocol: tcp
+          source_cidr: 83.98.0.0/17
+        - port: 5666
+          protocol: tcp
+          source_cidr: 83.98.0.0/17
+        - port: 161
+          protocol: tcp
+          source_cidr: 83.98.0.0/17
+        - port: 161
+          protocol: udp
+          source_cidr: 83.98.0.0/17
+        - port: -1
+          protocol: icmp
+          source_cidr: 83.98.0.0/17
+        - port: 22
+          protocol: tcp
+          source_cidr: 46.137.169.193/32
+        - port: 80
+          protocol: tcp
+          source_cidr: 0.0.0.0/0
+        - port: 443
+          protocol: tcp
+          source_cidr: 0.0.0.0/0
