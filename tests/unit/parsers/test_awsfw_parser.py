@@ -136,7 +136,7 @@ class TestParser(object):
             }
         }]
         parser.build_lbs('test', lbdata)
-        assert_equals(parser._stack['resources']['load_balancer'], data)
+        assert_equals(parser.stack()['resources']['load_balancer'], data)
 
     def test_build_lbs_valid_https(self):
         parser = awsfw_parser.AWSFWParser()
@@ -170,7 +170,7 @@ class TestParser(object):
             }
         }]
         parser.build_lbs('test', lbdata)
-        assert_equals(parser._stack['resources']['load_balancer'], data)
+        assert_equals(parser.stack()['resources']['load_balancer'], data)
 
     def test_build_lbs_valid_tcp(self):
         parser = awsfw_parser.AWSFWParser()
@@ -199,7 +199,7 @@ class TestParser(object):
             }
         }]
         parser.build_lbs('test', lbdata)
-        assert_equals(parser._stack['resources']['load_balancer'], data)
+        assert_equals(parser.stack()['resources']['load_balancer'], data)
 
     def test_build_lbs_valid_multiple(self):
         parser = awsfw_parser.AWSFWParser()
@@ -245,7 +245,7 @@ class TestParser(object):
             ]
         }]
         parser.build_lbs('test', lbdata)
-        assert_equals(parser._stack['resources']['load_balancer'], data)
+        assert_equals(parser.stack()['resources']['load_balancer'], data)
 
     def test_build_fw_valid(self):
         parser = awsfw_parser.AWSFWParser()
@@ -281,7 +281,7 @@ class TestParser(object):
             }
         ]
         parser.build_fw('test', rdata)
-        assert_equals(parser._stack['resources']['secgroup'], rules)
+        assert_equals(parser.stack()['resources']['secgroup'], rules)
 
     def test_parse_invalid_config_no_instances(self):
         parser = awsfw_parser.AWSFWParser()

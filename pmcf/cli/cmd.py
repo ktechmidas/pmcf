@@ -37,23 +37,23 @@ class PMCFCLI(object):
     def run(self):
         try:
             self.parser.parse_file(self.args['stackfile'], self.args)
-            for k, v in self.parser._stack['resources'].iteritems():
+            for k, v in self.parser.stack()['resources'].iteritems():
                 for idx, res in enumerate(v):
-                    data = self.parser._stack['resources'][k][idx]
+                    data = self.parser.stack()['resources'][k][idx]
                     self.policy.validate_resource(k, data)
             data = self.output.add_resources(self.provisioner,
-                                             self.parser._stack['resources'],
-                                             self.parser._stack['config'])
+                                             self.parser.stack()['resources'],
+                                             self.parser.stack()['config'])
 
             try:
                 metadata = {
                     'access': self.args['accesskey'],
                     'secret': self.args['secretkey'],
                     'region': 'us-west-2',
-                    'name': self.parser._stack['config']['name'],
-                    'owner': self.parser._stack['config']['owner'],
-                    'stage': self.parser._stack['config']['stage'],
-                    'verstion': self.parser._stack['config']['version'],
+                    'name': self.parser.stack()['config']['name'],
+                    'owner': self.parser.stack()['config']['owner'],
+                    'stage': self.parser.stack()['config']['stage'],
+                    'verstion': self.parser.stack()['config']['version'],
                 }
             except KeyError, e:
                 raise ParserFailure(str(e))

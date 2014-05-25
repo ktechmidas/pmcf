@@ -43,6 +43,9 @@ class BaseParser(object):
     def parse(self, config, args={}):
         raise NotImplementedError
 
+    def stack(self):
+        return self._stack
+
     def parse_file(self, fname, args={}):
         try:
             with open(fname) as fd:
