@@ -131,23 +131,15 @@ class JSONOutput(BaseOutput):
             for k, v in cred_mapping.iteritems():
                 if config.get(k, None):
                     cfg[v] = config[k]
-
-            inst_sgs = []
-            if sgs.get('sg%s' % inst['name']):
-                inst_sgs.append(Ref(sgs['sg%s' % inst['name']]))
-            try:
-                inst['sg'].index('default')
-                inst_sgs.append('default')
-            except ValueError:
-                pass
             ud = provisioner.userdata(cfg)
+
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 ImageId=inst['image'],
                 InstanceType=inst['size'],
                 KeyName=inst['sshKey'],
                 InstanceMonitoring=inst['monitoring'],
-                SecurityGroups=inst_sgs,
+                SecurityGroups=inst['sg'],
                 UserData=Base64(ud)
             )
             LOG.debug('Adding lc: %s' % lc.JSONrepr())
