@@ -33,6 +33,7 @@ class TestPMCFConfig(object):
             'region': None,
             'secretkey': None,
             'stackfile': None,
+            'stage': None,
             'verbose': None,
             'accesskey': None,
         }
@@ -58,6 +59,7 @@ class TestPMCFConfig(object):
             'region': None,
             'secretkey': None,
             'stackfile': None,
+            'stage': None,
             'verbose': None,
             'accesskey': None,
         }
