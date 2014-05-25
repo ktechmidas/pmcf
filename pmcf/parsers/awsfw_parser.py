@@ -22,7 +22,6 @@ from xml.parsers.expat import ExpatError
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
 
-
 LOG = logging.getLogger(__name__)
 
 

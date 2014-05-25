@@ -12,11 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
 import yaml
+
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
-
-import logging
 
 LOG = logging.getLogger(__name__)
 

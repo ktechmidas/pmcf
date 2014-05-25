@@ -12,10 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import logging
 
 from pmcf.exceptions import PropertyException
-
-import logging
 
 LOG = logging.getLogger(__name__)
 

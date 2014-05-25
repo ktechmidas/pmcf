@@ -12,9 +12,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from pmcf.provisioners.base_provisioner import BaseProvisioner
-
 import logging
+
+from pmcf.provisioners.base_provisioner import BaseProvisioner
 
 LOG = logging.getLogger(__name__)
 

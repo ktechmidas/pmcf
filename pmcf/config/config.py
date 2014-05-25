@@ -13,7 +13,6 @@
 #    under the License.
 
 import ConfigParser
-
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -59,10 +58,10 @@ class PMCFConfig(object):
         options = {}
 
         for opt in self.options.keys():
-            default_options[opt] = self.get_from_section(
+            default_options[opt] = self._get_from_section(
                 'default', opt) or self.options[opt]
-            profile_options[opt] = self.get_from_section(self.profile_name,
-                                                         opt) or None
+            profile_options[opt] = self._get_from_section(self.profile_name,
+                                                          opt) or None
             cli_options[opt] = getattr(self.args, opt, None) or None
 
             if profile_options[opt] is None:
@@ -76,13 +75,14 @@ class PMCFConfig(object):
 
         return options
 
-    def get_from_section(self, section, option):
+    def _get_from_section(self, section, option):
         val = None
         try:
             val = self.cfg.get(section, option)
         except ConfigParser.NoOptionError:
             pass
         return val
+
 
 __all__ = [
     PMCFConfig,

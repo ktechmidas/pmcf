@@ -68,11 +68,11 @@ class TestPMCFConfig(object):
     def test_get_from_section_succeeds(self):
         cfg = PMCFConfig('tests/data/etc/pmcf.conf', 'default', {})
         cfg.get_config()
-        item = cfg.get_from_section('default', 'output')
+        item = cfg._get_from_section('default', 'output')
         assert_equals(item, 'AWSCFNOutput')
 
     def test_get_missing_from_section_returns_none(self):
         cfg = PMCFConfig('tests/data/etc/pmcf.conf', 'default', {})
         cfg.get_config()
-        item = cfg.get_from_section('default', 'wibble')
+        item = cfg._get_from_section('default', 'wibble')
         assert_equals(item, None)

@@ -13,17 +13,16 @@
 #    under the License.
 
 import abc
+from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 import gzip
+import logging
 import os
 import StringIO
 import sys
 
 from pmcf.exceptions import ProvisionerException
-
-import logging
 
 LOG = logging.getLogger(__name__)
 

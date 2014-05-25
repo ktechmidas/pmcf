@@ -13,12 +13,11 @@
 #    under the License.
 
 import argparse
+import logging
 import sys
 
 from pmcf.exceptions import PMCFException
 from pmcf.utils import import_from_string
-
-import logging
 
 
 def main():

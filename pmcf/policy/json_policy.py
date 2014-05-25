@@ -13,11 +13,10 @@
 #    under the License.
 
 import json
+import logging
 
 from pmcf.exceptions import PolicyException
 from pmcf.policy.base_policy import BasePolicy
-
-import logging
 
 LOG = logging.getLogger(__name__)
 
