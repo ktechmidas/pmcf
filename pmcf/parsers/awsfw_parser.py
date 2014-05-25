@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import datetime
 import logging
 import netaddr
 import os
@@ -191,16 +190,7 @@ class AWSFWParser(BaseParser):
             'stage': name_parts[1],
             'strategy': 'BLUEGREEN',
             'version': name_parts[2],
-        }
-        review_date = (datetime.date.today() +
-                       datetime.timedelta(6*365/12)).isoformat()
-        self._stack['tags'] = {
-            'Project': name_parts[0],
-            'Environment': name_parts[1],
-            'CodeVersion': name_parts[2],
-            'Farm': ds['farmName'],
-            'ReviewDate': review_date,
-            'Owner': ds.get('farmOwner', 'gis-channel4@piksel.com')
+            'owner': ds.get('farmOwner', 'gis-channel4@piksel.com')
         }
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']

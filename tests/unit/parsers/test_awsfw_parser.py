@@ -302,14 +302,6 @@ class TestParser(object):
                 'version': u'v2p54',
                 'owner': 'gis-channel4@piksel.com'
             },
-            'tags': {
-                'Environment': 'stage',
-                'CodeVersion': 'v2p54',
-                'Farm': 'ais-stage-v2p54-02',
-                'ReviewDate': review_date,
-                'Project': 'ais',
-                'Owner': 'gis-channel4@piksel.com'
-            },
             'resources': {
                 'cdn': [],
                 'db': [],
@@ -476,14 +468,8 @@ class TestParser(object):
                 'name': u'ais',
                 'stage': u'stage',
                 'strategy': 'BLUEGREEN',
-                'version': u'v2p54'},
-            'tags': {
-                'Environment': 'stage',
-                'CodeVersion': 'v2p54',
-                'Farm': 'ais-stage-v2p54-02',
-                'ReviewDate': review_date,
-                'Project': 'ais',
-                'Owner': 'gis-channel4@piksel.com'
+                'version': u'v2p54',
+                'owner': 'gis-channel4@piksel.com'
             },
             'resources': {
                 'cdn': [],
