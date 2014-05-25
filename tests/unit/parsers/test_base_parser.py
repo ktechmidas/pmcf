@@ -20,6 +20,14 @@ from pmcf.parsers import BaseParser
 
 class TestBaseParser(object):
 
+    def __init__(self):
+        self.parser = None
+
+    def setup(self):
+        #  HACK alert: have to empty this so we can instantiate the class
+        BaseParser.__abstractmethods__ = set()
+        self.parser = BaseParser()
+
     def test_parse_raises(self):
         struct = {
             'foo': {
@@ -35,12 +43,7 @@ class TestBaseParser(object):
                   - three
                 baz: true
         """
-        #  HACK alert: have to empty this so we can instantiate the class
-        BaseParser.__abstractmethods__ = set()
-        parser = BaseParser()
-        assert_raises(NotImplementedError, parser.parse, config)
+        assert_raises(NotImplementedError, self.parser.parse, config)
 
     def test_parse_file_missing_file_raises(self):
-        BaseParser.__abstractmethods__ = set()
-        parser = BaseParser()
-        assert_raises(ParserFailure, parser.parse_file, 'missing')
+        assert_raises(ParserFailure, self.parser.parse_file, 'missing')

@@ -13,6 +13,7 @@
 #    under the License.
 
 from nose.tools import assert_equals, assert_raises
+
 from pmcf import exceptions
 from pmcf import utils
 

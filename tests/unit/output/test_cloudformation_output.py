@@ -12,7 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from boto.exception import BotoServerError
 import mock
 from nose.tools import assert_equals, assert_raises
 

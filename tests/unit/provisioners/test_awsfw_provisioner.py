@@ -13,8 +13,8 @@
 #    under the License.
 
 import email
-from nose.tools import assert_equals, assert_raises
 import gzip
+from nose.tools import assert_equals, assert_raises
 import StringIO
 
 from pmcf.provisioners.awsfw import AWSFWProvisioner
@@ -51,7 +51,6 @@ class TestAWSFWProvisioner(object):
         assert_equals(fnames, expected_files)
 
     def test_userdata_vars_contains_expected_data(self):
-
         vars_data = {}
         for part in self.message.walk():
             if part.get_content_maintype() == 'multipart':

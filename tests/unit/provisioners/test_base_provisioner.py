@@ -48,18 +48,3 @@ MIME-Version: 1.0
              self.provisioner.boundary)
         data = self.provisioner.make_skeleton()
         assert_equals(data.as_string(), expected)
-
-    def test_add_data_output(self):
-        pass
-
-    def test_resize(self):
-        expected = """
-eNqNjrEOgkAQRPv7isv1p0hQFHKVWljYGfsFFt0E9sjdksDfayw0JhZOOTMvM3vPgiz2Mg9Y6H7s
-hAYIsuxpwqbUlR+5gTA7476VpckmTbJdkmf5Ll1tN+vUOaPOp/PRXjFE8lzo1SJRytp/0B/k/uua
-4CTLoQPiUtd3CBHFmTFaiDWR+ZQDcGwx2CPXviG+FTqvSN75geLgI8lrBUSgvvdPv9QtdcjQozOC
-UYxSrfeugvDnf2sfCJJi/A==
-"""
-        test_data = 'foo=bar'
-        data = self.provisioner.make_skeleton()
-        data = self.provisioner.add_data(data, test_data, 'test')
-        data = self.provisioner.resize(data)
