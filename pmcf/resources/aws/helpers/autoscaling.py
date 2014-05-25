@@ -53,3 +53,9 @@ class AutoScalingGroup(AWSObject):
                     "MinInstancesInService must be less than the "
                     "autoscaling group's MaxSize")
         return True
+
+
+__all__ = [
+    AutoScalingGroup,
+    MetricsCollection,
+]

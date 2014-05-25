@@ -15,3 +15,4 @@
 from pmcf.resources.aws import autoscaling
 from pmcf.resources.aws import ec2
 from pmcf.resources.aws import elasticloadbalancing
+from pmcf.resources.aws import rds
