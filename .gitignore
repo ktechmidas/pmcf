@@ -6,3 +6,4 @@ dist/
 pmcf.egg-info/
 .venv
 coverage
+.local
