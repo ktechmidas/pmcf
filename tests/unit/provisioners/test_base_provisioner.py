@@ -27,6 +27,9 @@ class TestBaseProvisioner(object):
         BaseProvisioner.__abstractmethods__ = set()
         self.provisioner = BaseProvisioner()
 
+    def test_provides_provides_None(self):
+        assert_equals(None, BaseProvisioner().provides())
+
     def test_parse_raises(self):
         config = {}
         assert_raises(NotImplementedError, self.provisioner.userdata, config)

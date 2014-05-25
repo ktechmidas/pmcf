@@ -21,6 +21,8 @@ LOG = logging.getLogger(__name__)
 
 class AWSFWProvisioner(BaseProvisioner):
 
+    _provides = 'awsfw_standalone'
+
     def userdata(self, config):
         ud = self.make_skeleton()
 

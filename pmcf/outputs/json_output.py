@@ -108,9 +108,12 @@ class JSONOutput(BaseOutput):
             data.add_resource(sgs[name])
 
         for inst in resources['instance']:
-            if inst['provisioner']['provider'] != 'awsfw_standalone':
-                raise ProvisionerException('wrong provisoner in config: %s' %
-                                           inst['provisioner']['provider'])
+            if inst.get('provisioner'):
+                if inst['provisioner']['provider'] != provisioner.provides():
+                    raise ProvisionerException('wrong provisoner for '
+                                               'instance: %s' %
+                                               inst['provisioner']['provider']
+                                               )
 
             cfg = {
                 'roles': ','.join(inst['provisioner']['args']['roles']),

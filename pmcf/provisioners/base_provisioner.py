@@ -29,9 +29,14 @@ LOG = logging.getLogger(__name__)
 
 class BaseProvisioner(object):
     __metaclass__ = abc.ABCMeta
+    _provides = None
 
     def __init__(self):
         self.boundary = '===============4206204907479218652=='
+
+    @classmethod
+    def provides(kls):
+        return kls._provides
 
     @abc.abstractmethod
     def userdata(self, config):
