@@ -51,9 +51,13 @@ class PMCFCLI(object):
                     'secret': self.args['secretkey'],
                     'region': 'us-west-2',
                     'name': self.parser._stack['config']['name'],
+                    'owner': self.parser._stack['config']['owner'],
+                    'stage': self.parser._stack['config']['stage'],
+                    'verstion': self.parser._stack['config']['version'],
                 }
             except KeyError, e:
                 raise ParserFailure(str(e))
+
             self.output.run(data, metadata)
             return False
         except PMCFException, e:

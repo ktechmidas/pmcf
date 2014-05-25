@@ -15,6 +15,7 @@
 import datetime
 import logging
 
+from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.cloudformation import AWSCFNOutput
 
 LOG = logging.getLogger(__name__)
@@ -23,21 +24,26 @@ LOG = logging.getLogger(__name__)
 class C4AWSCFNOutput(AWSCFNOutput):
 
     def run(self, data, metadata={}):
-        if config['stage'].lower() == 'prod':
-            review_date = (datetime.date.today() +
-                           datetime.timedelta(6*365/12)).isoformat()
-        else:
-            review_date = (datetime.date.today() +
-                           datetime.timedelta(2*365/12)).isoformat()
+        try:
+            if metadata['stage'].lower() == 'prod':
+                review_date = (datetime.date.today() +
+                               datetime.timedelta(6*365/12)).isoformat()
+            else:
+                review_date = (datetime.date.today() +
+                               datetime.timedelta(2*365/12)).isoformat()
 
-        metadata['tags'] = {
-            'Project': config['name'],
-            'Environment': config['stage'],
-            'CodeVersion': config['version'],
-            'Farm': '-'.join(
-                    [config['name'], config['stage'], config['version']]),
-            'ReviewDate': review_date,
-            'Owner': config['owner']
-        }
+            farmname = '-'.join(
+                [metadata['name'], metadata['stage'], metadata['version']]),
 
-        super(self.__class__, self).run(data, metadata)
+            metadata['tags'] = {
+                'Project': metadata['name'],
+                'Environment': metadata['stage'],
+                'CodeVersion': metadata['version'],
+                'Farm': farmname,
+                'ReviewDate': review_date,
+                'Owner': metadata['owner']
+            }
+        except KeyError, e:
+            raise ProvisionerException(str(e))
+
+        return super(self.__class__, self).run(data, metadata)

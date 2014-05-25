@@ -36,7 +36,7 @@ def _mock_create_stack_fails(obj, name, data, tags):
     raise ProvisionerException('I fail')
 
 
-class TestAWSCFNParser(object):
+class TestAWSCFNOutput(object):
 
     def test_run_no_region_raises(self):
         cfno = AWSCFNOutput()

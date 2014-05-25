@@ -13,11 +13,14 @@
 #    under the License.
 
 from pmcf.outputs.base_output import BaseOutput
+from pmcf.outputs.c4cloudformation import C4AWSCFNOutput
 from pmcf.outputs.cloudformation import AWSCFNOutput
 from pmcf.outputs.json_output import JSONOutput
 
 
 __all__ = [
+    AWSCFNOutput,
+    C4AWSCFNOutput,
     BaseOutput,
     JSONOutput,
 ]
