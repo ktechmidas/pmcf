@@ -12,10 +12,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import jsonschema
+import mock
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.parsers import yaml_parser
 from pmcf.exceptions import ParserFailure
+
+
+def _mock_validate(data, schema):
+    raise jsonschema.exceptions.ValidationError('error')
 
 
 class TestParser(object):
@@ -170,3 +176,10 @@ class TestParser(object):
         """
         parser = yaml_parser.YamlParser()
         assert_raises(ParserFailure, parser.parse, config)
+
+    @mock.patch('jsonschema.validate', _mock_validate)
+    def test_schema_validation_failure_raises(self):
+        parser = yaml_parser.YamlParser()
+        # Append empty instance
+        parser._stack['resources']['instance'].append({})
+        assert_raises(ParserFailure, parser.validate)
