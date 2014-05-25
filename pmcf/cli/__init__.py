@@ -13,11 +13,7 @@
 #    under the License.
 
 from pmcf.cli.cmd import PMCFCLI
-from pmcf.cli.fail import FailCLI
-from pmcf.cli.noop import NoopCLI
 
 __all__ = [
-    FailCLI,
-    NoopCLI,
     PMCFCLI,
 ]

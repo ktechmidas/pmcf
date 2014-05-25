@@ -13,10 +13,8 @@
 #    under the License.
 
 from pmcf.config.config import PMCFConfig
-from pmcf.config.noop import NoopConfig
 
 
 __all__ = [
-    NoopConfig,
     PMCFConfig,
 ]
