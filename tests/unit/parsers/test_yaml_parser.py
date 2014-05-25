@@ -146,19 +146,19 @@ class TestParser(object):
             'instance_secretkey': '23456'
         }
         parser = yaml_parser.YamlParser()
-        with open('tests/data/yaml/ais-test-farm.yaml') as fd:
-            data = parser.parse(fd.read(), args)
+        fname = 'tests/data/yaml/ais-test-farm.yaml'
+        data = parser.parse_file(fname, args)
         assert_equals(data, struct)
 
     def test_parse_invalid_args_raises(self):
         parser = yaml_parser.YamlParser()
-        with open('tests/data/yaml/ais-test-farm.yaml') as fd:
-            assert_raises(ParserFailure, parser.parse, fd.read(), {})
+        fname = 'tests/data/yaml/ais-test-farm.yaml'
+        assert_raises(ParserFailure, parser.parse_file, fname, {})
 
     def test_parse_invalid_config_raises(self):
         parser = yaml_parser.YamlParser()
-        with open('tests/data/yaml/ais-test-bad-farm.yaml') as fd:
-            assert_raises(ParserFailure, parser.parse, fd.read(), {})
+        fname = 'tests/data/yaml/ais-test-bad-farm.yaml'
+        assert_raises(ParserFailure, parser.parse_file, fname, {})
 
     def test_parse_invalid_yaml_raises(self):
         config = """

@@ -46,7 +46,7 @@ class BaseParser(object):
     def parse_file(self, fname, args={}):
         try:
             with open(fname) as fd:
-                self.parse(fd.read(), args)
+                return self.parse(fd.read(), args)
         except IOError, e:
             raise ParserFailure(str(e))
 
