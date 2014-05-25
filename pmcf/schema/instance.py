@@ -28,6 +28,12 @@ properties:
         type: boolean
     lb:
         type: string
+    min:
+        type: integer
+        minimum: 1
+    max:
+        type: integer
+        minimum: 1
     name:
         type: string
     provisioner:

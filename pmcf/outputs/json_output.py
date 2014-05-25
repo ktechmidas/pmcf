@@ -151,12 +151,14 @@ class JSONOutput(BaseOutput):
                     propogate=True,
                 )
             ]
+            inst['min'] = inst.get('min', inst['count'])
+            inst['max'] = inst.get('max', inst['count'])
             asgargs = {
                 'AvailabilityZones': GetAZs(''),
                 'DesiredCapacity': inst['count'],
                 'LaunchConfigurationName': Ref(lc),
-                'MaxSize': inst['count'],
-                'MinSize': inst['count'],
+                'MaxSize': inst['min'],
+                'MinSize': inst['max'],
                 'Tags': asgtags
             }
             if inst.get('lb'):
