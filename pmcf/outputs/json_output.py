@@ -32,7 +32,7 @@ class JSONOutput(BaseOutput):
         lbs = {}
         for lb in resources['load_balancer']:
             lb_hc_tgt = lb['healthcheck']['protocol'] + ':' + \
-                lb['healthcheck']['port']
+                str(lb['healthcheck']['port'])
             if lb['healthcheck'].get('path'):
                 lb_hc_tgt += lb['healthcheck']['path']
 
@@ -84,6 +84,8 @@ class JSONOutput(BaseOutput):
             rules = []
             name = 'sg%s' % sg['name']
             for idx, rule in enumerate(sg['rules']):
+                if rule.get('port'):
+                    rule['to_port'] = rule['from_port'] = rule['port']
                 if rule.get('source_group'):
                     rules.append(ec2.SecurityGroupRule(
                         FromPort=rule['from_port'],
