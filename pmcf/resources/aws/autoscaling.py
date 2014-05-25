@@ -158,12 +158,6 @@ class Trigger(asg.Trigger):
 
 
 class EBSBlockDevice(asg.EBSBlockDevice):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(

@@ -62,12 +62,6 @@ class DBSubnetGroup(rds.DBSubnetGroup):
 
 
 class RDSSecurityGroup(rds.RDSSecurityGroup):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('CIDRIP'):

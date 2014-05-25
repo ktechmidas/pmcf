@@ -33,12 +33,6 @@ class CustomerGateway(ec2.CustomerGateway):
 
 
 class DHCPOptions(ec2.DHCPOptions):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -48,20 +42,10 @@ class DHCPOptions(ec2.DHCPOptions):
 
 
 class EIP(ec2.EIP):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+    pass
 
 
 class EIPAssociation(ec2.EIPAssociation):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -80,12 +64,6 @@ class EIPAssociation(ec2.EIPAssociation):
 
 
 class EBSBlockDevice(ec2.EBSBlockDevice):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -177,11 +155,7 @@ class Instance(ec2.Instance):
 
 
 class InternetGateway(ec2.InternetGateway):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+    pass
 
 
 class NetworkAcl(ec2.NetworkAcl):
@@ -193,12 +167,6 @@ class NetworkAcl(ec2.NetworkAcl):
 
 
 class ICMP(ec2.ICMP):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -210,12 +178,6 @@ class ICMP(ec2.ICMP):
 
 
 class PortRange(ec2.PortRange):
-    def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
-
     def validate(self):
         super(self.__class__, self).validate()
 
