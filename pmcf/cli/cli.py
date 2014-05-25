@@ -42,6 +42,9 @@ def main():
     parser.add_argument("-r", "--runner",
                         default='PMCFCLI',
                         help="use alternate CLI implementation")
+    parser.add_argument("-s", "--stage",
+                        default='dev',
+                        help="run config for this stage")
     parser.add_argument("-p", "--profile",
                         default='default',
                         help="use config profile")
