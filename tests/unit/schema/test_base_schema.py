@@ -22,14 +22,80 @@ class TestBaseSchema(object):
 
     def test_schema_loads(self):
         schema_data = {
+            'additionalProperties': False,
+            'definitions': {
+                'instance': {
+                    'additionalProperties': False,
+                    'required': [
+                        'count',
+                        'image',
+                        'monitoring',
+                        'name',
+                        'provisioner',
+                        'sg',
+                        'sshKey',
+                        'size'
+                    ],
+                    'properties': {
+                        'count': {
+                            'minimum': 1,
+                            'type': 'integer'
+                        },
+                        'monitoring': {
+                            'type': 'boolean'
+                        },
+                        'name': {
+                            'type': 'string'
+                        },
+                        'min': {
+                            'minimum': 1,
+                            'type': 'integer'
+                        },
+                        'block_device': {
+                            'type': 'array'
+                        },
+                        'max': {
+                            'minimum': 1,
+                            'type': 'integer'
+                        },
+                        'image': {
+                            'type': 'string'
+                        },
+                        'sshKey': {
+                            'type': 'string'
+                        },
+                        'provisioner': {
+                            'type': 'object',
+                            'properties': {
+                                'args': {
+                                    'type': 'object'
+                                },
+                                'provider': {
+                                    'type': 'string'
+                                }
+                            }
+                        },
+                        'lb': {
+                            'type': 'string'
+                        },
+                        'sg': {
+                            'type': 'array'
+                        },
+                        'size': {
+                            'type': 'string'
+                        }
+                    }
+                }
+            },
             '$schema': 'http://json-schema.org/draft-04/schema#',
+            'required': [
+                'config',
+                'resources'
+            ],
             'type': 'object',
             'properties': {
                 'config': {
                     'type': 'object'
-                },
-                'tags': {
-                    'type': 'object',
                 },
                 'resources': {
                     'type': 'object',
@@ -38,6 +104,10 @@ class TestBaseSchema(object):
                             'type': 'array'
                         },
                         'instance': {
+                            'minItems': 1,
+                            'items': {
+                                '$ref': '#/definitions/instance'
+                            },
                             'type': 'array'
                         },
                         'cdn': {
@@ -50,13 +120,11 @@ class TestBaseSchema(object):
                             'type': 'array'
                         }
                     }
+                },
+                'tags': {
+                    'type': 'object'
                 }
-            },
-            'required': [
-                'config',
-                'resources',
-            ],
-            'additionalProperties': False,
+            }
         }
         data = yaml.load(schema)
         assert_equals(data, schema_data)

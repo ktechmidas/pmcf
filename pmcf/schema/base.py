@@ -15,6 +15,51 @@
 
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
+definitions:
+    instance:
+        properties:
+            block_device:
+                type: array
+            count:
+                type: integer
+                minimum: 1
+            image:
+                type: string
+            monitoring:
+                type: boolean
+            lb:
+                type: string
+            min:
+                type: integer
+                minimum: 1
+            max:
+                type: integer
+                minimum: 1
+            name:
+                type: string
+            provisioner:
+                type: object
+                properties:
+                    args:
+                        type: object
+                    provider:
+                        type: string
+            sg:
+                type: array
+            sshKey:
+                type: string
+            size:
+                type: string
+        required:
+            - count
+            - image
+            - monitoring
+            - name
+            - provisioner
+            - sg
+            - sshKey
+            - size
+        additionalProperties: false
 type: object
 properties:
     config:
@@ -28,6 +73,9 @@ properties:
                 type: array
             instance:
                 type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/instance"
             load_balancer:
                 type: array
             sec_group:

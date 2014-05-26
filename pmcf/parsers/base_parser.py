@@ -19,7 +19,6 @@ import yaml
 
 from pmcf.exceptions import ParserFailure
 from pmcf.schema.base import schema as base_schema
-from pmcf.schema.instance import schema as instance_schema
 
 LOG = logging.getLogger(__name__)
 
@@ -60,8 +59,6 @@ class BaseParser(object):
 
         try:
             jsonschema.validate(self._stack, yaml.load(base_schema))
-            for instance in self._stack['resources']['instance']:
-                jsonschema.validate(instance, yaml.load(instance_schema))
         except jsonschema.exceptions.ValidationError, e:
             raise ParserFailure(str(e))
         LOG.info('Finished validation of stack')
