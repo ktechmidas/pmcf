@@ -52,7 +52,7 @@ class AWSFWParser(BaseParser):
             path = None
         hc = {
             'protocol': protocol.upper(),
-            'port': port
+            'port': int(port)
         }
         if path:
             hc['path'] = path
@@ -69,8 +69,8 @@ class AWSFWParser(BaseParser):
                     lb['healthcheck'] = self._build_hc(hc)
                 lstnr = {
                     'protocol': listener['protocol'],
-                    'lb_port': listener['port'],
-                    'instance_port': listener['instancePort'],
+                    'lb_port': int(listener['port']),
+                    'instance_port': int(listener['instancePort']),
                 }
                 if listener['protocol'].upper() == 'HTTPS':
                     if not listener.get('sslCert'):

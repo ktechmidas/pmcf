@@ -39,7 +39,7 @@ class TestParser(object):
         parser = awsfw_parser.AWSFWParser()
         data = {
             'protocol': 'HTTP',
-            'port': '80',
+            'port': 80,
             'path': '/healthcheck'
         }
         entry = 'HTTP:80/healthcheck'
@@ -50,7 +50,7 @@ class TestParser(object):
         parser = awsfw_parser.AWSFWParser()
         data = {
             'protocol': 'TCP',
-            'port': '80',
+            'port': 80,
         }
         entry = 'TCP:80'
 
@@ -62,7 +62,7 @@ class TestParser(object):
             'listener': {
                 'healthCheck': 'HTTP:80/healthcheck',
                 'protocol': 'HTTPS',
-                'port': '443',
+                'port': 443,
                 'instance_protocol': u'HTTP',
                 'instancePort': 80,
             }
@@ -75,7 +75,7 @@ class TestParser(object):
         lbdata = [{
             'listener': {
                 'protocol': 'HTTP',
-                'port': '80',
+                'port': 80,
                 'instancePort': 80,
                 'instance_protocol': u'HTTP',
             }
@@ -89,7 +89,7 @@ class TestParser(object):
             {
                 'listener': {
                     'protocol': 'HTTP',
-                    'port': '80',
+                    'port': 80,
                     'instancePort': 80,
                     'instance_protocol': u'HTTP',
                 }
@@ -97,7 +97,7 @@ class TestParser(object):
             {
                 'listener': {
                     'protocol': 'HTTP',
-                    'port': '8080',
+                    'port': 8080,
                     'instancePort': 80,
                     'instance_protocol': u'HTTP',
                 }
@@ -114,14 +114,14 @@ class TestParser(object):
                     {
                         'instance_port': 80,
                         'protocol': 'HTTP',
-                        'lb_port': '80',
+                        'lb_port': 80,
                         'instance_protocol': 'HTTP',
                     }
                 ],
                 'healthcheck': {
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
-                    'port': '80'
+                    'port': 80
                 },
                 'name': 'test',
             }
@@ -130,7 +130,7 @@ class TestParser(object):
             'listener': {
                 'healthCheck': 'HTTP:80/healthcheck',
                 'protocol': 'HTTP',
-                'port': '80',
+                'port': 80,
                 'instancePort': 80,
                 'instance_protocol': 'HTTP',
             }
@@ -147,7 +147,7 @@ class TestParser(object):
                         'instance_port': 80,
                         'sslCert': 'test',
                         'protocol': 'HTTPS',
-                        'lb_port': '80',
+                        'lb_port': 80,
                         'instance_protocol': 'HTTP',
                     }
                 ],
@@ -155,7 +155,7 @@ class TestParser(object):
                 'healthcheck': {
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
-                    'port': '80'
+                    'port': 80
                 }
             }
         ]
@@ -163,7 +163,7 @@ class TestParser(object):
             'listener': {
                 'healthCheck': 'HTTP:80/healthcheck',
                 'protocol': 'HTTPS',
-                'port': '80',
+                'port': 80,
                 'instancePort': 80,
                 'sslCert': 'test',
                 'instance_protocol': 'HTTP',
@@ -180,13 +180,13 @@ class TestParser(object):
                     {
                         'instance_port': 80,
                         'protocol': 'TCP',
-                        'lb_port': '80'
+                        'lb_port': 80
                     }
                 ],
                 'name': 'test',
                 'healthcheck': {
                     'protocol': 'TCP',
-                    'port': '80'
+                    'port': 80
                 }
             }
         ]
@@ -194,7 +194,7 @@ class TestParser(object):
             'listener': {
                 'healthCheck': 'TCP:80',
                 'protocol': 'TCP',
-                'port': '80',
+                'port': 80,
                 'instancePort': 80,
             }
         }]
@@ -209,20 +209,20 @@ class TestParser(object):
                     {
                         'instance_port': 80,
                         'protocol': 'HTTP',
-                        'lb_port': '80',
+                        'lb_port': 80,
                         'instance_protocol': 'HTTP',
                     },
                     {
                         'instance_port': 80,
                         'protocol': 'HTTP',
-                        'lb_port': '8080',
+                        'lb_port': 8080,
                         'instance_protocol': 'HTTP',
                     }
                 ],
                 'healthcheck': {
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
-                    'port': '80'
+                    'port': 80
                 },
                 'name': 'test'
             }
@@ -232,13 +232,13 @@ class TestParser(object):
                 {
                     'healthCheck': 'HTTP:80/healthcheck',
                     'protocol': 'HTTP',
-                    'port': '80',
+                    'port': 80,
                     'instancePort': 80,
                     'instance_protocol': 'HTTP',
                 },
                 {
                     'protocol': 'HTTP',
-                    'port': '8080',
+                    'port': 8080,
                     'instancePort': 80,
                     'instance_protocol': 'HTTP',
                 }
@@ -254,14 +254,14 @@ class TestParser(object):
                 'name': 'test',
                 'rules': [
                     {
-                        'from_port': '22',
-                        'to_port': '22',
+                        'from_port': 22,
+                        'to_port': 22,
                         'protocol': 'tcp',
                         'source_group': 'womble'
                     },
                     {
-                        'from_port': '80',
-                        'to_port': '80',
+                        'from_port': 80,
+                        'to_port': 80,
                         'protocol': 'tcp',
                         'source_cidr': '10.1.2.0/24'
                     }
@@ -270,12 +270,12 @@ class TestParser(object):
         ]
         rdata = [
             {
-                'port': '22',
+                'port': 22,
                 'protocol': 'tcp',
                 'source': 'womble',
             },
             {
-                'port': '80',
+                'port': 80,
                 'protocol': 'tcp',
                 'source': '10.1.2.0/24',
             }
