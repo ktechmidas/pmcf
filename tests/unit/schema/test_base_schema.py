@@ -206,11 +206,13 @@ class TestBaseSchema(object):
                         'protocol': {
                             'type': 'string'
                         },
-                        'source_cidr': {
-                            'type': 'string'
-                        },
-                        'source_group': {
-                            'type': 'string'
+                        'oneOf': {
+                            'source_cidr': {
+                                'type': 'string'
+                            },
+                            'source_group': {
+                                'type': 'string'
+                            }
                         },
                         'to_port': {
                             'type': 'integer'
@@ -265,4 +267,5 @@ class TestBaseSchema(object):
             'type': 'object'
         }
         data = yaml.load(schema)
+        print data
         assert_equals(data, schema_data)

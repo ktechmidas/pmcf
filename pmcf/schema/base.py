@@ -135,10 +135,11 @@ definitions:
                 type: integer
             protocol:
                 type: string
-            source_cidr:
-                type: string
-            source_group:
-                type: string
+            oneOf:
+                source_cidr:
+                    type: string
+                source_group:
+                    type: string
         required:
             - from_port
             - to_port
