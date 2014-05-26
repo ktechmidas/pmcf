@@ -12,10 +12,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.parsers import awsfw_parser
 from pmcf.exceptions import ParserFailure
+
+
+def _mock_validate(stack, schema):
+    return True
 
 
 class TestParser(object):
@@ -283,12 +288,14 @@ class TestParser(object):
         parser.build_fw('test', rdata)
         assert_equals(parser.stack()['resources']['secgroup'], rules)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_config_no_instances(self):
         parser = awsfw_parser.AWSFWParser()
         with open('tests/data/awsfw/ais-stage-farm-noinstances.xml') as fd:
             config = fd.read()
         assert_raises(ParserFailure, parser.parse, config)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_valid_config_provisioner_puppet(self):
         parser = awsfw_parser.AWSFWParser()
         struct = {
@@ -448,6 +455,7 @@ class TestParser(object):
         data = parser.parse(config)
         assert_equals(data, struct)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_config_raises(self):
         parser = awsfw_parser.AWSFWParser()
         with open('tests/data/awsfw/ais-stage-farm-broken.xml') as fd:
@@ -455,6 +463,7 @@ class TestParser(object):
 
         assert_raises(ParserFailure, parser.parse, config)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_valid_config(self):
         parser = awsfw_parser.AWSFWParser()
         parser = awsfw_parser.AWSFWParser()
