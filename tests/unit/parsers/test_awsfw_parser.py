@@ -327,20 +327,20 @@ class TestParser(object):
                 'load_balancer': [
                     {
                         'healthcheck': {
-                            'port': u'80',
+                            'port': 80,
                             'protocol': u'TCP'
                         },
                         'name': 'app',
                         'listener': [
                             {
-                                'instance_port': u'80',
-                                'lb_port': u'80',
+                                'instance_port': 80,
+                                'lb_port': 80,
                                 'protocol': u'HTTP',
                                 'instance_protocol': 'HTTP',
                             },
                             {
-                                'instance_port': u'80',
-                                'lb_port': u'443',
+                                'instance_port': 80,
+                                'lb_port': 443,
                                 'protocol': u'HTTPS',
                                 'sslCert': u'test',
                                 'instance_protocol': 'HTTP',
@@ -359,82 +359,82 @@ class TestParser(object):
                         'name': u'app',
                         'rules': [
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'54.246.118.174/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'62.82.81.73/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.244.197.164/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.244.197.190/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_group': u'jump-server-sg',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'5666',
+                                'from_port': 5666,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'5666'
+                                'to_port': 5666
                             },
                             {
-                                'from_port': u'161',
+                                'from_port': 161,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'161'
+                                'to_port': 161
                             },
                             {
-                                'from_port': u'161',
+                                'from_port': 161,
                                 'protocol': u'udp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'161'
+                                'to_port': 161
                             },
                             {
-                                'from_port': u'-1',
+                                'from_port': -1,
                                 'protocol': u'icmp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'-1'
+                                'to_port': -1
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'46.137.169.193/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'80',
+                                'from_port': 80,
                                 'protocol': u'tcp',
                                 'source_cidr': u'0.0.0.0/0',
-                                'to_port': u'80'
+                                'to_port': 80
                             },
                             {
-                                'from_port': u'443',
+                                'from_port': 443,
                                 'protocol': u'tcp',
                                 'source_cidr': u'0.0.0.0/0',
-                                'to_port': u'443'
+                                'to_port': 443
                             }
                         ]
                     }
@@ -504,20 +504,20 @@ class TestParser(object):
                 'load_balancer': [
                     {
                         'healthcheck': {
-                            'port': u'80',
+                            'port': 80,
                             'protocol': u'TCP'
                         },
                         'name': 'app',
                         'listener': [
                             {
-                                'instance_port': u'80',
-                                'lb_port': u'80',
+                                'instance_port': 80,
+                                'lb_port': 80,
                                 'protocol': u'HTTP',
                                 'instance_protocol': u'HTTP',
                             },
                             {
-                                'instance_port': u'80',
-                                'lb_port': u'443',
+                                'instance_port': 80,
+                                'lb_port': 443,
                                 'protocol': u'HTTPS',
                                 'sslCert': u'test',
                                 'instance_protocol': u'HTTP',
@@ -536,82 +536,82 @@ class TestParser(object):
                         'name': u'app',
                         'rules': [
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'54.246.118.174/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'62.82.81.73/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.244.197.164/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.244.197.190/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_group': u'jump-server-sg',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'5666',
+                                'from_port': 5666,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'5666'
+                                'to_port': 5666
                             },
                             {
-                                'from_port': u'161',
+                                'from_port': 161,
                                 'protocol': u'tcp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'161'
+                                'to_port': 161
                             },
                             {
-                                'from_port': u'161',
+                                'from_port': 161,
                                 'protocol': u'udp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'161'
+                                'to_port': 161
                             },
                             {
-                                'from_port': u'-1',
+                                'from_port': -1,
                                 'protocol': u'icmp',
                                 'source_cidr': u'83.98.0.0/17',
-                                'to_port': u'-1'
+                                'to_port': -1
                             },
                             {
-                                'from_port': u'22',
+                                'from_port': 22,
                                 'protocol': u'tcp',
                                 'source_cidr': u'46.137.169.193/32',
-                                'to_port': u'22'
+                                'to_port': 22
                             },
                             {
-                                'from_port': u'80',
+                                'from_port': 80,
                                 'protocol': u'tcp',
                                 'source_cidr': u'0.0.0.0/0',
-                                'to_port': u'80'
+                                'to_port': 80
                             },
                             {
-                                'from_port': u'443',
+                                'from_port': 443,
                                 'protocol': u'tcp',
                                 'source_cidr': u'0.0.0.0/0',
-                                'to_port': u'443'
+                                'to_port': 443
                             }
                         ]
                     }

@@ -109,8 +109,8 @@ class AWSFWParser(BaseParser):
         fwrules = []
         for rule in rules:
             r = {
-                'from_port': rule['port'],
-                'to_port': rule['port'],
+                'from_port': int(rule['port']),
+                'to_port': int(rule['port']),
                 'protocol': rule['protocol'],
             }
             try:
