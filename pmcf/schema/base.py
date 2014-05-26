@@ -20,6 +20,8 @@ definitions:
         properties:
             block_device:
                 type: array
+                items:
+                    $ref: "#/definitions/block_storage"
             count:
                 type: integer
                 minimum: 1
@@ -43,7 +45,10 @@ definitions:
                     args:
                         type: object
                     provider:
-                        type: string
+                        enum:
+                            - puppet
+                            - chef
+                            - awsfw_standalone
             sg:
                 type: array
             sshKey:
@@ -59,6 +64,98 @@ definitions:
             - sg
             - sshKey
             - size
+        additionalProperties: false
+    block_storage:
+        properties:
+           size:
+               type: string
+           device:
+               type: string
+        required:
+            - size
+            - device
+        additionalProperties: false
+    listener:
+        properties:
+            instance_port:
+                type: integer
+            protocol:
+                enum:
+                    - HTTP
+                    - HTTPS
+                    - TCP
+            instance_protocol:
+                enum:
+                    - HTTP
+                    - HTTPS
+                    - TCP
+            lb_port:
+                type: integer
+            sslCert:
+                type: string
+        required:
+            - instance_port
+            - protocol
+            - instance_protocol
+            - lb_port
+        additionalProperties: false
+    load_balancer:
+        properties:
+            name:
+                type: string
+            listener:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/listener"
+            policy:
+                type: array
+            logging:
+                type: object
+            healthcheck:
+                type: object
+                properties:
+                    protocol:
+                        enum:
+                            - HTTP
+                            - HTTPS
+                            - TCP
+                    port:
+                        type: integer
+        required:
+            - name
+            - listener
+            - healthcheck
+        additionalProperties: false
+    secgrouprule:
+        properties:
+            to_port:
+                type: integer
+            from_port:
+                type: integer
+            protocol:
+                type: string
+            source_cidr:
+                type: string
+            source_group:
+                type: string
+        required:
+            - from_port
+            - to_port
+            - protocol
+        additionalProperties: false
+    secgroup:
+        properties:
+            name:
+                type: string
+            rules:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/secgrouprule"
+        required:
+            - name
+            - rules
         additionalProperties: false
 type: object
 properties:
@@ -78,8 +175,12 @@ properties:
                     $ref: "#/definitions/instance"
             load_balancer:
                 type: array
+                items:
+                    $ref: "#/definitions/load_balancer"
             sec_group:
                 type: array
+                items:
+                    $ref: "#/definitions/secgroup"
     tags:
         type: object
 required:
