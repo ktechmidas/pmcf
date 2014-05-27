@@ -12,260 +12,243 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nose.tools import assert_equals
+import jsonschema
+from jsonschema.exceptions import ValidationError
+from nose.tools import assert_equals, assert_raises
 import yaml
 
-from pmcf.schema.base import schema
+from pmcf.schema.base import schema as base_schema
 
 
 class TestBaseSchema(object):
 
-    def test_schema_loads(self):
-        schema_data = {
-            '$schema': 'http://json-schema.org/draft-04/schema#',
-            'additionalProperties': False,
-            'definitions': {
-                'block_storage': {
-                    'additionalProperties': False,
-                    'properties': {
-                        'device': {
-                            'type': 'string'
-                        },
-                        'size': {
-                            'type': 'string'
-                        }
-                    },
-                    'required': ['size', 'device']
-                },
-                'instance': {
-                    'additionalProperties': False,
-                    'properties': {
-                        'block_device': {
-                            'items': {
-                                '$ref': '#/definitions/block_storage'
-                            },
-                            'type': 'array'
-                        },
-                        'count': {
-                            'minimum': 1,
-                            'type': 'integer'
-                        },
-                        'image': {
-                            'type': 'string'
-                        },
-                        'lb': {
-                            'type': 'string'
-                        },
-                        'max': {
-                            'minimum': 1,
-                            'type': 'integer'
-                        },
-                        'min': {
-                            'minimum': 1,
-                            'type': 'integer'
-                        },
-                        'monitoring': {
-                            'type': 'boolean'
-                        },
-                        'name': {
-                            'type': 'string'
-                        },
-                        'provisioner': {
-                            'properties': {
-                                'args': {
-                                    'type': 'object'
-                                },
-                                'provider': {
-                                    'enum': [
-                                        'puppet',
-                                        'chef',
-                                        'awsfw_standalone'
-                                    ]
-                                }
-                            },
-                            'type': 'object'
-                        },
-                        'sg': {
-                            'type': 'array'
-                        },
-                        'size': {
-                            'type': 'string'
-                        },
-                        'sshKey': {
-                            'type': 'string'
-                        }
-                    },
-                    'required': [
-                        'count',
-                        'image',
-                        'monitoring',
-                        'name',
-                        'provisioner',
-                        'sg',
-                        'sshKey',
-                        'size'
-                    ]
-                },
-                'listener': {
-                    'additionalProperties': False,
-                    'properties': {
-                        'instance_port': {
-                            'type': 'integer'
-                        },
-                        'instance_protocol': {
-                            'enum': [
-                                'HTTP',
-                                'HTTPS',
-                                'TCP'
-                            ]
-                        },
-                        'lb_port': {
-                            'type': 'integer'
-                        },
-                        'protocol': {
-                            'enum': [
-                                'HTTP',
-                                'HTTPS',
-                                'TCP'
-                            ]
-                        },
-                        'sslCert': {
-                            'type': 'string'
-                        }
-                    },
-                    'required': [
-                        'instance_port',
-                        'protocol',
-                        'instance_protocol',
-                        'lb_port'
-                    ]
-                },
-                'load_balancer': {
-                    'additionalProperties': False,
-                    'properties': {
-                        'healthcheck': {
-                            'properties': {
-                                'port': {
-                                    'type': 'integer'
-                                },
-                                'protocol': {
-                                    'enum': [
-                                        'HTTP',
-                                        'HTTPS',
-                                        'TCP'
-                                    ]
-                                }
-                            },
-                            'type': 'object'
-                        },
-                        'listener': {
-                            'items': {
-                                '$ref': '#/definitions/listener'
-                            },
-                            'minItems': 1,
-                            'type': 'array'
-                        },
-                        'logging': {
-                            'type': 'object'
-                        },
-                        'name': {
-                            'type': 'string'
-                        },
-                        'policy': {
-                            'type': 'array'
-                        }
-                    },
-                    'required': [
-                        'name',
-                        'listener',
-                        'healthcheck'
-                    ]
-                },
-                'secgroup': {
-                    'additionalProperties': False,
-                    'properties': {
-                        'name': {
-                            'type': 'string'
-                        },
-                        'rules': {
-                            'items': {
-                                '$ref': '#/definitions/secgrouprule'
-                            },
-                            'minItems': 1,
-                            'type': 'array'
-                        }
-                    },
-                    'required': ['name', 'rules']
-                },
-                'secgrouprule': {
-                    'additionalProperties': False,
-                    'properties': {
-                        'from_port': {
-                            'type': 'integer'
-                        },
-                        'protocol': {
-                            'type': 'string'
-                        },
-                        'oneOf': {
-                            'source_cidr': {
-                                'type': 'string'
-                            },
-                            'source_group': {
-                                'type': 'string'
-                            }
-                        },
-                        'to_port': {
-                            'type': 'integer'
-                        }
-                    },
-                    'required': [
-                        'from_port',
-                        'to_port',
-                        'protocol'
-                    ]
-                }
-            },
-            'properties': {
-                'config': {
-                    'type': 'object'
-                },
-                'resources': {
-                    'properties': {
-                        'cdn': {
-                            'type': 'array'
-                        },
-                        'db': {
-                            'type': 'array'
-                        },
-                        'instance': {
-                            'items': {
-                                '$ref': '#/definitions/instance'
-                            },
-                            'minItems': 1,
-                            'type': 'array'
-                        },
-                        'load_balancer': {
-                            'items': {
-                                '$ref': '#/definitions/load_balancer'
-                            },
-                            'type': 'array'
-                        },
-                        'sec_group': {
-                            'items': {
-                                '$ref': '#/definitions/secgroup'
-                            },
-                            'type': 'array'
-                        }
-                    },
-                    'type': 'object'
-                },
-                'tags': {
-                    'type': 'object'
-                }
-            },
-            'required': ['config', 'resources'],
-            'type': 'object'
+    def __init__(self):
+        self.data = {
+            'config': {},
+            'resources': {
+                'secgroup': [],
+                'load_balancer': [],
+                'db': [],
+                'cdn': [],
+                'instance': [
+                    {
+                        'count': 3,
+                        'image': 'ami-0bceb93b',
+                        'lb': 'app',
+                        'monitoring': False,
+                        'name': 'app',
+                        'provisioner': {'provider': 'puppet'},
+                        'sg': ['app'],
+                        'size': 'm1.large',
+                        'sshKey': 'bootstrap'
+                    }
+                ]
+            }
         }
-        data = yaml.load(schema)
-        print data
-        assert_equals(data, schema_data)
+
+    def _add_sg_data(self):
+        self.data['resources']['secgroup'].append({
+            'name': 'test',
+            'rules': [
+                {
+                    'from_port': 22,
+                    'to_port': 22,
+                    'protocol': 'tcp',
+                    'source_group': 'womble'
+                },
+                {
+                    'from_port': 80,
+                    'to_port': 80,
+                    'protocol': 'tcp',
+                    'source_cidr': '10.1.2.0/24'
+                }
+            ]
+        })
+
+    def _add_lb_data(self):
+        self.data['resources']['load_balancer'].append({
+            'listener': [
+                {
+                    'instance_port': 80,
+                    'protocol': 'HTTP',
+                    'lb_port': 80,
+                    'instance_protocol': 'HTTP',
+                }
+            ],
+            'healthcheck': {
+                'path': '/healthcheck',
+                'protocol': 'HTTP',
+                'port': 80
+            },
+            'name': 'test',
+        })
+
+    def test_schema_loads(self):
+        schema = yaml.load(base_schema)
+        # We're only testing for valid YAML
+        assert_equals(True, True)
+
+    def test_schema_invalid_no_config(self):
+        schema = yaml.load(base_schema)
+        self.data.pop('config')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_no_resources(self):
+        schema = yaml.load(base_schema)
+        self.data.pop('resources')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_valid(self):
+        schema = yaml.load(base_schema)
+        assert_equals(None, jsonschema.validate(self.data, schema))
+
+    def test_schema_no_instance_invalid(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'].pop(0)
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_count(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('count')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_image(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('image')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_monitoring(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('monitoring')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_name(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('name')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_provisioner(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('provisioner')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_sg(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('sg')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_size(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('size')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_one_instance_invalid_no_sshKey(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0].pop('sshKey')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_valid(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        assert_equals(None, jsonschema.validate(self.data, schema))
+
+    def test_schema_loadbalancer_invalid_listener_no_instance_port(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['listener'][0].pop(
+            'instance_port')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_listener_no_protocol(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['listener'][0].pop(
+            'protocol')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_listener_no_instance_protocol(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['listener'][0].pop(
+            'instance_protocol')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_listener_no_lb_port(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['listener'][0].pop(
+            'lb_port')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_healthcheck_no_protocol(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['healthcheck'].pop(
+            'protocol')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_healthcheck_no_port(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['healthcheck'].pop('port')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_no_name(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0].pop('name')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_no_healthcheck(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0].pop('healthcheck')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_loadbalancer_invalid_no_listener(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0].pop('listener')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_secgroup_valid(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        assert_equals(None, jsonschema.validate(self.data, schema))
+
+    def test_schema_secgroup_valid_empty_rules(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['rules'].pop(0)
+        self.data['resources']['secgroup'][0]['rules'].pop(0)
+        assert_equals(None, jsonschema.validate(self.data, schema))
+
+    def test_schema_secgroup_invalid_no_name(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0].pop('name')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_secgroup_invalid_no_rules(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0].pop('rules')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_secgroup_invalid_rule_no_from_port(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['rules'][0].pop('from_port')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_secgroup_invalid_rule_no_to_port(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['rules'][0].pop('to_port')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_secgroup_invalid_rule_no_protocol(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['rules'][0].pop('protocol')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
