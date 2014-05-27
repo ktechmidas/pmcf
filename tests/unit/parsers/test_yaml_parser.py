@@ -31,146 +31,9 @@ def _mock_validate_raises(data, schema):
 class TestParser(object):
 
     @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parse_valid_config(self):
-        struct = {
-            'config': {
-                'name': 'ais',
-                'stage': 'stage',
-                'access': '1234',
-                'secret': '2345',
-                'instance_access': '12345',
-                'instance_secret': '23456'
-            },
-            'resources': {
-                'instance': [
-                    {
-                        'count': 3,
-                        'image': 'ami-0bceb93b',
-                        'lb': 'app',
-                        'monitoring': False,
-                        'name': 'app',
-                        'provisioner': {'provider': 'puppet'},
-                        'sg': ['app'],
-                        'size': 'm1.large',
-                        'sshKey': 'bootstrap'
-                    }
-                ],
-                'load_balancer': [
-                    {
-                        'healthcheck': {
-                            'port': 80,
-                            'protocol': 'TCP'
-                        },
-                        'listener': [
-                            {
-                                'instance_port': 80,
-                                'instance_protocol': 'HTTP',
-                                'lb_port': 80,
-                                'protocol': 'HTTP'
-                            },
-                            {
-                                'instance_port': 80,
-                                'instance_protocol': 'HTTP',
-                                'lb_port': 443,
-                                'protocol': 'HTTPS',
-                                'sslCert': 'test',
-                            }
-                        ],
-                        'name': 'app'
-                    }
-                ],
-                'secgroup': [
-                    {
-                        'name': 'app',
-                        'rules': [
-                            {
-                                'port': 22,
-                                'protocol': 'tcp',
-                                'source_cidr': '54.246.118.174/32'
-                            },
-                            {
-                                'port': 22,
-                                'protocol': 'tcp',
-                                'source_cidr': '62.82.81.73/32'
-                            },
-                            {
-                                'port': 22,
-                                'protocol': 'tcp',
-                                'source_cidr': '83.244.197.164/32'
-                            },
-                            {
-                                'port': 22,
-                                'protocol': 'tcp',
-                                'source_cidr': '83.244.197.190/32'
-                            },
-                            {
-                                'port': 22,
-                                'protocol': 'tcp',
-                                'source_cidr': '83.98.0.0/17'
-                            },
-                            {
-                                'port': 5666,
-                                'protocol': 'tcp',
-                                'source_cidr': '83.98.0.0/17'
-                            },
-                            {
-                                'port': 161,
-                                'protocol': 'tcp',
-                                'source_cidr': '83.98.0.0/17'
-                            },
-                            {
-                                'port': 161,
-                                'protocol': 'udp',
-                                'source_cidr': '83.98.0.0/17'
-                            },
-                            {
-                                'port': -1,
-                                'protocol': 'icmp',
-                                'source_cidr': '83.98.0.0/17'
-                            },
-                            {
-                                'port': 22,
-                                'protocol': 'tcp',
-                                'source_cidr': '46.137.169.193/32'
-                            },
-                            {
-                                'port': 80,
-                                'protocol': 'tcp',
-                                'source_cidr': '0.0.0.0/0'
-                            },
-                            {
-                                'port': 443,
-                                'protocol': 'tcp',
-                                'source_cidr': '0.0.0.0/0'
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
-
-        args = {
-            'stage': 'stage',
-            'accesskey': '1234',
-            'secretkey': '2345',
-            'instance_accesskey': '12345',
-            'instance_secretkey': '23456'
-        }
-        parser = yaml_parser.YamlParser()
-        fname = 'tests/data/yaml/ais-test-farm.yaml'
-        data = parser.parse_file(fname, args)
-        assert_equals(data, struct)
-
-    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_args_raises(self):
         parser = yaml_parser.YamlParser()
         fname = 'tests/data/yaml/ais-test-farm.yaml'
-        assert_raises(ParserFailure, parser.parse_file, fname, {})
-
-    @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parse_invalid_config_raises(self):
-        parser = yaml_parser.YamlParser()
-        fname = 'tests/data/yaml/ais-test-bad-farm.yaml'
         assert_raises(ParserFailure, parser.parse_file, fname, {})
 
     def test_parse_invalid_yaml_raises(self):
@@ -190,3 +53,60 @@ class TestParser(object):
         # Append empty instance
         parser._stack['resources']['instance'].append({})
         assert_raises(ParserFailure, parser.validate)
+
+
+class TestParserData(object):
+
+    def __init__(self):
+        self.data = {}
+
+    @mock.patch('jsonschema.validate', _mock_validate)
+    def setup(self):
+        args = {
+            'stage': 'stage',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/ais-test-farm.yaml'
+        self.data = parser.parse_file(fname, args)
+
+    def test_parser_has_valid_keys(self):
+        assert_equals(set(['config', 'resources']), set(self.data.keys()))
+
+    def test_parser_config_has_valid_keys(self):
+        keys = [
+            'name',
+            'stage',
+            'access',
+            'secret',
+            'instance_access',
+            'instance_secret',
+        ]
+        assert_equals(set(keys), set(self.data['config'].keys()))
+
+    def test_parser_resource_has_valid_keys(self):
+        keys = [
+            'instance',
+            'load_balancer',
+            'secgroup',
+        ]
+        assert_equals(set(keys), set(self.data['resources'].keys()))
+
+    def test_parser_resource_has_valid_instance_count(self):
+        assert_equals(1, len(self.data['resources']['instance']))
+
+    def test_parser_resource_has_valid_lb_count(self):
+        assert_equals(1, len(self.data['resources']['load_balancer']))
+
+    def test_parser_resource_has_valid_secgroup_count(self):
+        assert_equals(1, len(self.data['resources']['secgroup']))
+
+    def test_parser_lb_has_valid_listener_count(self):
+        assert_equals(2, len(
+            self.data['resources']['load_balancer'][0]['listener']))
+
+    def test_parser_sg_has_valid_rule_count(self):
+        assert_equals(12, len(self.data['resources']['secgroup'][0]['rules']))
