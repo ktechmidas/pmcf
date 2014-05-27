@@ -93,6 +93,11 @@ class TestBaseSchema(object):
         self.data.pop('config')
         assert_raises(ValidationError, jsonschema.validate, self.data, schema)
 
+    def test_schema_invalid_extra_property(self):
+        schema = yaml.load(base_schema)
+        self.data['wobble'] = True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
     def test_schema_invalid_no_resources(self):
         schema = yaml.load(base_schema)
         self.data.pop('resources')
@@ -101,6 +106,11 @@ class TestBaseSchema(object):
     def test_schema_one_instance_valid(self):
         schema = yaml.load(base_schema)
         assert_equals(None, jsonschema.validate(self.data, schema))
+
+    def test_schema_invalid_instance_extra_property(self):
+        schema = yaml.load(base_schema)
+        self.data['resources']['instance'][0]['wobble'] = True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
 
     def test_schema_no_instance_invalid(self):
         schema = yaml.load(base_schema)
@@ -151,6 +161,26 @@ class TestBaseSchema(object):
         schema = yaml.load(base_schema)
         self._add_lb_data()
         assert_equals(None, jsonschema.validate(self.data, schema))
+
+    def test_schema_invalid_loadbalancer_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['wobble'] = True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_listener_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['listener'][0]['wobble'] =\
+            True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_healthcheck_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_lb_data()
+        self.data['resources']['load_balancer'][0]['healthcheck']['wobble'] =\
+            True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
 
     def test_schema_loadbalancer_invalid_listener_no_instance_port(self):
         schema = yaml.load(base_schema)
@@ -251,4 +281,22 @@ class TestBaseSchema(object):
         schema = yaml.load(base_schema)
         self._add_sg_data()
         self.data['resources']['secgroup'][0]['rules'][0].pop('protocol')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_secgroup_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['wobble'] = True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_secgroup_cidr_rule_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['rules'][0]['wobble'] = True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_secgroup_group_rule_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_sg_data()
+        self.data['resources']['secgroup'][0]['rules'][1]['wobble'] = True
         assert_raises(ValidationError, jsonschema.validate, self.data, schema)
