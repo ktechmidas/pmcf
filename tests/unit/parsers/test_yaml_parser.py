@@ -21,11 +21,16 @@ from pmcf.exceptions import ParserFailure
 
 
 def _mock_validate(data, schema):
+    return True
+
+
+def _mock_validate_raises(data, schema):
     raise jsonschema.exceptions.ValidationError('error')
 
 
 class TestParser(object):
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_valid_config(self):
         struct = {
             'config': {
@@ -156,11 +161,13 @@ class TestParser(object):
         data = parser.parse_file(fname, args)
         assert_equals(data, struct)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_args_raises(self):
         parser = yaml_parser.YamlParser()
         fname = 'tests/data/yaml/ais-test-farm.yaml'
         assert_raises(ParserFailure, parser.parse_file, fname, {})
 
+    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_config_raises(self):
         parser = yaml_parser.YamlParser()
         fname = 'tests/data/yaml/ais-test-bad-farm.yaml'
@@ -177,7 +184,7 @@ class TestParser(object):
         parser = yaml_parser.YamlParser()
         assert_raises(ParserFailure, parser.parse, config)
 
-    @mock.patch('jsonschema.validate', _mock_validate)
+    @mock.patch('jsonschema.validate', _mock_validate_raises)
     def test_schema_validation_failure_raises(self):
         parser = yaml_parser.YamlParser()
         # Append empty instance
