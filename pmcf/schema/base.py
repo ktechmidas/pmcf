@@ -115,6 +115,8 @@ definitions:
             healthcheck:
                 type: object
                 properties:
+                    path:
+                        type: string
                     protocol:
                         enum:
                             - HTTP
@@ -122,12 +124,16 @@ definitions:
                             - TCP
                     port:
                         type: integer
+                required:
+                    - protocol
+                    - port
+                additionalProperties: false
         required:
             - name
             - listener
             - healthcheck
         additionalProperties: false
-    secgrouprule:
+    secgrouprule_cidr:
         properties:
             to_port:
                 type: integer
@@ -135,15 +141,29 @@ definitions:
                 type: integer
             protocol:
                 type: string
-            oneOf:
-                source_cidr:
-                    type: string
-                source_group:
-                    type: string
+            source_cidr:
+                type: string
         required:
             - from_port
             - to_port
             - protocol
+            - source_cidr
+        additionalProperties: false
+    secgrouprule_group:
+        properties:
+            to_port:
+                type: integer
+            from_port:
+                type: integer
+            protocol:
+                type: string
+            source_group:
+                type: string
+        required:
+            - from_port
+            - to_port
+            - protocol
+            - source_group
         additionalProperties: false
     secgroup:
         properties:
@@ -151,9 +171,10 @@ definitions:
                 type: string
             rules:
                 type: array
-                minItems: 1
                 items:
-                    $ref: "#/definitions/secgrouprule"
+                    anyOf:
+                        - $ref: "#/definitions/secgrouprule_group"
+                        - $ref: "#/definitions/secgrouprule_cidr"
         required:
             - name
             - rules
@@ -178,7 +199,7 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/load_balancer"
-            sec_group:
+            secgroup:
                 type: array
                 items:
                     $ref: "#/definitions/secgroup"
