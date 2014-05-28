@@ -129,6 +129,7 @@ class TestParser(object):
                     'port': 80
                 },
                 'name': 'test',
+                'policy': [],
             }
         ]
         lbdata = [{
@@ -157,6 +158,7 @@ class TestParser(object):
                     }
                 ],
                 'name': 'test',
+                'policy': [],
                 'healthcheck': {
                     'path': '/healthcheck',
                     'protocol': 'HTTP',
@@ -177,6 +179,50 @@ class TestParser(object):
         parser.build_lbs('test', lbdata)
         assert_equals(parser.stack()['resources']['load_balancer'], data)
 
+    def test_build_lbs_valid_logging_policy(self):
+        parser = awsfw_parser.AWSFWParser()
+        data = [
+            {
+                'listener': [
+                    {
+                        'instance_port': 80,
+                        'protocol': 'TCP',
+                        'lb_port': 80
+                    }
+                ],
+                'name': 'test',
+                'policy': [],
+                'healthcheck': {
+                    'protocol': 'TCP',
+                    'port': 80
+                },
+                'policy': [{
+                    'type': 'log_policy',
+                    'policy': {
+                        's3bucket': u'c4-elb-logs',
+                        'emit_interval': u'60',
+                        'enabled': True,
+                        's3prefix': u'stage/ais'
+                    }
+                }]
+            }
+        ]
+        lbdata = [{
+            'listener': {
+                'healthCheck': 'TCP:80',
+                'protocol': 'TCP',
+                'port': 80,
+                'instancePort': 80,
+            },
+            'elb-logging': {
+                'emitinterval': '60',
+                's3bucket': 'c4-elb-logs',
+                'prefix': 'stage%2Fais'
+            }
+        }]
+        parser.build_lbs('test', lbdata)
+        assert_equals(parser.stack()['resources']['load_balancer'], data)
+
     def test_build_lbs_valid_tcp(self):
         parser = awsfw_parser.AWSFWParser()
         data = [
@@ -189,6 +235,7 @@ class TestParser(object):
                     }
                 ],
                 'name': 'test',
+                'policy': [],
                 'healthcheck': {
                     'protocol': 'TCP',
                     'port': 80
@@ -229,7 +276,8 @@ class TestParser(object):
                     'protocol': 'HTTP',
                     'port': 80
                 },
-                'name': 'test'
+                'name': 'test',
+                'policy': [],
             }
         ]
         lbdata = [{

@@ -61,8 +61,10 @@ class AWSFWParser(BaseParser):
 
     def build_lbs(self, farmname, elbs):
         for idx, elb in enumerate(elbs):
-            lb = {}
-            lb['listener'] = []
+            lb = {
+                'listener': [],
+                'policy': []
+            }
             for listener in self._listify(elbs[idx]['listener']):
                 hc = listener.get('healthCheck')
                 if hc:
@@ -93,10 +95,10 @@ class AWSFWParser(BaseParser):
                     'enabled': True,
                 }
                 LOG.debug('Found log_policy: %s' % log_policy)
-                lb['logging'] = log_policy
-            if lb.get('healthcheck', None) is None:
-                raise ParserFailure('a loadbalancer needs a healthCheck '
-                                    'parameter')
+                lb['policy'].append({
+                    'type': 'log_policy',
+                    'policy': log_policy
+                })
 
             LOG.debug('Found loadbalancer: %s' % lb)
             if elb.get('suffix'):
