@@ -62,15 +62,16 @@ class JSONOutput(BaseOutput):
                 ),
                 'Listeners': listeners
             }
-            if lb.get('logging'):
-                eap = elasticloadbalancing.AccessLoggingPolicy(
-                    name,
-                    EmitInterval=int(lb['logging']['emit_interval']),
-                    Enabled=lb['logging']['enabled'],
-                    S3BucketName=lb['logging']['s3bucket'],
-                    S3BucketPrefix=lb['logging']['s3prefix'],
-                )
-                elb['AccessLoggingPolicy'] = eap
+            for policy in lb['policy']:
+                if policy['type'] == 'log_policy':
+                    eap = elasticloadbalancing.AccessLoggingPolicy(
+                        name,
+                        EmitInterval=int(policy['policy']['emit_interval']),
+                        Enabled=policy['policy']['enabled'],
+                        S3BucketName=policy['policy']['s3bucket'],
+                        S3BucketPrefix=policy['policy']['s3prefix'],
+                    )
+                    elb['AccessLoggingPolicy'] = eap
             lbs[name] = elasticloadbalancing.LoadBalancer(
                 name,
                 **elb
