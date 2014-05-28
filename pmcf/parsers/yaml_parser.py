@@ -46,7 +46,7 @@ class YamlParser(BaseParser):
                 args['instance_accesskey']
             self._stack['config']['instance_secret'] =\
                 args['instance_secretkey']
-        self._stack['resources'] = data['resources']
+        self._stack['resources'].update(data['resources'])
 
         self.validate()
         LOG.debug('stack: %s' % self._stack)

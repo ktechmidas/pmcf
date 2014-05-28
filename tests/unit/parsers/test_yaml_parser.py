@@ -21,7 +21,7 @@ from pmcf.exceptions import ParserFailure
 
 
 def _mock_validate(data, schema):
-    return True
+    return None
 
 
 def _mock_validate_raises(data, schema):
@@ -92,6 +92,8 @@ class TestParserData(object):
             'instance',
             'load_balancer',
             'secgroup',
+            'cdn',
+            'db',
         ]
         assert_equals(set(keys), set(self.data['resources'].keys()))
 
