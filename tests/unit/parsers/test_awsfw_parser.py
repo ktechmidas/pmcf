@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import jsonschema
 import mock
 from nose.tools import assert_equals, assert_raises
 
@@ -20,7 +21,11 @@ from pmcf.exceptions import ParserFailure
 
 
 def _mock_validate(stack, schema):
-    return True
+    return None
+
+
+def _mock_validate_raises(data, schema):
+    raise jsonschema.exceptions.ValidationError('error')
 
 
 class TestParser(object):
@@ -301,340 +306,76 @@ class TestParser(object):
         assert_equals(parser.stack()['resources']['secgroup'], rules)
 
     @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parse_valid_config_provisioner_puppet(self):
+    def test_parse_invalid_xml_config_raises(self):
         parser = awsfw_parser.AWSFWParser()
-        struct = {
-            'config': {
-                'name': u'ais',
-                'stage': u'stage',
-                'strategy': 'BLUEGREEN',
-                'version': u'v2p54',
-                'owner': 'gis-channel4@piksel.com'
-            },
-            'resources': {
-                'cdn': [],
-                'db': [],
-                'instance': [
-                    {
-                        'block_device': [],
-                        'count': 6,
-                        'image': u'ami-e97f849e',
-                        'monitoring': False,
-                        'name': u'app',
-                        'lb': u'app',
-                        'provisioner': {
-                            'args': {
-                                'appBucket': u'aws-c4-003358414754',
-                                'apps': ['ais'],
-                                'roleBucket': u'aws-c4-003358414754',
-                                'roles': ['app']
-                            },
-                            'provider': u'puppet'
-                        },
-                        'sg': [u'app', 'default'],
-                        'sshKey': u'ioko-pml',
-                        'size': u'm1.large'
-                    }
-                ],
-                'load_balancer': [
-                    {
-                        'healthcheck': {
-                            'port': 80,
-                            'protocol': u'TCP'
-                        },
-                        'name': 'app',
-                        'listener': [
-                            {
-                                'instance_port': 80,
-                                'lb_port': 80,
-                                'protocol': u'HTTP',
-                                'instance_protocol': 'HTTP',
-                            },
-                            {
-                                'instance_port': 80,
-                                'lb_port': 443,
-                                'protocol': u'HTTPS',
-                                'sslCert': u'test',
-                                'instance_protocol': 'HTTP',
-                            }
-                        ],
-                        'logging': {
-                            's3bucket': u'c4-elb-logs',
-                            'emit_interval': u'60',
-                            'enabled': True,
-                            's3prefix': u'stage/ais'
-                        }
-                    }
-                ],
-                'secgroup': [
-                    {
-                        'name': u'app',
-                        'rules': [
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'54.246.118.174/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'62.82.81.73/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.244.197.164/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.244.197.190/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_group': u'jump-server-sg',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 5666,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 5666
-                            },
-                            {
-                                'from_port': 161,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 161
-                            },
-                            {
-                                'from_port': 161,
-                                'protocol': u'udp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 161
-                            },
-                            {
-                                'from_port': -1,
-                                'protocol': u'icmp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': -1
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'46.137.169.193/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 80,
-                                'protocol': u'tcp',
-                                'source_cidr': u'0.0.0.0/0',
-                                'to_port': 80
-                            },
-                            {
-                                'from_port': 443,
-                                'protocol': u'tcp',
-                                'source_cidr': u'0.0.0.0/0',
-                                'to_port': 443
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+        assert_raises(ParserFailure, parser.parse_file,
+                      'tests/data/awsfw/ais-stage-farm-broken.xml')
 
-        with open('tests/data/awsfw/ais-stage-farm-puppet.xml') as fd:
-            config = fd.read()
+    @mock.patch('jsonschema.validate', _mock_validate_raises)
+    def test_schema_validation_failure_raises(self):
+        parser = awsfw_parser.AWSFWParser()
+        # Append empty instance
+        parser._stack['resources']['instance'].append({})
+        assert_raises(ParserFailure, parser.validate)
 
-        data = parser.parse(config)
-        assert_equals(data, struct)
+
+class TestParserData(object):
+
+    def __init__(self):
+        self.data = {}
 
     @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parse_invalid_config_raises(self):
-        parser = awsfw_parser.AWSFWParser()
-        with open('tests/data/awsfw/ais-stage-farm-broken.xml') as fd:
-            config = fd.read()
-
-        assert_raises(ParserFailure, parser.parse, config)
-
-    @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parse_valid_config(self):
-        parser = awsfw_parser.AWSFWParser()
-        parser = awsfw_parser.AWSFWParser()
-        struct = {
-            'config': {
-                'name': u'ais',
-                'stage': u'stage',
-                'strategy': 'BLUEGREEN',
-                'version': u'v2p54',
-                'owner': 'gis-channel4@piksel.com'
-            },
-            'resources': {
-                'cdn': [],
-                'db': [],
-                'instance': [
-                    {
-                        'block_device': [],
-                        'count': 6,
-                        'image': u'ami-e97f849e',
-                        'monitoring': False,
-                        'name': u'app',
-                        'lb': u'app',
-                        'provisioner': {
-                            'args': {
-                                'appBucket': u'aws-c4-003358414754',
-                                'apps': [
-                                    u'ais-jetty/v2.54-02',
-                                    u'ais-nginx/v1.23',
-                                    u'c4-devaccess'
-                                ],
-                                'roleBucket': u'aws-c4-003358414754',
-                                'roles': [
-                                    u'jetty',
-                                    u'nginx-latest/v1.5',
-                                    u'nagiosclient/v1.5',
-                                    u'snmpd/v1.2',
-                                    u'cloudwatch-monitoring/v1'
-                                ]
-                            },
-                            'provider': 'awsfw_standalone'
-                        },
-                        'sg': [u'app'],
-                        'sshKey': u'ioko-pml',
-                        'size': u'm1.large'
-                    }
-                ],
-                'load_balancer': [
-                    {
-                        'healthcheck': {
-                            'port': 80,
-                            'protocol': u'TCP'
-                        },
-                        'name': 'app',
-                        'listener': [
-                            {
-                                'instance_port': 80,
-                                'lb_port': 80,
-                                'protocol': u'HTTP',
-                                'instance_protocol': u'HTTP',
-                            },
-                            {
-                                'instance_port': 80,
-                                'lb_port': 443,
-                                'protocol': u'HTTPS',
-                                'sslCert': u'test',
-                                'instance_protocol': u'HTTP',
-                            }
-                        ],
-                        'logging': {
-                            's3bucket': u'c4-elb-logs',
-                            'emit_interval': u'60',
-                            'enabled': True,
-                            's3prefix': u'stage/ais'
-                        }
-                    }
-                ],
-                'secgroup': [
-                    {
-                        'name': u'app',
-                        'rules': [
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'54.246.118.174/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'62.82.81.73/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.244.197.164/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.244.197.190/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_group': u'jump-server-sg',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 5666,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 5666
-                            },
-                            {
-                                'from_port': 161,
-                                'protocol': u'tcp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 161
-                            },
-                            {
-                                'from_port': 161,
-                                'protocol': u'udp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': 161
-                            },
-                            {
-                                'from_port': -1,
-                                'protocol': u'icmp',
-                                'source_cidr': u'83.98.0.0/17',
-                                'to_port': -1
-                            },
-                            {
-                                'from_port': 22,
-                                'protocol': u'tcp',
-                                'source_cidr': u'46.137.169.193/32',
-                                'to_port': 22
-                            },
-                            {
-                                'from_port': 80,
-                                'protocol': u'tcp',
-                                'source_cidr': u'0.0.0.0/0',
-                                'to_port': 80
-                            },
-                            {
-                                'from_port': 443,
-                                'protocol': u'tcp',
-                                'source_cidr': u'0.0.0.0/0',
-                                'to_port': 443
-                            }
-                        ]
-                    }
-                ]
-            }
+    def setup(self):
+        args = {
+            'stage': 'stage',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
         }
+        parser = awsfw_parser.AWSFWParser()
+        fname = 'tests/data/awsfw/ais-stage-farm.xml'
+        self.data = parser.parse_file(fname, args)
 
-        with open('tests/data/awsfw/ais-stage-farm.xml') as fd:
-            config = fd.read()
+    def test_parser_has_valid_keys(self):
+        assert_equals(set(['config', 'resources']), set(self.data.keys()))
 
-        data = parser.parse(config)
-        assert_equals(data, struct)
+    def test_parser_config_has_valid_keys(self):
+        keys = [
+            'name',
+            'stage',
+            'access',
+            'secret',
+            'instance_access',
+            'instance_secret',
+            'owner',
+            'version',
+            'strategy',
+        ]
+        assert_equals(set(keys), set(self.data['config'].keys()))
+
+    def test_parser_resource_has_valid_keys(self):
+        keys = [
+            'instance',
+            'load_balancer',
+            'secgroup',
+            'cdn',
+            'db',
+        ]
+        assert_equals(set(keys), set(self.data['resources'].keys()))
+
+    def test_parser_resource_has_valid_instance_count(self):
+        assert_equals(1, len(self.data['resources']['instance']))
+
+    def test_parser_resource_has_valid_lb_count(self):
+        assert_equals(1, len(self.data['resources']['load_balancer']))
+
+    def test_parser_resource_has_valid_secgroup_count(self):
+        assert_equals(1, len(self.data['resources']['secgroup']))
+
+    def test_parser_lb_has_valid_listener_count(self):
+        assert_equals(2, len(
+            self.data['resources']['load_balancer'][0]['listener']))
+
+    def test_parser_sg_has_valid_rule_count(self):
+        assert_equals(13, len(self.data['resources']['secgroup'][0]['rules']))
