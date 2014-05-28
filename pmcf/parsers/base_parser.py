@@ -54,9 +54,6 @@ class BaseParser(object):
 
     def validate(self):
         LOG.info('Start validation of stack')
-        if len(self._stack['resources']['instance']) == 0:
-            raise ParserFailure('Bad stack: no instances')
-
         try:
             jsonschema.validate(self._stack, yaml.load(base_schema))
         except jsonschema.exceptions.ValidationError, e:

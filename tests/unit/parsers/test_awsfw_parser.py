@@ -75,42 +75,6 @@ class TestParser(object):
 
         assert_raises(ParserFailure, parser.build_lbs, 'test', lbdata)
 
-    def test_build_lbs_invalid_no_healthcheck(self):
-        parser = awsfw_parser.AWSFWParser()
-        lbdata = [{
-            'listener': {
-                'protocol': 'HTTP',
-                'port': 80,
-                'instancePort': 80,
-                'instance_protocol': u'HTTP',
-            }
-        }]
-
-        assert_raises(ParserFailure, parser.build_lbs, 'test', lbdata)
-
-    def test_build_lbs_invalid_no_healthcheck_multi(self):
-        parser = awsfw_parser.AWSFWParser()
-        lbdata = [
-            {
-                'listener': {
-                    'protocol': 'HTTP',
-                    'port': 80,
-                    'instancePort': 80,
-                    'instance_protocol': u'HTTP',
-                }
-            },
-            {
-                'listener': {
-                    'protocol': 'HTTP',
-                    'port': 8080,
-                    'instancePort': 80,
-                    'instance_protocol': u'HTTP',
-                }
-            }
-        ]
-
-        assert_raises(ParserFailure, parser.build_lbs, 'test', lbdata)
-
     def test_build_lbs_valid_http(self):
         parser = awsfw_parser.AWSFWParser()
         data = [
@@ -335,13 +299,6 @@ class TestParser(object):
         ]
         parser.build_fw('test', rdata)
         assert_equals(parser.stack()['resources']['secgroup'], rules)
-
-    @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parse_invalid_config_no_instances(self):
-        parser = awsfw_parser.AWSFWParser()
-        with open('tests/data/awsfw/ais-stage-farm-noinstances.xml') as fd:
-            config = fd.read()
-        assert_raises(ParserFailure, parser.parse, config)
 
     @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_valid_config_provisioner_puppet(self):
