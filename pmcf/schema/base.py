@@ -110,8 +110,6 @@ definitions:
                     $ref: "#/definitions/listener"
             policy:
                 type: array
-            logging:
-                type: object
             healthcheck:
                 type: object
                 properties:
