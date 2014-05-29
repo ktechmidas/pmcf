@@ -66,7 +66,7 @@ class JSONOutput(BaseOutput):
                 if policy['type'] == 'log_policy':
                     eap = elasticloadbalancing.AccessLoggingPolicy(
                         name,
-                        EmitInterval=int(policy['policy']['emit_interval']),
+                        EmitInterval=policy['policy']['emit_interval'],
                         Enabled=policy['policy']['enabled'],
                         S3BucketName=policy['policy']['s3bucket'],
                         S3BucketPrefix=policy['policy']['s3prefix'],

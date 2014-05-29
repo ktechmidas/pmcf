@@ -169,7 +169,7 @@ class TestParser(object):
                     'type': 'log_policy',
                     'policy': {
                         's3bucket': u'c4-elb-logs',
-                        'emit_interval': u'60',
+                        'emit_interval': 60,
                         'enabled': True,
                         's3prefix': u'stage/ais'
                     }
