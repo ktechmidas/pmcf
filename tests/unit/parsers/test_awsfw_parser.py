@@ -305,6 +305,393 @@ class TestParser(object):
         parser.build_fw('test', rdata)
         assert_equals(parser.stack()['resources']['secgroup'], rules)
 
+    def test_build_instance_valid(self):
+        data = [
+            {
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'lb': 'app',
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty']
+                    },
+                    'provider': 'awsfw_standalone'},
+                'sg': [],
+                'size': 'm1.large'
+            }
+        ]
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'role': ['jetty'],
+            'cname': 'app',
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'app': ['ais-jetty/v2.54-02'],
+            'elb': 'app',
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser._stack['resources']['load_balancer'].append({
+            'listener': [
+                {
+                    'instance_port': 80,
+                    'sslCert': 'test',
+                    'protocol': 'HTTPS',
+                    'lb_port': 80,
+                    'instance_protocol': 'HTTP',
+                }
+            ],
+            'name': 'app',
+            'policy': [],
+            'healthcheck': {
+                'path': '/healthcheck',
+                'protocol': 'HTTP',
+                'port': 80
+            }
+        })
+        parser.build_instances('test', instances)
+        assert_equals(parser.stack()['resources']['instance'], data)
+
+    def test_build_instance_valid_no_cname(self):
+        data = [
+            {
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty']
+                    },
+                    'provider': 'awsfw_standalone'},
+                'sg': [],
+                'size': 'm1.large'
+            }
+        ]
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'role': ['jetty'],
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'app': ['ais-jetty/v2.54-02'],
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser.build_instances('test', instances)
+        assert_equals(parser.stack()['resources']['instance'], data)
+
+    def test_build_instance_valid_single_block_device(self):
+        data = [
+            {
+                'block_device': [{
+                    'size': 10,
+                    'device': '/dev/sdh'
+                }],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty']
+                    },
+                    'provider': 'awsfw_standalone'
+                },
+                'sg': [],
+                'size': 'm1.large'
+            }
+        ]
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'role': ['jetty'],
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'app': ['ais-jetty/v2.54-02'],
+            'volume': {
+                'volumeSize': '10',
+                'volumeDevice': '/dev/sdh'
+            }
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser.build_instances('test', instances)
+        assert_equals(parser.stack()['resources']['instance'], data)
+
+    def test_build_instance_valid_alternate_provisioner(self):
+        data = [
+            {
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'name': 'app',
+                'sg': [],
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty']
+                    },
+                    'provider': 'puppet'
+                },
+                'size': 'm1.large'
+            }
+        ]
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'provisioner': {
+                'provider': 'puppet',
+                'args': {
+                    'role': ['jetty'],
+                    'app': ['ais-jetty/v2.54-02'],
+                }
+            }
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser.build_instances('test', instances)
+        assert_equals(parser.stack()['resources']['instance'], data)
+
+    def test_build_instance_valid_multiple_lb(self):
+        data = [
+            {
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'lb': 'app',
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty']
+                    },
+                    'provider': 'awsfw_standalone'},
+                'sg': [],
+                'size': 'm1.large'
+            }
+        ]
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'role': ['jetty'],
+            'cname': 'app',
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'app': ['ais-jetty/v2.54-02'],
+            'elb': 'app',
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser._stack['resources']['load_balancer'].append({
+            'listener': [
+                {
+                    'instance_port': 80,
+                    'sslCert': 'test',
+                    'protocol': 'HTTPS',
+                    'lb_port': 80,
+                    'instance_protocol': 'HTTP',
+                }
+            ],
+            'name': 'app',
+            'policy': [],
+            'healthcheck': {
+                'path': '/healthcheck',
+                'protocol': 'HTTP',
+                'port': 80
+            }
+        })
+        parser._stack['resources']['load_balancer'].append({
+            'listener': [
+                {
+                    'instance_port': 80,
+                    'sslCert': 'test',
+                    'protocol': 'HTTPS',
+                    'lb_port': 80,
+                    'instance_protocol': 'HTTP',
+                }
+            ],
+            'name': 'app2',
+            'policy': [],
+            'healthcheck': {
+                'path': '/healthcheck',
+                'protocol': 'HTTP',
+                'port': 80
+            }
+        })
+        parser.build_instances('test', instances)
+        assert_equals(parser.stack()['resources']['instance'], data)
+
+    def test_build_instance_invalid_missing_lb(self):
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'role': ['jetty'],
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'app': ['ais-jetty/v2.54-02'],
+            'elb': 'app',
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        assert_raises(ParserFailure, parser.build_instances, 'test', instances)
+
+    def test_build_instance_invalid_multiple_lb(self):
+        instances = [{
+            'tier': 'app',
+            'availabilityZone': ['eu-west-1a'],
+            'role': ['jetty'],
+            'cname': 'app',
+            'count': '6',
+            'amiId': 'ami-e97f849e',
+            'size': 'm1.large',
+            'app': ['ais-jetty/v2.54-02'],
+            'elb': None,
+        }]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser._stack['resources']['load_balancer'].append({
+            'listener': [
+                {
+                    'instance_port': 80,
+                    'sslCert': 'test',
+                    'protocol': 'HTTPS',
+                    'lb_port': 80,
+                    'instance_protocol': 'HTTP',
+                }
+            ],
+            'name': 'app',
+            'policy': [],
+            'healthcheck': {
+                'path': '/healthcheck',
+                'protocol': 'HTTP',
+                'port': 80
+            }
+        })
+        parser._stack['resources']['load_balancer'].append({
+            'listener': [
+                {
+                    'instance_port': 80,
+                    'sslCert': 'test',
+                    'protocol': 'HTTPS',
+                    'lb_port': 80,
+                    'instance_protocol': 'HTTP',
+                }
+            ],
+            'name': 'app2',
+            'policy': [],
+            'healthcheck': {
+                'path': '/healthcheck',
+                'protocol': 'HTTP',
+                'port': 80
+            }
+        })
+        assert_raises(ParserFailure, parser.build_instances, 'test', instances)
+
+    def test_build_ds_default_sg(self):
+        ds = {
+            'farmName': 'ais-stage-01',
+            'farmOwner': 'gis-channel4@piksel.com',
+            'key': 'test',
+            'cloudwatch': 'true',
+            'appBucket': 'testbucket',
+            'roleBucket': 'testbucket',
+            'instances': [{
+                'tier': 'app',
+                'availabilityZone': ['eu-west-1a'],
+                'role': ['jetty'],
+                'cname': 'app',
+                'count': '6',
+                'amiId': 'ami-e97f849e',
+                'size': 'm1.large',
+                'app': ['ais-jetty/v2.54-02'],
+            }]
+        }
+        data = [
+            {
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'name': 'app',
+                'sg': ['default'],
+                'monitoring': True,
+                'sshKey': 'test',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty'],
+                        'appBucket': 'testbucket',
+                        'roleBucket': 'testbucket',
+                    },
+                    'provider': 'awsfw_standalone'
+                },
+                'size': 'm1.large'
+            }
+        ]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser.build_ds(ds, {})
+        assert_equals(parser._stack['resources']['instance'],  data)
+
+    def test_build_ds_default_no_default_sg(self):
+        ds = {
+            'farmName': 'ais-stage-01',
+            'farmOwner': 'gis-channel4@piksel.com',
+            'key': 'test',
+            'cloudwatch': 'true',
+            'appBucket': 'testbucket',
+            'roleBucket': 'testbucket',
+            'noDefaultSG': None,
+            'instances': [{
+                'tier': 'app',
+                'availabilityZone': ['eu-west-1a'],
+                'role': ['jetty'],
+                'cname': 'app',
+                'count': '6',
+                'amiId': 'ami-e97f849e',
+                'size': 'm1.large',
+                'app': ['ais-jetty/v2.54-02'],
+            }]
+        }
+        data = [
+            {
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'name': 'app',
+                'sg': [],
+                'monitoring': True,
+                'sshKey': 'test',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'roles': ['jetty'],
+                        'appBucket': 'testbucket',
+                        'roleBucket': 'testbucket',
+                    },
+                    'provider': 'awsfw_standalone'
+                },
+                'size': 'm1.large'
+            }
+        ]
+
+        parser = awsfw_parser.AWSFWParser()
+        parser.build_ds(ds, {})
+        assert_equals(parser._stack['resources']['instance'],  data)
+
     @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_xml_config_raises(self):
         parser = awsfw_parser.AWSFWParser()

@@ -149,6 +149,9 @@ class AWSFWParser(BaseParser):
                     else:
                         raise ParserFailure('Bad stack: unclear loadbalancer '
                                             'to instance declaration')
+                else:
+                    raise ParserFailure('Bad stack: unclear loadbalancer '
+                                        'to instance declaration')
             if instance.get('role') and instance.get('app'):
                 inst['provisioner'] = {
                     'provider': 'awsfw_standalone',
@@ -175,7 +178,7 @@ class AWSFWParser(BaseParser):
             if instance.get('volume'):
                 for vol in self._listify(instance['volume']):
                     data = {
-                        'size': vol['volumeSize'],
+                        'size': int(vol['volumeSize']),
                         'device': vol['volumeDevice']
                     }
                     inst['block_device'].append(data)
@@ -201,8 +204,6 @@ class AWSFWParser(BaseParser):
                 args['instance_accesskey']
             self._stack['config']['instance_secret'] =\
                 args['instance_secretkey']
-        if ds.get('farmOwner'):
-            self._stack['config']['owner'] = ds['farmOwner']
 
         if ds.get('ELB'):
             self.build_lbs(ds['farmName'], self._listify(ds['ELB']))
