@@ -11,8 +11,3 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
-from pmcf.resources.aws import autoscaling
-from pmcf.resources.aws import ec2
-from pmcf.resources.aws import elasticloadbalancing
-from pmcf.resources.aws import rds

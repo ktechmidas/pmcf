@@ -144,7 +144,7 @@ class ScheduledAction(asg.ScheduledAction):
 
         for item in ['StartTime', 'EndTime']:
             try:
-                struct_time = time.strptime(self.properties[item], tm_fmt)
+                time.strptime(self.properties[item], tm_fmt)
             except ValueError:
                 error(self, '%s invalid date, must match %s' % (item, tm_fmt))
 

@@ -14,7 +14,7 @@
 
 import email
 import gzip
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 import StringIO
 
 from pmcf.provisioners.awsfw import AWSFWProvisioner

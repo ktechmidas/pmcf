@@ -29,13 +29,6 @@ class TestBaseParser(object):
         self.parser = BaseParser()
 
     def test_parse_raises(self):
-        struct = {
-            'foo': {
-                'bar': [1, 'three'],
-                'baz': True
-            }
-        }
-
         config = """
             foo:
                 bar:

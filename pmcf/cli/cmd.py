@@ -13,7 +13,6 @@
 #    under the License.
 
 import logging
-import sys
 
 from pmcf.exceptions import ParserFailure, PMCFException
 from pmcf.utils import import_from_string

@@ -14,7 +14,6 @@
 
 import logging
 import netaddr
-import os
 import urllib
 import xmltodict
 from xml.parsers.expat import ExpatError

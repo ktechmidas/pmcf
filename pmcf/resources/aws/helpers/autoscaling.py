@@ -13,7 +13,7 @@
 #    under the License.
 
 from troposphere import AWSObject, AWSProperty
-from troposphere.validators import boolean, positive_integer, integer
+from troposphere.validators import positive_integer, integer
 from troposphere.autoscaling import NotificationConfiguration
 
 

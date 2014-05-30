@@ -14,7 +14,6 @@
 
 import argparse
 import logging
-import sys
 
 from pmcf.exceptions import PMCFException
 from pmcf.utils import import_from_string

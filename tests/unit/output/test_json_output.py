@@ -12,11 +12,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nose.tools import assert_equals, assert_raises
-
-from pmcf.exceptions import ProvisionerException
-from pmcf.outputs import JSONOutput
-
 
 class TestJSONOutput(object):
 

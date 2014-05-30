@@ -13,7 +13,7 @@
 #    under the License.
 
 from troposphere import AWSObject, AWSProperty
-from troposphere.validators import boolean, positive_integer
+from troposphere.validators import boolean
 from troposphere.elasticloadbalancing import \
     (ConnectionDrainingPolicy, HealthCheck)
 

@@ -17,7 +17,7 @@ from troposphere import Base64, GetAZs, Ref, Template
 
 from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.base_output import BaseOutput
-from pmcf.resources.aws import *
+from pmcf.resources.aws import autoscaling, ec2, elasticloadbalancing
 
 LOG = logging.getLogger(__name__)
 

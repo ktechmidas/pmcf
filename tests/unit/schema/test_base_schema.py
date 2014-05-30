@@ -84,7 +84,7 @@ class TestBaseSchema(object):
         })
 
     def test_schema_loads(self):
-        schema = yaml.load(base_schema)
+        yaml.load(base_schema)
         # We're only testing for valid YAML
         assert_equals(True, True)
 

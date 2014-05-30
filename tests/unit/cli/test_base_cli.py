@@ -13,7 +13,7 @@
 #    under the License.
 
 import mock
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 import sys
 
 from pmcf.cli.cli import main
