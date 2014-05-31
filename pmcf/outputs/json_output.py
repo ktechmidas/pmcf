@@ -109,6 +109,8 @@ class JSONOutput(BaseOutput):
             data.add_resource(sgs[name])
 
         for inst in resources['instance']:
+            cfg = {}
+            args = {}
             if inst.get('provisioner'):
                 if inst['provisioner']['provider'] != provisioner.provides():
                     raise ProvisionerException('wrong provisoner for '
@@ -116,23 +118,18 @@ class JSONOutput(BaseOutput):
                                                inst['provisioner']['provider']
                                                )
 
-            cfg = {
-                'roles': ','.join(inst['provisioner']['args']['roles']),
-                'rolebucket': inst['provisioner']['args']['roleBucket'],
-                'apps': ','.join(inst['provisioner']['args']['apps']),
-                'appbucket': inst['provisioner']['args']['appBucket'],
-                'instantiatedby': 'create-farm',
-                'platform_environment': config['stage'],
-            }
+                if inst['provisioner']['provider'] == 'awsfw_standalone':
+                    args = inst['provisioner']['args']
+                    cfg['platform_environment'] = config['stage']
+                    cred_mapping = {
+                        'instance_access': 'AWS_ACCESS_KEY_ID',
+                        'instance_secret': 'AWS_SECRET_ACCESS_KEY',
+                    }
+                    for k, v in cred_mapping.iteritems():
+                        if config.get(k, None):
+                            cfg[v] = config[k]
 
-            cred_mapping = {
-                'instance_access': 'AWS_ACCESS_KEY_ID',
-                'instance_secret': 'AWS_SECRET_ACCESS_KEY',
-            }
-            for k, v in cred_mapping.iteritems():
-                if config.get(k, None):
-                    cfg[v] = config[k]
-            ud = provisioner.userdata(cfg)
+            ud = provisioner.userdata(cfg, args)
 
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
@@ -145,6 +142,7 @@ class JSONOutput(BaseOutput):
             )
             LOG.debug('Adding lc: %s' % lc.JSONrepr())
             data.add_resource(lc)
+
             asgtags = [
                 autoscaling.Tag(
                     key='Name',

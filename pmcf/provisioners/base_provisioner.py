@@ -39,7 +39,7 @@ class BaseProvisioner(object):
         return kls._provides
 
     @abc.abstractmethod
-    def userdata(self, config):
+    def userdata(self, config, args):
         raise NotImplementedError
 
     def add_file(self, ud, filename, ftype='plain', compress=True):

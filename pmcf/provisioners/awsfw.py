@@ -23,11 +23,17 @@ class AWSFWProvisioner(BaseProvisioner):
 
     _provides = 'awsfw_standalone'
 
-    def userdata(self, config):
+    def userdata(self, config, args):
         ud = self.make_skeleton()
 
         ud = self.add_file(ud, 'scripts/awsfw/part-handler')
         ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl', 'x-s3curl', False)
+
+        config['roles'] = ','.join(args['roles'])
+        config['rolebucket'] = args['roleBucket']
+        config['apps'] = ','.join(args['apps'])
+        config['appbucket'] = args['appBucket']
+        config['instantiatedby'] = 'create-farm'
 
         awsfw_data = ''
         for k, v in config.iteritems():

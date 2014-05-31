@@ -30,8 +30,14 @@ class TestAWSFWProvisioner(object):
         }
 
     def setup(self):
+        args = {
+            'roles': ['test'],
+            'roleBucket': 'somewhere',
+            'apps': ['test'],
+            'appBucket': 'somewhere',
+        }
         awsfwp = AWSFWProvisioner()
-        data = awsfwp.userdata(self.config)
+        data = awsfwp.userdata(self.config, args)
         self.message = email.message_from_string(data)
 
     def _decode(self, data):

@@ -31,8 +31,7 @@ class TestBaseProvisioner(object):
         assert_equals(None, BaseProvisioner().provides())
 
     def test_parse_raises(self):
-        config = {}
-        assert_raises(NotImplementedError, self.provisioner.userdata, config)
+        assert_raises(NotImplementedError, self.provisioner.userdata, {}, {})
 
     def test_userdata_too_long(self):
         data = self.provisioner.make_skeleton()
