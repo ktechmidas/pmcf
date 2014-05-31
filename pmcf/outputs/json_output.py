@@ -13,7 +13,7 @@
 #    under the License.
 
 import logging
-from troposphere import Base64, GetAZs, Ref, Template
+from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
 from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.base_output import BaseOutput
@@ -27,6 +27,9 @@ class JSONOutput(BaseOutput):
     def add_resources(self, provisioner, resources, config):
         LOG.info('Start building template')
         data = Template()
+        desc = "%s %s stack" % (config['name'], config['stage'])
+        data.add_description(desc)
+        data.add_version()
 
         lbs = {}
         for lb in resources['load_balancer']:
@@ -75,6 +78,13 @@ class JSONOutput(BaseOutput):
             lbs[name] = elasticloadbalancing.LoadBalancer(
                 name,
                 **elb
+            )
+            data.add_output(
+                Output(
+                    "%sDNS" % name,
+                    Description="Public DNSName of the %s ELB" % name,
+                    Value=GetAtt(lbs[name], "DNSName"),
+                )
             )
             LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])

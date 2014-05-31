@@ -30,6 +30,19 @@ class TestJSONOutput(object):
     def test_lb_valid(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Outputs": {
+                "ELBtestDNS": {
+                    "Description": "Public DNSName of the ELBtest ELB",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "ELBtest",
+                            "DNSName"
+                        ]
+                    }
+                }
+            },
             "Resources": {
                 "ELBtest": {
                     "Properties": {
@@ -58,6 +71,10 @@ class TestJSONOutput(object):
             }
         }
 
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
         res = {
             'instance': [],
             'secgroup': [],
@@ -79,12 +96,25 @@ class TestJSONOutput(object):
                 'policy': [],
             }]
         }
-        tmpl = out.add_resources(None, res, {})
+        tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid_ssl(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Outputs": {
+                "ELBtestDNS": {
+                    "Description": "Public DNSName of the ELBtest ELB",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "ELBtest",
+                            "DNSName"
+                        ]
+                    }
+                }
+            },
             "Resources": {
                 "ELBtest": {
                     "Properties": {
@@ -114,6 +144,10 @@ class TestJSONOutput(object):
             }
         }
 
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
         res = {
             'instance': [],
             'secgroup': [],
@@ -136,12 +170,25 @@ class TestJSONOutput(object):
                 'policy': [],
             }]
         }
-        tmpl = out.add_resources(None, res, {})
+        tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid_access_log_policy(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Outputs": {
+                "ELBtestDNS": {
+                    "Description": "Public DNSName of the ELBtest ELB",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "ELBtest",
+                            "DNSName"
+                        ]
+                    }
+                }
+            },
             "Resources": {
                 "ELBtest": {
                     "Properties": {
@@ -176,6 +223,10 @@ class TestJSONOutput(object):
             }
         }
 
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
         res = {
             'instance': [],
             'secgroup': [],
@@ -205,12 +256,14 @@ class TestJSONOutput(object):
                 }]
             }]
         }
-        tmpl = out.add_resources(None, res, {})
+        tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
             "Resources": {
                 "sgtest": {
                     "Properties": {
@@ -235,6 +288,10 @@ class TestJSONOutput(object):
             }
         }
 
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
         res = {
             'instance': [],
             'load_balancer': [],
@@ -256,12 +313,14 @@ class TestJSONOutput(object):
                 ]
             }]
         }
-        tmpl = out.add_resources(None, res, {})
+        tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid_short_form(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
             "Resources": {
                 "sgtest": {
                     "Properties": {
@@ -280,6 +339,10 @@ class TestJSONOutput(object):
             }
         }
 
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
         res = {
             'instance': [],
             'load_balancer': [],
@@ -294,13 +357,15 @@ class TestJSONOutput(object):
                 ]
             }]
         }
-        tmpl = out.add_resources(None, res, {})
+        tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
     def test_instance_valid_instance_secrets(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
             "Resources": {
                 "ASGapp": {
                     "Properties": {
@@ -374,6 +439,19 @@ class TestJSONOutput(object):
     def test_instance_valid_elb(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Outputs": {
+                "ELBtestDNS": {
+                    "Description": "Public DNSName of the ELBtest ELB",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "ELBtest",
+                            "DNSName"
+                        ]
+                    }
+                }
+            },
             "Resources": {
                 "ELBtest": {
                     "Properties": {
@@ -489,6 +567,8 @@ class TestJSONOutput(object):
     def test_instance_valid(self):
         out = JSONOutput()
         ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
             "Resources": {
                 "ASGapp": {
                     "Properties": {
