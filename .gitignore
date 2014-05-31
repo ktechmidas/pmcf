@@ -8,3 +8,4 @@ pmcf.egg-info/
 .tox
 coverage
 .local
+nosetests.xml
