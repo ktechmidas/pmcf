@@ -14,7 +14,8 @@ source ${VENV}/bin/activate
 
 echo "Running unit tests ..."
 
-nosetests
+nosetests "$@" || ret=$(($ret|$?))
+
 
 echo "Running pep8 tests ..."
 pep8 --show-source pmcf || ret=$(($ret|$?))
