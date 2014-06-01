@@ -7,5 +7,6 @@ pmcf.egg-info/
 .venv
 .tox
 .local
+coverage
 testreports/*
 !testreports/.empty
