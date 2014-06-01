@@ -6,6 +6,6 @@ dist/
 pmcf.egg-info/
 .venv
 .tox
-coverage
 .local
-nosetests.xml
+testreports/*
+!testreports/.empty
