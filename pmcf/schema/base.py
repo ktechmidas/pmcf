@@ -112,6 +112,8 @@ definitions:
                     $ref: "#/definitions/listener"
             policy:
                 type: array
+            sg:
+                type: array
             healthcheck:
                 type: object
                 properties:

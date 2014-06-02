@@ -151,7 +151,7 @@ class TestJSONOutput(object):
                                 "Protocol": "HTTP"
                             }
                         ],
-                        "SecurityGroups": [{"Ref": "elbsg"}],
+                        "SecurityGroups": [{"Ref": "sgelb"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -189,7 +189,7 @@ class TestJSONOutput(object):
                     'port': 80
                 },
                 'name': 'test',
-                'sg': 'elbsg',
+                'sg': ['elb'],
                 'policy': [],
             }]
         }

@@ -51,6 +51,8 @@ class YamlParser(BaseParser):
                 args['instance_secretkey']
         self._stack['resources'].update(data['resources'])
 
+        for lb in self._stack['resources']['load_balancer']:
+            lb['policy'] = lb.get('policy', [])
         for instance in self._stack['resources']['instance']:
             found = False
             for sg in self._stack['resources']['secgroup']:

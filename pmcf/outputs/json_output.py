@@ -31,66 +31,6 @@ class JSONOutput(BaseOutput):
         data.add_description(desc)
         data.add_version()
 
-        lbs = {}
-        for lb in resources['load_balancer']:
-            lb_hc_tgt = lb['healthcheck']['protocol'] + ':' + \
-                str(lb['healthcheck']['port'])
-            if lb['healthcheck'].get('path'):
-                lb_hc_tgt += lb['healthcheck']['path']
-
-            listeners = []
-            for listener in lb['listener']:
-                kwargs = {
-                    'InstancePort': listener['instance_port'],
-                    'LoadBalancerPort': listener['lb_port'],
-                    'Protocol': listener['protocol']
-                }
-                if listener.get('instance_protocol'):
-                    kwargs['InstanceProtocol'] = listener['instance_protocol']
-                if listener.get('sslCert'):
-                    kwargs['SSLCertificateId'] = listener['sslCert']
-                listeners.append(elasticloadbalancing.Listener(**kwargs))
-
-            name = "ELB" + lb['name']
-            elb = {
-                'CrossZone': True,
-                'AvailabilityZones': GetAZs(''),
-                'HealthCheck': elasticloadbalancing.HealthCheck(
-                    'test',
-                    HealthyThreshold=3,
-                    Interval=5,
-                    Target=lb_hc_tgt,
-                    Timeout=2,
-                    UnhealthyThreshold=3
-                ),
-                'Listeners': listeners
-            }
-            if lb.get('sg'):
-                elb['SecurityGroups'] = [Ref(lb['sg'])]
-            for policy in lb['policy']:
-                if policy['type'] == 'log_policy':
-                    eap = elasticloadbalancing.AccessLoggingPolicy(
-                        name,
-                        EmitInterval=policy['policy']['emit_interval'],
-                        Enabled=policy['policy']['enabled'],
-                        S3BucketName=policy['policy']['s3bucket'],
-                        S3BucketPrefix=policy['policy']['s3prefix'],
-                    )
-                    elb['AccessLoggingPolicy'] = eap
-            lbs[name] = elasticloadbalancing.LoadBalancer(
-                name,
-                **elb
-            )
-            data.add_output(
-                Output(
-                    "%sDNS" % name,
-                    Description="Public DNSName of the %s ELB" % name,
-                    Value=GetAtt(lbs[name], "DNSName"),
-                )
-            )
-            LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
-            data.add_resource(lbs[name])
-
         sgs = {}
         for sg in resources['secgroup']:
             rules = []
@@ -132,6 +72,68 @@ class JSONOutput(BaseOutput):
             )
             LOG.debug('Adding sg: %s' % sgs[name].JSONrepr())
             data.add_resource(sgs[name])
+
+        lbs = {}
+        for lb in resources['load_balancer']:
+            lb_hc_tgt = lb['healthcheck']['protocol'] + ':' + \
+                str(lb['healthcheck']['port'])
+            if lb['healthcheck'].get('path'):
+                lb_hc_tgt += lb['healthcheck']['path']
+
+            listeners = []
+            for listener in lb['listener']:
+                kwargs = {
+                    'InstancePort': listener['instance_port'],
+                    'LoadBalancerPort': listener['lb_port'],
+                    'Protocol': listener['protocol']
+                }
+                if listener.get('instance_protocol'):
+                    kwargs['InstanceProtocol'] = listener['instance_protocol']
+                if listener.get('sslCert'):
+                    kwargs['SSLCertificateId'] = listener['sslCert']
+                listeners.append(elasticloadbalancing.Listener(**kwargs))
+
+            name = "ELB" + lb['name']
+            elb = {
+                'CrossZone': True,
+                'AvailabilityZones': GetAZs(''),
+                'HealthCheck': elasticloadbalancing.HealthCheck(
+                    'test',
+                    HealthyThreshold=3,
+                    Interval=5,
+                    Target=lb_hc_tgt,
+                    Timeout=2,
+                    UnhealthyThreshold=3
+                ),
+                'Listeners': listeners
+            }
+            if lb.get('sg'):
+                elb['SecurityGroups'] = []
+                for sg in lb['sg']:
+                    elb['SecurityGroups'].append(Ref(sgs[sg]))
+            for policy in lb['policy']:
+                if policy['type'] == 'log_policy':
+                    eap = elasticloadbalancing.AccessLoggingPolicy(
+                        name,
+                        EmitInterval=policy['policy']['emit_interval'],
+                        Enabled=policy['policy']['enabled'],
+                        S3BucketName=policy['policy']['s3bucket'],
+                        S3BucketPrefix=policy['policy']['s3prefix'],
+                    )
+                    elb['AccessLoggingPolicy'] = eap
+            lbs[name] = elasticloadbalancing.LoadBalancer(
+                name,
+                **elb
+            )
+            data.add_output(
+                Output(
+                    "%sDNS" % name,
+                    Description="Public DNSName of the %s ELB" % name,
+                    Value=GetAtt(lbs[name], "DNSName"),
+                )
+            )
+            LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
+            data.add_resource(lbs[name])
 
         for inst in resources['instance']:
             cfg = {}
