@@ -595,6 +595,11 @@ class TestJSONOutput(object):
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
                                 "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
                             }
                         ]
                     },
@@ -708,6 +713,11 @@ class TestJSONOutput(object):
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
                                 "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
                             }
                         ]
                     },
@@ -798,6 +808,11 @@ class TestJSONOutput(object):
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
                                 "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
                             }
                         ]
                     },
@@ -887,6 +902,11 @@ class TestJSONOutput(object):
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
                                 "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
                             }
                         ]
                     },
@@ -973,6 +993,11 @@ class TestJSONOutput(object):
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
                                 "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
                             }
                         ]
                     },
@@ -1048,6 +1073,11 @@ class TestJSONOutput(object):
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
                                 "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
                             }
                         ]
                     },

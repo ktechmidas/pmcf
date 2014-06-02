@@ -185,6 +185,11 @@ class JSONOutput(BaseOutput):
                     key='Name',
                     value=config['name'] + '::' + inst['name'],
                     propogate=True,
+                ),
+                autoscaling.Tag(
+                    key='App',
+                    value=inst['name'],
+                    propogate=True,
                 )
             ]
             inst['min'] = inst.get('min', inst['count'])
