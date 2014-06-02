@@ -133,6 +133,32 @@ definitions:
             - listener
             - healthcheck
         additionalProperties: false
+    secgrouprule_cidr_port:
+        properties:
+            port:
+                type: integer
+            protocol:
+                type: string
+            source_cidr:
+                type: string
+        required:
+            - port
+            - protocol
+            - source_cidr
+        additionalProperties: false
+    secgrouprule_group_port:
+        properties:
+            port:
+                type: integer
+            protocol:
+                type: string
+            source_group:
+                type: string
+        required:
+            - port
+            - protocol
+            - source_group
+        additionalProperties: false
     secgrouprule_cidr:
         properties:
             to_port:
@@ -175,6 +201,8 @@ definitions:
                     anyOf:
                         - $ref: "#/definitions/secgrouprule_group"
                         - $ref: "#/definitions/secgrouprule_cidr"
+                        - $ref: "#/definitions/secgrouprule_group_port"
+                        - $ref: "#/definitions/secgrouprule_cidr_port"
         required:
             - name
             - rules
