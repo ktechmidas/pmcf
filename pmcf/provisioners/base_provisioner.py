@@ -42,6 +42,9 @@ class BaseProvisioner(object):
     def userdata(self, config, args):
         raise NotImplementedError
 
+    def cfn_init(self, config, args):
+        return None
+
     def add_file(self, ud, filename, ftype='plain', compress=True):
         fname = os.path.basename(filename)
         with open(filename) as fd:

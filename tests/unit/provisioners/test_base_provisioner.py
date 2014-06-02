@@ -30,6 +30,9 @@ class TestBaseProvisioner(object):
     def test_provides_provides_None(self):
         assert_equals(None, BaseProvisioner().provides())
 
+    def test_cfn_init_returns_None(self):
+        assert_equals(None, BaseProvisioner().cfn_init({}, {}))
+
     def test_parse_raises(self):
         assert_raises(NotImplementedError, self.provisioner.userdata, {}, {})
 
