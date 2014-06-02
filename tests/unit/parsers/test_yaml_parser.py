@@ -36,6 +36,9 @@ class TestParser(object):
         fname = 'tests/data/yaml/ais-test-farm.yaml'
         assert_raises(ParserFailure, parser.parse_file, fname, {})
 
+    def test_fail(self):
+        assert_equals(True, False)
+
     @mock.patch('jsonschema.validate', _mock_validate)
     def test_parser_raises_invalid_stage(self):
         args = {
