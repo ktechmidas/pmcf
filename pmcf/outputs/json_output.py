@@ -65,6 +65,8 @@ class JSONOutput(BaseOutput):
                 ),
                 'Listeners': listeners
             }
+            if lb.get('sg'):
+                elb['SecurityGroups'] = [Ref(lb['sg'])]
             for policy in lb['policy']:
                 if policy['type'] == 'log_policy':
                     eap = elasticloadbalancing.AccessLoggingPolicy(

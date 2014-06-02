@@ -99,6 +99,103 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_lb_valid_sg(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Outputs": {
+                "ELBtestDNS": {
+                    "Description": "Public DNSName of the ELBtest ELB",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "ELBtest",
+                            "DNSName"
+                        ]
+                    }
+                }
+            },
+            "Resources": {
+                "sgelb": {
+                    "Properties": {
+                        "GroupDescription": "security group for elb",
+                        "SecurityGroupIngress": [
+                            {
+                                "CidrIp": "10.1.2.0/24",
+                                "FromPort": 80,
+                                "IpProtocol": "tcp",
+                                "ToPort": 80
+                            }
+                        ]
+                    },
+                    "Type": "AWS::EC2::SecurityGroup"
+                },
+                "ELBtest": {
+                    "Properties": {
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        },
+                        "CrossZone": "true",
+                        "HealthCheck": {
+                            "HealthyThreshold": 3,
+                            "Interval": 5,
+                            "Target": "HTTP:80/healthcheck",
+                            "Timeout": 2,
+                            "UnhealthyThreshold": 3
+                        },
+                        "Listeners": [
+                            {
+                                "InstancePort": 80,
+                                "InstanceProtocol": "HTTP",
+                                "LoadBalancerPort": 80,
+                                "Protocol": "HTTP"
+                            }
+                        ],
+                        "SecurityGroups": [{"Ref": "elbsg"}],
+                    },
+                    "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
+        res = {
+            'instance': [],
+            'secgroup': [{
+                'name': 'elb',
+                'rules': [
+                    {
+                        'port': 80,
+                        'protocol': 'tcp',
+                        'source_cidr': '10.1.2.0/24'
+                    }
+                ]
+            }],
+            'load_balancer': [{
+                'listener': [
+                    {
+                        'instance_port': 80,
+                        'protocol': 'HTTP',
+                        'lb_port': 80,
+                        'instance_protocol': 'HTTP',
+                    }
+                ],
+                'healthcheck': {
+                    'path': '/healthcheck',
+                    'protocol': 'HTTP',
+                    'port': 80
+                },
+                'name': 'test',
+                'sg': 'elbsg',
+                'policy': [],
+            }]
+        }
+        tmpl = out.add_resources(None, res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_lb_valid_ssl(self):
         out = JSONOutput()
         ret = {
