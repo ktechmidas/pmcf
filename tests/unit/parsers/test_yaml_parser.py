@@ -36,6 +36,19 @@ class TestParser(object):
         fname = 'tests/data/yaml/ais-test-farm.yaml'
         assert_raises(ParserFailure, parser.parse_file, fname, {})
 
+    @mock.patch('jsonschema.validate', _mock_validate)
+    def test_parser_raises_invalid_stage(self):
+        args = {
+            'stage': 'nosuchstage',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/ais-test-farm.yaml'
+        assert_raises(ParserFailure, parser.parse_file, fname, args)
+
     def test_parse_invalid_yaml_raises(self):
         config = """
             foo:
