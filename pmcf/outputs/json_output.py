@@ -141,16 +141,18 @@ class JSONOutput(BaseOutput):
                         if config.get(k, None):
                             cfg[v] = config[k]
 
-            ud = provisioner.userdata(cfg, args)
-
             lcargs = {
                 'ImageId': inst['image'],
                 'InstanceType': inst['size'],
                 'KeyName': inst['sshKey'],
                 'InstanceMonitoring': inst['monitoring'],
                 'SecurityGroups': inst['sg'],
-                'UserData': Base64(ud)
             }
+
+            ud = provisioner.userdata(cfg, args)
+            if ud is not None:
+                lcargs['UserData'] = Base64(ud)
+
             if inst.get('profile', None):
                 lcargs['IamInstanceProfile'] = inst['profile']
             lc = autoscaling.LaunchConfiguration(
