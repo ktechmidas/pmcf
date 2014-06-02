@@ -12,12 +12,16 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from pmcf.provisioners.awsfw import AWSFWProvisioner
-from pmcf.provisioners.base_provisioner import BaseProvisioner
-from pmcf.provisioners.puppet import PuppetProvisioner
+import logging
 
-__all__ = [
-    AWSFWProvisioner,
-    BaseProvisioner,
-    PuppetProvisioner,
-]
+from pmcf.provisioners.base_provisioner import BaseProvisioner
+
+LOG = logging.getLogger(__name__)
+
+
+class PuppetProvisioner(BaseProvisioner):
+
+    _provides = 'puppet'
+
+    def userdata(self, config, args):
+        return None
