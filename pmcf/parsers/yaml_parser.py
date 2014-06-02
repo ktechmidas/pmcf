@@ -39,6 +39,7 @@ class YamlParser(BaseParser):
             raise ParserFailure(e)
 
         self._stack['config'].update(data['config'])
+        self._stack['config'].pop('stages', None)
 
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']
