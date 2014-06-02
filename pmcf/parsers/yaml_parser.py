@@ -38,6 +38,8 @@ class YamlParser(BaseParser):
         except KeyError, e:
             raise ParserFailure(e)
 
+        self._stack['config'].update(data['config'])
+
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']
             self._stack['config']['secret'] = args['secretkey']
