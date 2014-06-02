@@ -130,6 +130,7 @@ class TestCliCmd(object):
             'secretkey': '3456',
             'instance_accesskey': '1234',
             'instance_secretkey': '3456',
+            'region': 'eu-west-1',
         }
         cli = PMCFCLI(options)
         assert_equals(False, cli.run())

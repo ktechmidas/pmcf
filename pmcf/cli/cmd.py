@@ -48,7 +48,7 @@ class PMCFCLI(object):
                 metadata = {
                     'access': self.args['accesskey'],
                     'secret': self.args['secretkey'],
-                    'region': 'us-west-2',
+                    'region': self.args['region'],
                     'name': self.parser.stack()['config']['name'],
                     'owner': self.parser.stack()['config']['owner'],
                     'stage': self.parser.stack()['config']['stage'],
