@@ -39,6 +39,8 @@ definitions:
                 minimum: 1
             name:
                 type: string
+            profile:
+                type: string
             provisioner:
                 type: object
                 properties:
