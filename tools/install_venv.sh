@@ -31,7 +31,8 @@ do
 done
 
 if [ "${force}" = yes ];then
-	rm -rf .venv
+	rm -rf .venv coverage
+	find testreports/ -type f \! -name .empty -delete
 fi
 
 virtualenv -q .venv
