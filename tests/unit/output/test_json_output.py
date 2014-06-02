@@ -564,6 +564,81 @@ class TestJSONOutput(object):
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
+    def test_instance_valid_instance_profile(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "ASGapp": {
+                    "Properties": {
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        },
+                        "DesiredCapacity": 6,
+                        "LaunchConfigurationName": {
+                            "Ref": "LCapp"
+                        },
+                        "MaxSize": 6,
+                        "MinSize": 6,
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "PropagateAtLaunch": True,
+                                "Value": "test::app"
+                            }
+                        ]
+                    },
+                    "Type": "AWS::AutoScaling::AutoScalingGroup"
+                },
+                "LCapp": {
+                    "Properties": {
+                        "IamInstanceProfile": "deploy-client",
+                        "ImageId": "ami-e97f849e",
+                        "InstanceMonitoring": "false",
+                        "InstanceType": "m1.large",
+                        "KeyName": "bootstrap",
+                        "SecurityGroups": [],
+                        "UserData": {
+                            "Fn::Base64": ""
+                        }
+                    },
+                    "Type": "AWS::AutoScaling::LaunchConfiguration"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'stage': 'test'
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'instance': [{
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'monitoring': False,
+                'name': 'app',
+                'profile': 'deploy-client',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'appBucket': 'test',
+                        'roleBucket': 'test',
+                        'roles': ['jetty']
+                    },
+                    'provider': 'awsfw_standalone'},
+                'sg': [],
+                'size': 'm1.large',
+                'sshKey': 'bootstrap'
+            }]
+        }
+        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
     def test_instance_valid(self):
         out = JSONOutput()
         ret = {
