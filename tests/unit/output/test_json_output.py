@@ -15,6 +15,7 @@
 import json
 import mock
 from nose.tools import assert_equals, assert_raises
+import sys
 
 from pmcf.exceptions import ProvisionerException
 from pmcf.outputs import JSONOutput
@@ -1161,4 +1162,5 @@ class TestJSONOutput(object):
                       AWSFWProvisioner(), res, cfg)
 
     def test_run(self):
+        sys.stdout = open('/dev/null', 'w')
         assert_equals(True, JSONOutput().run('', {}))
