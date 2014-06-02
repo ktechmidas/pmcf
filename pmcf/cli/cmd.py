@@ -52,7 +52,7 @@ class PMCFCLI(object):
                     'name': self.parser.stack()['config']['name'],
                     'owner': self.parser.stack()['config']['owner'],
                     'stage': self.parser.stack()['config']['stage'],
-                    'verstion': self.parser.stack()['config']['version'],
+                    'version': self.parser.stack()['config']['version'],
                 }
             except KeyError, e:
                 raise ParserFailure(str(e))
