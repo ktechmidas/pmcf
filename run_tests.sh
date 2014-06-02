@@ -14,6 +14,8 @@ source ${VENV}/bin/activate
 
 echo "Running unit tests ..."
 
+mkdir -p testreports
+
 nosetests "$@" || ret=$(($ret|$?))
 
 

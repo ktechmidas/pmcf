@@ -31,9 +31,7 @@ do
 done
 
 if [ "${force}" = yes ];then
-	rm -rf .venv coverage
-	find testreports/ -type f \! -name .empty -delete
-	find testreports/ -mindepth 1 -type d -exec rmdir {} \;
+	rm -rf .venv coverage testreports
 fi
 
 virtualenv -q .venv
