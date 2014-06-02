@@ -65,10 +65,14 @@ class JSONOutput(BaseOutput):
                         IpProtocol=rule['protocol'],
                         CidrIp=rule['source_cidr'],
                     ))
+            sgargs = {}
+            if config.get('vpcid'):
+                sgargs['VpcId'] = config['vpcid']
             sgs[name] = ec2.SecurityGroup(
                 sgname,
                 GroupDescription='security group for %s' % sg['name'],
                 SecurityGroupIngress=rules,
+                **sgargs
             )
             LOG.debug('Adding sg: %s' % sgs[name].JSONrepr())
             data.add_resource(sgs[name])

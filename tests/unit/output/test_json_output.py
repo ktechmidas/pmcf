@@ -573,6 +573,52 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_sg_valid_short_form_vpc(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "sgtest": {
+                    "Properties": {
+                        "GroupDescription": "security group for test",
+                        "SecurityGroupIngress": [
+                            {
+                                "CidrIp": "10.1.2.0/24",
+                                "FromPort": 80,
+                                "IpProtocol": "tcp",
+                                "ToPort": 80,
+                            }
+                        ],
+                        "VpcId": "vpc-123",
+                    },
+                    "Type": "AWS::EC2::SecurityGroup"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'stage': 'test',
+            'vpcid': 'vpc-123',
+        }
+        res = {
+            'instance': [],
+            'load_balancer': [],
+            'secgroup': [{
+                'name': 'test',
+                'rules': [
+                    {
+                        'port': 80,
+                        'protocol': 'tcp',
+                        'source_cidr': '10.1.2.0/24'
+                    }
+                ]
+            }]
+        }
+        tmpl = out.add_resources(None, res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
     def test_instance_valid_instance_secrets(self):
         out = JSONOutput()
