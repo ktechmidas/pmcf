@@ -51,6 +51,23 @@ class YamlParser(BaseParser):
                 args['instance_secretkey']
         self._stack['resources'].update(data['resources'])
 
+        for instance in self._stack['resources']['instance']:
+            found = False
+            for sg in self._stack['resources']['secgroup']:
+                if sg['name'] == instance['name']:
+                    found = True
+                    break
+            if not found:
+                self._stack['resources']['secgroup'].insert(0, {
+                    'name': instance['name'],
+                    'rules': []
+                })
+                instance['sg'] = instance.get('sg', [])
+                instance['sg'].append(instance['name'])
+            if not self._stack['config'].get('nodefaultsg'):
+                instance['sg'] = instance.get('sg', [])
+                instance['sg'].append('default')
+
         self.validate()
         LOG.debug('stack: %s' % self._stack)
         LOG.info('Finished parsing config')

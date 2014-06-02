@@ -94,16 +94,29 @@ class JSONOutput(BaseOutput):
         sgs = {}
         for sg in resources['secgroup']:
             rules = []
-            name = 'sg%s' % sg['name']
+            sgname = 'sg%s' % sg['name']
+            name = sg['name']
             for idx, rule in enumerate(sg['rules']):
                 if rule.get('port'):
                     rule['to_port'] = rule['from_port'] = rule['port']
                 if rule.get('source_group'):
+                    sg_rule_data = {}
+                    if rule['source_group'].startswith('='):
+                        sg_rule_data['SourceSecurityGroupName'] =\
+                            Ref(sgs[rule['source_group'][1:]])
+                    elif rule['source_group'].find('/') != -1:
+                        (sg_owner, sg_group) = rule['source_group'].split('/')
+                        sg_rule_data['SourceSecurityGroupName'] = sg_group
+                        sg_rule_data['SourceSecurityGroupOwnerId'] = sg_owner
+                    else:
+                        sg_rule_data['SourceSecurityGroupName'] =\
+                            rule['source_group']
+
                     rules.append(ec2.SecurityGroupRule(
                         FromPort=rule['from_port'],
                         ToPort=rule['to_port'],
                         IpProtocol=rule['protocol'],
-                        SourceSecurityGroupName=rule['source_group'],
+                        **sg_rule_data
                     ))
                 else:
                     rules.append(ec2.SecurityGroupRule(
@@ -113,7 +126,7 @@ class JSONOutput(BaseOutput):
                         CidrIp=rule['source_cidr'],
                     ))
             sgs[name] = ec2.SecurityGroup(
-                name,
+                sgname,
                 GroupDescription='security group for %s' % sg['name'],
                 SecurityGroupIngress=rules,
             )
@@ -146,9 +159,14 @@ class JSONOutput(BaseOutput):
                 'InstanceType': inst['size'],
                 'KeyName': inst['sshKey'],
                 'InstanceMonitoring': inst['monitoring'],
-                'SecurityGroups': inst['sg'],
             }
-
+            inst_sgs = []
+            for sg in inst['sg']:
+                if sgs.get(sg):
+                    inst_sgs.append(Ref(sgs[sg]))
+                else:
+                    inst_sgs.append(sg)
+            lcargs['SecurityGroups'] = inst_sgs
             ud = provisioner.userdata(cfg, args)
             if ud is not None:
                 lcargs['UserData'] = Base64(ud)

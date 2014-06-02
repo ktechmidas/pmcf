@@ -33,6 +33,14 @@ resources:
       sg:
         - app
       size: m1.large
+    - name: app2
+      count: 1
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: puppet
+      monitoring: False
+      size: m1.large
   secgroup:
     - name: app
       rules:

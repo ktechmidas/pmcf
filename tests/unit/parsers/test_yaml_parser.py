@@ -98,17 +98,20 @@ class TestParserData(object):
         assert_equals(set(keys), set(self.data['resources'].keys()))
 
     def test_parser_resource_has_valid_instance_count(self):
-        assert_equals(1, len(self.data['resources']['instance']))
+        assert_equals(2, len(self.data['resources']['instance']))
 
     def test_parser_resource_has_valid_lb_count(self):
         assert_equals(1, len(self.data['resources']['load_balancer']))
 
     def test_parser_resource_has_valid_secgroup_count(self):
-        assert_equals(1, len(self.data['resources']['secgroup']))
+        assert_equals(2, len(self.data['resources']['secgroup']))
 
     def test_parser_lb_has_valid_listener_count(self):
         assert_equals(2, len(
             self.data['resources']['load_balancer'][0]['listener']))
 
-    def test_parser_sg_has_valid_rule_count(self):
-        assert_equals(12, len(self.data['resources']['secgroup'][0]['rules']))
+    def test_parser_sg_has_valid_rule_count_app(self):
+        assert_equals(12, len(self.data['resources']['secgroup'][1]['rules']))
+
+    def test_parser_sg_has_valid_rule_count_app2(self):
+        assert_equals(0, len(self.data['resources']['secgroup'][0]['rules']))
