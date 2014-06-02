@@ -669,4 +669,4 @@ class TestJSONOutput(object):
                       AWSFWProvisioner(), res, cfg)
 
     def test_run(self):
-        assert_equals(True, JSONOutput().run({}, {}))
+        assert_equals(True, JSONOutput().run('', {}))
