@@ -18,11 +18,27 @@ import logging
 
 from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.json_output import JSONOutput
+from pmcf.utils import make_diff
 
 LOG = logging.getLogger(__name__)
 
 
 class AWSCFNOutput(JSONOutput):
+
+    def _show_prompt(self, cfn, stack, data):
+        resp = cfn.get_template(stack)['GetTemplateResponse']
+        old_body = resp['GetTemplateResult']['TemplateBody']
+        diff = make_diff(old_body, data)
+        if len(diff):
+            print "Diff from previous:"
+            print diff
+            answer = raw_input("Continue? [Yn]: ")
+            if answer.lower().startswith('n'):
+                return False
+        else:
+            LOG.warning('No difference, not updating')
+            return False
+        return True
 
     def _stack_exists(self, cfn, stack):
         try:
@@ -50,16 +66,21 @@ class AWSCFNOutput(JSONOutput):
 
         tags = metadata.get('tags', {})
 
-        data = json.dumps(json.loads(data))
         try:
             if metadata.get('strategy', 'BLUEGREEN') != 'BLUEGREEN' and \
                     self._stack_exists(cfn, metadata['name']):
                 LOG.debug('stack %s exists, updating', metadata['name'])
+                if metadata['strategy'] == 'prompt_inplace':
+                    if not self._show_prompt(cfn, metadata['name'], data):
+                        return True
+
+                data = json.dumps(json.loads(data))
                 cfn.update_stack(metadata['name'], data, tags=tags)
             else:
                 LOG.debug("stack %s doesn't exist, creating", metadata['name'])
+                data = json.dumps(json.loads(data))
                 cfn.create_stack(metadata['name'], data, tags=tags)
-        except Exception, e:
+        except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
 
         return True
