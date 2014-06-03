@@ -50,12 +50,14 @@ class PMCFCLI(object):
                     'secret': self.args['secretkey'],
                     'region': self.args['region'],
                     'name': self.parser.stack()['config']['name'],
-                    'owner': self.parser.stack()['config']['owner'],
                     'stage': self.parser.stack()['config']['stage'],
-                    'version': self.parser.stack()['config']['version'],
                 }
             except KeyError, e:
                 raise ParserFailure(str(e))
+
+            for k in ['owner', 'version', 'strategy']:
+                if self.parser.stack()['config'].get(k):
+                    metadata[k] = self.parser.stack()['config'][k]
 
             self.output.run(data, metadata)
             return False
