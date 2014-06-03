@@ -13,6 +13,7 @@
 #    under the License.
 
 import boto
+import json
 import logging
 
 from pmcf.exceptions import ProvisionerException
@@ -40,6 +41,7 @@ class AWSCFNOutput(JSONOutput):
 
         tags = metadata.get('tags', {})
 
+        data = json.dumps(json.loads(data))
         try:
             cfn.create_stack(metadata['name'], data, tags=tags)
         except Exception, e:

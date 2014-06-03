@@ -39,11 +39,12 @@ class TestAWSCFNOutput(object):
 
     def test_run_no_region_raises(self):
         cfno = AWSCFNOutput()
-        assert_raises(ProvisionerException, cfno.run, {}, {})
+        assert_raises(ProvisionerException, cfno.run, '{"a": "b"}', {})
 
     def test_run_bad_region_raises(self):
         cfno = AWSCFNOutput()
-        assert_raises(ProvisionerException, cfno.run, {}, {'region': 'nah'})
+        assert_raises(ProvisionerException, cfno.run,
+                      '{"a": "b"}', {'region': 'nah'})
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
@@ -56,7 +57,7 @@ class TestAWSCFNOutput(object):
             'secret': '2345',
             'name': 'test'
         }
-        assert_equals(cfno.run({}, metadata), True)
+        assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
@@ -72,7 +73,7 @@ class TestAWSCFNOutput(object):
                 'Name': 'test'
             }
         }
-        assert_equals(cfno.run({}, metadata), True)
+        assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
@@ -85,4 +86,4 @@ class TestAWSCFNOutput(object):
             'secret': '2345',
             'name': 'test'
         }
-        assert_raises(ProvisionerException, cfno.run, {}, metadata)
+        assert_raises(ProvisionerException, cfno.run, '{"a": "b"}', metadata)
