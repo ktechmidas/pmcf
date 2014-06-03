@@ -42,8 +42,12 @@ class JSONOutput(BaseOutput):
                 if rule.get('source_group'):
                     sg_rule_data = {}
                     if rule['source_group'].startswith('='):
-                        sg_rule_data['SourceSecurityGroupName'] =\
-                            Ref(sgs[rule['source_group'][1:]])
+                        if config.get('vpcid', None):
+                            sg_rule_data['SourceSecurityGroupId'] =\
+                                Ref(sgs[rule['source_group'][1:]])
+                        else:
+                            sg_rule_data['SourceSecurityGroupName'] =\
+                                Ref(sgs[rule['source_group'][1:]])
                     elif rule['source_group'].find('/') != -1:
                         (sg_owner, sg_group) = rule['source_group'].split('/')
                         sg_rule_data['SourceSecurityGroupName'] = sg_group

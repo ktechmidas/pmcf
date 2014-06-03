@@ -73,7 +73,10 @@ class YamlParser(BaseParser):
                 instance['sg'].append(instance['name'])
             if not self._stack['config'].get('nodefaultsg'):
                 instance['sg'] = instance.get('sg', [])
-                instance['sg'].append('default')
+                if data['config'].get('defaultsg'):
+                    instance['sg'].append(data['config']['defaultsg'])
+                else:
+                    instance['sg'].append('default')
 
         self.validate()
         LOG.debug('stack: %s' % self._stack)
