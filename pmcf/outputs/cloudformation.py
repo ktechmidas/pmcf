@@ -24,7 +24,16 @@ LOG = logging.getLogger(__name__)
 
 class AWSCFNOutput(JSONOutput):
 
+    def _stack_exists(self, cfn, stack):
+        try:
+            cfn.describe_stacks(stack)
+        except boto.exception.BotoServerError:
+            return False
+        return True
+
     def run(self, data, metadata={}):
+        LOG.debug('metadata is %s' % metadata)
+
         if metadata.get('region', None) is None:
             raise ProvisionerException('Need to supply region in metadata')
 
@@ -43,7 +52,13 @@ class AWSCFNOutput(JSONOutput):
 
         data = json.dumps(json.loads(data))
         try:
-            cfn.create_stack(metadata['name'], data, tags=tags)
+            if metadata.get('strategy', 'BLUEGREEN') != 'BLUEGREEN' and \
+                    self._stack_exists(cfn, metadata['name']):
+                LOG.debug('stack %s exists, updating', metadata['name'])
+                cfn.update_stack(metadata['name'], data, tags=tags)
+            else:
+                LOG.debug("stack %s doesn't exist, creating", metadata['name'])
+                cfn.create_stack(metadata['name'], data, tags=tags)
         except Exception, e:
             raise ProvisionerException(str(e))
 
