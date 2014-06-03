@@ -414,6 +414,79 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(None, res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_sg_valid_ref_vpc(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "sgwomble": {
+                    "Properties": {
+                        "GroupDescription": "security group for womble",
+                        "SecurityGroupIngress": [
+                            {
+                                "CidrIp": "10.0.0.0/8",
+                                "FromPort": 80,
+                                "IpProtocol": "tcp",
+                                "ToPort": 80
+                            }
+                        ],
+                        "VpcId": "vpc-123",
+                    },
+                    "Type": "AWS::EC2::SecurityGroup"
+                },
+                "sgtest": {
+                    "Properties": {
+                        "GroupDescription": "security group for test",
+                        "SecurityGroupIngress": [
+                            {
+                                "SourceSecurityGroupId": {"Ref": "sgwomble"},
+                                "FromPort": 80,
+                                "IpProtocol": "tcp",
+                                "ToPort": 80
+                            }
+                        ],
+                        "VpcId": "vpc-123",
+                    },
+                    "Type": "AWS::EC2::SecurityGroup"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'stage': 'test',
+            'vpcid': 'vpc-123',
+        }
+        res = {
+            'instance': [],
+            'load_balancer': [],
+            'secgroup': [
+                {
+                    'name': 'womble',
+                    'rules': [
+                        {
+                            'port': 80,
+                            'protocol': 'tcp',
+                            'source_cidr': '10.0.0.0/8'
+                        }
+                    ]
+                },
+                {
+                    'name': 'test',
+                    'rules': [
+                        {
+                            'port': 80,
+                            'protocol': 'tcp',
+                            'source_group': '=womble'
+                        }
+                    ]
+                }
+            ]
+        }
+        tmpl = out.add_resources(None, res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_sg_valid_ref(self):
         out = JSONOutput()
         ret = {
