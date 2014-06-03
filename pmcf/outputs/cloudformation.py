@@ -25,6 +25,9 @@ LOG = logging.getLogger(__name__)
 
 class AWSCFNOutput(JSONOutput):
 
+    def _get_input(self, prompt):
+        return raw_input(prompt)
+
     def _show_prompt(self, cfn, stack, data):
         resp = cfn.get_template(stack)['GetTemplateResponse']
         old_body = resp['GetTemplateResult']['TemplateBody']
@@ -32,7 +35,7 @@ class AWSCFNOutput(JSONOutput):
         if len(diff):
             print "Diff from previous:"
             print diff
-            answer = raw_input("Continue? [Yn]: ")
+            answer = self._get_input("Continue? [Yn]: ")
             if answer.lower().startswith('n'):
                 return False
         else:

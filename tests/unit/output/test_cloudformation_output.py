@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import boto
 import mock
 from nose.tools import assert_equals, assert_raises
 
@@ -33,6 +34,40 @@ def _mock_create_stack(obj, name, data, tags):
 
 def _mock_create_stack_fails(obj, name, data, tags):
     raise ProvisionerException('I fail')
+
+
+def _mock_describe_stack(obj, name):
+    return {}
+
+
+def _mock_describe_stack_fails(obj, name):
+    raise boto.exception.BotoServerError('nope', 'nope')
+
+
+def _mock_get_template(obj, name):
+    return {
+        'GetTemplateResponse': {
+            'GetTemplateResult': {
+                'TemplateBody': '{"a": "b"}'
+            }
+        }
+    }
+
+
+def _mock_make_diff(old, new):
+    return ''
+
+
+def _mock_make_diff_differs(old, new):
+    return 'aargg'
+
+
+def _mock_return_no(self, prompt):
+    return 'No'
+
+
+def _mock_return_yes(self, prompt):
+    return 'Yes'
 
 
 class TestAWSCFNOutput(object):
@@ -87,3 +122,60 @@ class TestAWSCFNOutput(object):
             'name': 'test'
         }
         assert_raises(ProvisionerException, cfno.run, '{"a": "b"}', metadata)
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
+    def test__stack_exists_exists(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno._stack_exists(cfn, 'test'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_fails)
+    def test__stack_exists_nonexistant(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno._stack_exists(cfn, 'test'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
+                _mock_get_template)
+    @mock.patch('pmcf.utils.make_diff', _mock_make_diff)
+    def test__show_prompt_no_difference(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "b"}'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
+                _mock_get_template)
+    @mock.patch('pmcf.utils.make_diff', _mock_make_diff_differs)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_input',
+                _mock_return_no)
+    def test__show_prompt_difference_no(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
+                _mock_get_template)
+    @mock.patch('pmcf.utils.make_diff', _mock_make_diff_differs)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_input',
+                _mock_return_yes)
+    def test__show_prompt_difference_yes(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
