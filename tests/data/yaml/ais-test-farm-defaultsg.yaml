@@ -1,0 +1,20 @@
+config:
+  name: ais
+  stages:
+      - dev
+      - stage
+      - qa
+      - prod
+  vpcid: vpc-123
+  defaultsg: sg-123
+resources:
+  instance:
+    - name: app
+      count: 3
+      lb: app
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: puppet
+      monitoring: False
+      size: m1.large

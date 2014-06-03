@@ -67,6 +67,21 @@ class TestParser(object):
         parser._stack['resources']['instance'].append({})
         assert_raises(ParserFailure, parser.validate)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
+    def test_instance_defaultsg(self):
+        args = {
+            'stage': 'stage',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/ais-test-farm-defaultsg.yaml'
+        data = parser.parse_file(fname, args)
+        sgs = ['app', 'sg-123']
+        assert_equals(data['resources']['instance'][0]['sg'], sgs)
+
 
 class TestParserData(object):
 
