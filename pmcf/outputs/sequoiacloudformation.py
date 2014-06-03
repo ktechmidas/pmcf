@@ -31,4 +31,6 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         except KeyError, e:
             raise ProvisionerException(str(e))
 
+        metadata['name'] = "%s-%s" % (metadata['name'], metadata['stage'])
+
         return super(self.__class__, self).run(data, metadata)
