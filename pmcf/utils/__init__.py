@@ -79,7 +79,6 @@ def make_diff(old, new):
         return COLORS[start] + line + COLORS[end]
 
     old = sort_json(old)
-    new = sort_json(new)
     old = json.dumps(json.loads(old), indent=4)
     new = json.dumps(json.loads(new), indent=4)
 
