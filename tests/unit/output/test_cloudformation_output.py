@@ -15,6 +15,7 @@
 import boto
 import mock
 from nose.tools import assert_equals, assert_raises
+import sys
 
 from pmcf.exceptions import ProvisionerException
 from pmcf.outputs import AWSCFNOutput
@@ -165,6 +166,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
+        sys.stdout = open('/dev/null', 'w')
         assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
@@ -178,4 +180,5 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
+        sys.stdout = open('/dev/null', 'w')
         assert_equals(True, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
