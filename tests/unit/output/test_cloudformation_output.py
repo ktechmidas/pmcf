@@ -34,7 +34,7 @@ def _mock_create_stack(obj, name, data, tags):
 
 
 def _mock_create_stack_fails(obj, name, data, tags):
-    raise ProvisionerException('I fail')
+    raise boto.exception.BotoServerError('I fail', 'nope')
 
 
 def _mock_describe_stack(obj, name):
@@ -71,6 +71,14 @@ def _mock_return_yes(self, prompt):
     return 'Yes'
 
 
+def _mock_return_true(self, cfn, name, data):
+    return True
+
+
+def _mock_return_false(self, cfn, name, data):
+    return False
+
+
 class TestAWSCFNOutput(object):
 
     def test_run_no_region_raises(self):
@@ -105,6 +113,52 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
+            'tags': {
+                'Name': 'test'
+            }
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._show_prompt',
+                _mock_return_true)
+    def test_run_with_prompt_true_succeeds(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'strategy': 'prompt_inplace',
+            'tags': {
+                'Name': 'test'
+            }
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._show_prompt',
+                _mock_return_false)
+    def test_run_with_prompt_false_succeeds(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'strategy': 'prompt_inplace',
             'tags': {
                 'Name': 'test'
             }
