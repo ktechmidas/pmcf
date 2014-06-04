@@ -31,7 +31,7 @@ do
 done
 
 if [ "${force}" = yes ];then
-	rm -rf .venv coverage testreports
+	rm -rf .tox .venv coverage testreports
 fi
 
 virtualenv -q .venv

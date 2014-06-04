@@ -16,6 +16,7 @@ echo "Running unit tests ..."
 
 mkdir -p testreports
 
+tox -e py27,pep8
 nosetests "$@" || ret=$(($ret|$?))
 
 
