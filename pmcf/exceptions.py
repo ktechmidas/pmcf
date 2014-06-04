@@ -45,7 +45,15 @@ class ProvisionerException(PMCFException):
         self.message = full_message
 
 
+class AuditException(PMCFException):
+    def __init__(self, message):
+        full_message = ("Error during audit logging: %s" % message)
+        super(AuditException, self).__init__(full_message)
+        self.message = full_message
+
+
 __all__ = [
+    AuditException,
     ParserFailure,
     PMCFException,
     PolicyException,

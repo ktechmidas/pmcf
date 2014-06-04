@@ -15,10 +15,11 @@
 import boto
 import json
 import logging
+import time
 
-from pmcf.exceptions import ProvisionerException
+from pmcf.exceptions import AuditException, ProvisionerException
 from pmcf.outputs.json_output import JSONOutput
-from pmcf.utils import make_diff
+from pmcf.utils import import_from_string, make_diff
 
 LOG = logging.getLogger(__name__)
 
@@ -85,6 +86,22 @@ class AWSCFNOutput(JSONOutput):
                 cfn.create_stack(metadata['name'], data, tags=tags)
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
+
+        try:
+            audit = import_from_string('pmcf.audit', metadata['audit'])()
+            creds = {
+                'access': metadata['access'],
+                'secret': metadata['secret'],
+                'audit_output': metadata.get('audit_output', None)
+            }
+            dest = 'audit/%s/%s/%s-%s' % (
+                metadata['name'],
+                metadata['stage'],
+                metadata['name'],
+                time.strftime('%Y%m%dT%H%M%S'))
+            audit.record_stack(data, dest, creds)
+        except AuditException, e:
+            LOG.error(e)
 
         return True
 

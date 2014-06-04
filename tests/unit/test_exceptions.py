@@ -57,3 +57,13 @@ class TestException(object):
             raiser(msg)
         except exceptions.ProvisionerException, e:
             assert_equals(e.message, "Error during provisioning: " + msg)
+
+    def test_raise_audit_error(self):
+        def raiser(message):
+            raise exceptions.AuditException(message)
+
+        msg = 'test message'
+        try:
+            raiser(msg)
+        except exceptions.AuditException, e:
+            assert_equals(e.message, "Error during audit logging: " + msg)

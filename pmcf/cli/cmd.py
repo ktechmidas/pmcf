@@ -58,6 +58,9 @@ class PMCFCLI(object):
             for k in ['owner', 'version', 'strategy']:
                 if self.parser.stack()['config'].get(k):
                     metadata[k] = self.parser.stack()['config'][k]
+            metadata['audit'] = self.args.get('audit', 'NoopAudit')
+            if self.args.get('audit_output', None):
+                metadata['audit_output'] = self.args['audit_output']
 
             self.output.run(data, metadata)
             return False

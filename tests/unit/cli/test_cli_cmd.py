@@ -131,6 +131,8 @@ class TestCliCmd(object):
             'instance_accesskey': '1234',
             'instance_secretkey': '3456',
             'region': 'eu-west-1',
+            'audit': 'NoopAudit',
+            'audit_output': 'foobar',
         }
         cli = PMCFCLI(options)
         assert_equals(False, cli.run())

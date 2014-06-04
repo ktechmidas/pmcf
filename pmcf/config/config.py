@@ -29,6 +29,8 @@ class PMCFConfig(object):
             self.profile_name = "profile " + profile_name
 
         self.options = {
+            'audit': 'NoopAudit',
+            'audit_output': None,
             'output': 'BaseOutput',
             'parser': 'BaseParser',
             'policy': 'BasePolicy',

@@ -17,7 +17,7 @@ import mock
 from nose.tools import assert_equals, assert_raises
 import sys
 
-from pmcf.exceptions import ProvisionerException
+from pmcf.exceptions import AuditException, ProvisionerException
 from pmcf.outputs import AWSCFNOutput
 
 
@@ -79,6 +79,10 @@ def _mock_return_false(self, cfn, name, data):
     return False
 
 
+def _mock_audit_fails(self, stack, dest, credentials):
+    raise AuditException('I fail')
+
+
 class TestAWSCFNOutput(object):
 
     def test_run_no_region_raises(self):
@@ -99,7 +103,25 @@ class TestAWSCFNOutput(object):
             'region': 'eu-west-1',
             'access': '1234',
             'secret': '2345',
-            'name': 'test'
+            'name': 'test',
+            'stage': 'test',
+            'audit': 'NoopAudit',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    @mock.patch('pmcf.audit.S3Audit.record_stack', _mock_audit_fails)
+    def test_run_audit_failure_connects(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'stage': 'test',
+            'audit': 'S3Audit',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
@@ -113,6 +135,8 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
+            'stage': 'test',
+            'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
             }
@@ -135,7 +159,9 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
+            'stage': 'test',
             'strategy': 'prompt_inplace',
+            'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
             }
@@ -158,7 +184,9 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
+            'stage': 'test',
             'strategy': 'prompt_inplace',
+            'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
             }
@@ -174,6 +202,8 @@ class TestAWSCFNOutput(object):
             'region': 'eu-west-1',
             'access': '1234',
             'secret': '2345',
+            'audit': 'NoopAudit',
+            'stage': 'test',
             'name': 'test'
         }
         assert_raises(ProvisionerException, cfno.run, '{"a": "b"}', metadata)
