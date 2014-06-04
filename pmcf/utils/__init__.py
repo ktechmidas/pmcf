@@ -82,8 +82,8 @@ def make_diff(old, new):
     old = json.dumps(json.loads(old), indent=4)
     new = json.dumps(json.loads(new), indent=4)
 
-    d = difflib.Differ()
-    diff = list(d.compare(old.splitlines(1), new.splitlines(1)))
+    diff = list(difflib.unified_diff(old.splitlines(1),
+                                     new.splitlines(1), n=10000))
     for line in diff:
         if line.startswith('-'):
             ret += _colourise('red', line)
