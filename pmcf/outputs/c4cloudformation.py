@@ -47,3 +47,8 @@ class C4AWSCFNOutput(AWSCFNOutput):
             raise ProvisionerException(str(e))
 
         return super(self.__class__, self).run(data, metadata)
+
+
+__all__ = [
+    C4AWSCFNOutput,
+]

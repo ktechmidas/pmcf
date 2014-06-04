@@ -24,3 +24,8 @@ class NoopAudit(BaseAudit):
     def record_stack(self, stack, destination, credentials):
         LOG.debug('recording stack to %s' % destination)
         return True
+
+
+__all__ = [
+    NoopAudit,
+]

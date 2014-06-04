@@ -34,3 +34,8 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         metadata['name'] = "%s-%s" % (metadata['name'], metadata['stage'])
 
         return super(self.__class__, self).run(data, metadata)
+
+
+__all__ = [
+    SequoiaAWSCFNOutput,
+]

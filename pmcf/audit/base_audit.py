@@ -24,3 +24,8 @@ class BaseAudit(object):
     @abc.abstractmethod
     def record_stack(self, stack, destination, credentials):
         raise NotImplementedError
+
+
+__all__ = [
+    BaseAudit,
+]

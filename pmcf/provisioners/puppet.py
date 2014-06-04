@@ -25,3 +25,8 @@ class PuppetProvisioner(BaseProvisioner):
 
     def userdata(self, config, args):
         return None
+
+
+__all__ = [
+    PuppetProvisioner,
+]
