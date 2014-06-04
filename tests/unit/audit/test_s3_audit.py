@@ -62,7 +62,7 @@ class TestS3Audit(object):
                 _mock_s3_get_bucket)
     @mock.patch('boto.s3.key.Key.set_contents_from_string',
                 _mock_key_set_contents)
-    def test_record_stack_fails_raises(self):
+    def test_record_stack_succeeds(self):
         sa = S3Audit()
         creds = {
             'access': '1234',
