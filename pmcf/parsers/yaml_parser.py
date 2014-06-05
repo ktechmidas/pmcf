@@ -58,6 +58,9 @@ class YamlParser(BaseParser):
 
         for lb in self._stack['resources']['load_balancer']:
             lb['policy'] = lb.get('policy', [])
+            if lb.get('internal', False):
+                if data['config'].get('subnets'):
+                    lb['subnets'] = data['config']['subnets']
         for instance in self._stack['resources']['instance']:
             found = False
             for sg in self._stack['resources']['secgroup']:

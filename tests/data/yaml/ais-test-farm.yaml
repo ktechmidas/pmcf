@@ -5,6 +5,8 @@ config:
       - stage
       - qa
       - prod
+  subnets:
+      - subnet-123
 resources:
   load_balancer:
     - name: app
@@ -18,6 +20,16 @@ resources:
           sslCert: test
           protocol: HTTPS
           lb_port: 443
+      healthcheck:
+        protocol: TCP
+        port: 80
+    - name: app2
+      internal: true
+      listener:
+        - instance_port: 80
+          instance_protocol: HTTP
+          protocol: HTTP
+          lb_port: 80
       healthcheck:
         protocol: TCP
         port: 80

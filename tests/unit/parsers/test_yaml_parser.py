@@ -112,6 +112,7 @@ class TestParserData(object):
             'secret',
             'instance_access',
             'instance_secret',
+            'subnets',
         ]
         assert_equals(set(keys), set(self.data['config'].keys()))
 
@@ -129,7 +130,7 @@ class TestParserData(object):
         assert_equals(2, len(self.data['resources']['instance']))
 
     def test_parser_resource_has_valid_lb_count(self):
-        assert_equals(1, len(self.data['resources']['load_balancer']))
+        assert_equals(2, len(self.data['resources']['load_balancer']))
 
     def test_parser_resource_has_valid_secgroup_count(self):
         assert_equals(2, len(self.data['resources']['secgroup']))

@@ -105,6 +105,11 @@ definitions:
         properties:
             name:
                 type: string
+            internal:
+                type: boolean
+            subnets:
+                type: array
+                minItems: 1
             listener:
                 type: array
                 minItems: 1

@@ -104,7 +104,6 @@ class JSONOutput(BaseOutput):
             name = "ELB" + lb['name']
             elb = {
                 'CrossZone': True,
-                'AvailabilityZones': GetAZs(''),
                 'HealthCheck': elasticloadbalancing.HealthCheck(
                     'test',
                     HealthyThreshold=3,
@@ -129,6 +128,11 @@ class JSONOutput(BaseOutput):
                         S3BucketPrefix=policy['policy']['s3prefix'],
                     )
                     elb['AccessLoggingPolicy'] = eap
+            if lb.get('internal', False) and lb.get('subnets'):
+                elb['Scheme'] = 'internal'
+                elb['Subnets'] = lb['subnets']
+            else:
+                elb['AvailabilityZones'] = GetAZs('')
             lbs[name] = elasticloadbalancing.LoadBalancer(
                 name,
                 **elb
