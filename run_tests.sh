@@ -37,6 +37,7 @@ do
 done
 
 if [ "${force}" = yes ];then
+	$(dirname $0)/tools/install_venv.sh -f
 	rm -rf .tox coverage testreports
 fi
 
