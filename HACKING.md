@@ -20,7 +20,7 @@ Running Tests
 The test harness runs in a python virtual environment to avoid polluting
 the normal python environment.  In order to install the python libraries in
 the venv, it is necessary to install a few packages:
-``apt-get install build-essential python-dev libyaml-dev``
+``apt-get install build-essential python-virtualenv python-tox python-dev libyaml-dev``
 
 The testing system is based on python nosetools.  Simply run the command
 ``./run_tests.sh``
