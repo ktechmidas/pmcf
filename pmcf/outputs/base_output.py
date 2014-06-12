@@ -41,7 +41,7 @@ class BaseOutput(object):
         Converts internal data structure into format suitable for interface
         with public and private cloud providers
 
-        :param provisioner: Subclass of :class:`pmcf.provisioners.BaseProvisioner`
+        :param provisioner: Subclass :class:`pmcf.provisioners.BaseProvisioner`
         :type configfile: object.
         :param resources: Internal data structure of resources
         :type resources: dict.
