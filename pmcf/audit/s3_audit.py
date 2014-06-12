@@ -45,7 +45,7 @@ class S3Audit(BaseAudit):
         :param credentials: credentials for copy command
         :type credentials: dict.
         :returns:  boolean
-        :raises: pmcf.exceptions.AuditException
+        :raises: :class:`pmcf.exceptions.AuditException`
         """
 
         LOG.debug('recording stack definition to s3://%s/%s' %

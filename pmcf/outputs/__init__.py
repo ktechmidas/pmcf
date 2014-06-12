@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.outputs
+    :platform: Unix
+    :synopsis: module containing output classes for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.outputs.c4cloudformation import C4AWSCFNOutput
 from pmcf.outputs.cloudformation import AWSCFNOutput

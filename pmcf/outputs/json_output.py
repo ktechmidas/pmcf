@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.outputs.json_output
+    :platform: Unix
+    :synopsis: module containing JSON output class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import logging
 from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
@@ -25,6 +33,19 @@ LOG = logging.getLogger(__name__)
 class JSONOutput(BaseOutput):
 
     def add_resources(self, provisioner, resources, config):
+        """
+        Creates JSON-formatted string representation of stack resourcs
+
+        :param provisioner: Subclass :class:`pmcf.provisioners.BaseProvisioner`
+        :type provisioner: object.
+        :param resources: Internal data structure of resources
+        :type resources: dict.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :returns: string
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
         LOG.info('Start building template')
         data = Template()
         desc = "%s %s stack" % (config['name'], config['stage'])
@@ -234,6 +255,16 @@ class JSONOutput(BaseOutput):
         return data.to_json(indent=indent)
 
     def run(self, data, metadata={}):
+        """
+        Prints out stack definition as json-formatted string
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        :returns: boolean
+        """
+
         LOG.info('Start running data')
         print data
         LOG.info('Finished running data')

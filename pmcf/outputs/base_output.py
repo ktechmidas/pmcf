@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.outputs.base_output
     :platform: Unix
-    :synopsis: module containing output classes for PMCF
+    :synopsis: module containing base output class for PMCF
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
@@ -42,12 +42,12 @@ class BaseOutput(object):
         with public and private cloud providers
 
         :param provisioner: Subclass :class:`pmcf.provisioners.BaseProvisioner`
-        :type configfile: object.
+        :type provisioner: object.
         :param resources: Internal data structure of resources
         :type resources: dict.
         :param config: Config key/value pairs
         :type config: dict.
-        :raises: NotImplementedError
+        :raises: :class:`NotImplementedError`
         """
 
         raise NotImplementedError
@@ -60,8 +60,8 @@ class BaseOutput(object):
         :param data: Stack definition
         :type data: str.
         :param metadata: Additional information for stack launch (tags, etc).
-        :type profile_name: dict.
-        :raises: NotImplementedError
+        :type metadata: dict.
+        :raises: :class:`NotImplementedError`
         """
 
         raise NotImplementedError

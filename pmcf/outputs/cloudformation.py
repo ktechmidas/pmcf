@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.outputs.cloudformation
+    :platform: Unix
+    :synopsis: module containing AWS Cloudformation output class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import boto
 import json
 import logging
@@ -25,6 +33,12 @@ LOG = logging.getLogger(__name__)
 
 
 class AWSCFNOutput(JSONOutput):
+    """
+    AWS Cloudformation output class.
+
+    Subclass of the JSONOutput class, this reuses the JSON data and interfaces
+    with the AWS Cloudformation API to create or update stacks.
+    """
 
     def _get_input(self, prompt):
         return raw_input(prompt)
@@ -45,6 +59,16 @@ class AWSCFNOutput(JSONOutput):
         return True
 
     def _stack_exists(self, cfn, stack):
+        """
+        Checks to see if a given stack already exists
+
+        :param cfn: boto cloudformation connection object
+        :type cfn: object.
+        :param stack: Stack name to check
+        :type stack: str.
+        :returns: boolean
+        """
+
         try:
             cfn.describe_stacks(stack)
         except boto.exception.BotoServerError:
@@ -52,6 +76,17 @@ class AWSCFNOutput(JSONOutput):
         return True
 
     def run(self, data, metadata={}):
+        """
+        Interfaces with public and private cloud providers.
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        :returns: boolean
+        """
+
         LOG.debug('metadata is %s' % metadata)
 
         if metadata.get('region', None) is None:

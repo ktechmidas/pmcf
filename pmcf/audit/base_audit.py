@@ -47,7 +47,7 @@ class BaseAudit(object):
         :param credentials: credentials for copy command
         :type credentials: dict.
         :returns:  boolean
-        :raises: NotImplementedError
+        :raises: :class:`NotImplementedError`
         """
 
         raise NotImplementedError

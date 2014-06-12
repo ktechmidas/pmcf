@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.outputs.c4cloudformation
+    :platform: Unix
+    :synopsis: module containing Channel4 output class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import datetime
 import logging
 
@@ -22,8 +30,28 @@ LOG = logging.getLogger(__name__)
 
 
 class C4AWSCFNOutput(AWSCFNOutput):
+    """
+    Channel4-specific output class.
+
+    Subclasses the AWS output class, and overlays it with a Channel4 specific
+    tagging policy.
+    """
 
     def run(self, data, metadata={}):
+        """
+        Interfaces with public and private cloud providers.
+
+        Channel4-specific overlay.  Add Channel4 tags and invokes parent class
+        method.
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        :returns: boolean
+        """
+
         try:
             if metadata['stage'].lower() == 'prod':
                 review_date = (datetime.date.today() +

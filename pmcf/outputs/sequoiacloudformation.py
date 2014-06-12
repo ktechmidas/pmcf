@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.outputs.sequoiacloudformation
+    :platform: Unix
+    :synopsis: module containing Sequoia output class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import logging
 
 from pmcf.exceptions import ProvisionerException
@@ -21,8 +29,28 @@ LOG = logging.getLogger(__name__)
 
 
 class SequoiaAWSCFNOutput(AWSCFNOutput):
+    """
+    Sequoia-specific output class.
+
+    Subclasses the AWS output class, and overlays it with a Sequoia specific
+    tagging policy.
+    """
 
     def run(self, data, metadata={}):
+        """
+        Interfaces with public and private cloud providers.
+
+        Sequoia-specific overlay.  Add Sequoia tags and invokes parent class
+        method.
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        :returns: boolean
+        """
+
         try:
             metadata['tags'] = {
                 'Stack': metadata['name'],

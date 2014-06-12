@@ -10,7 +10,7 @@ Developer Docs
 ==============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    devref/index
 
@@ -18,7 +18,7 @@ User Docs
 ==============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    user/index
 
