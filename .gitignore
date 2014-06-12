@@ -10,3 +10,4 @@ pmcf.egg-info/
 coverage
 testreports/*
 !testreports/.empty
+doc/build
