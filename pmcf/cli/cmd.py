@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.cli.cmd
+    :platform: Unix
+    :synopsis: module for PMCF CLI programs - glue for functional classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import logging
 
 from pmcf.exceptions import ParserFailure, PMCFException
@@ -21,6 +29,11 @@ LOG = logging.getLogger(__name__)
 
 
 class PMCFCLI(object):
+    """
+    Main class to glue together functional components for parsing, policy
+    enforcement, and output.
+    """
+
     def __init__(self, args):
 
         self.parser = import_from_string('pmcf.parsers', args['parser'])()
@@ -34,6 +47,11 @@ class PMCFCLI(object):
         self.args = args
 
     def run(self):
+        """
+        Parses stack file, validates data, runs output layer
+
+        :returns:  boolean
+        """
         try:
             self.parser.parse_file(self.args['stackfile'], self.args)
             for k, v in self.parser.stack()['resources'].iteritems():

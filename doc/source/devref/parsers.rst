@@ -29,8 +29,8 @@ Available parsers libraries
 ===========================
 
 
-The :mod:`pmcf.parsers.awsfw_parser` Module
-----------------------------------
+:mod:`pmcf.parsers.awsfw_parser`
+--------------------------------
 
 .. automodule:: pmcf.parsers.awsfw_parser
     :noindex:
@@ -44,8 +44,8 @@ The :mod:`pmcf.parsers.awsfw_parser` Module
     :show-inheritance:
 
 
-The :mod:`pmcf.parsers.base_parser` Module
-----------------------------------
+:mod:`pmcf.parsers.base_parser`
+-------------------------------
 
 .. automodule:: pmcf.parsers.base_parser
     :noindex:
@@ -59,8 +59,8 @@ The :mod:`pmcf.parsers.base_parser` Module
     :show-inheritance:
 
 
-The :mod:`pmcf.parsers.yaml_parser` Module
-----------------------------------
+:mod:`pmcf.parsers.yaml_parser`
+--------------------------------
 
 .. automodule:: pmcf.parsers.yaml_parser
     :noindex:

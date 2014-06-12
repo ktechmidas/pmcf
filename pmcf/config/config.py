@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.config.config
+    :platform: Unix
+    :synopsis: module containing config class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import ConfigParser
 import logging
 
@@ -19,7 +27,23 @@ LOG = logging.getLogger(__name__)
 
 
 class PMCFConfig(object):
+    """
+    Config class responsible to assemble config from files, defaults and
+    command line arguments.
+    """
+
     def __init__(self, configfile, profile_name, args):
+        """
+        Constructor
+
+        :param configfile: Path to configuration file
+        :type configfile: str.
+        :param profile_name: Profile in configuration file
+        :type profile_name: str.
+        :param args: command line arguments
+        :type args: dict.
+        """
+
         self.cfg = ConfigParser.ConfigParser()
         self.configfile = configfile
         self.profile_name = profile_name
@@ -49,6 +73,12 @@ class PMCFConfig(object):
         }
 
     def get_config(self):
+        """
+        Returns configuration in dictionary form.
+
+        :returns:  dictionary
+        """
+
         self.cfg.read(self.configfile)
 
         if self.profile_name not in self.cfg.sections():
@@ -78,6 +108,15 @@ class PMCFConfig(object):
         return options
 
     def _get_from_section(self, section, option):
+        """
+        Reads option out of section of ini file
+
+        :param section: Section of ini file to look for option.
+        :type section: str.
+        :param option: Option name to search for.
+        :type option: str.
+        :returns: string or None
+        """
         val = None
         try:
             val = self.cfg.get(section, option)

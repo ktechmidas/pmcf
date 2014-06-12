@@ -12,12 +12,26 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.exceptions
+    :platform: Unix
+    :synopsis: module containing exception classes for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 
 class PMCFException(Exception):
+    """
+    Base Exception class in PMCF
+    """
     pass
 
 
 class ParserFailure(PMCFException):
+    """
+    Exception raised for failures parsing stack definitions
+    """
     def __init__(self, message):
         full_message = ("Error parsing input: %s" % message)
         super(ParserFailure, self).__init__(full_message)
@@ -25,6 +39,9 @@ class ParserFailure(PMCFException):
 
 
 class PolicyException(PMCFException):
+    """
+    Exception raised for policy violations
+    """
     def __init__(self, message):
         full_message = ("Policy violation: %s" % message)
         super(PolicyException, self).__init__(full_message)
@@ -32,6 +49,9 @@ class PolicyException(PMCFException):
 
 
 class PropertyException(PMCFException):
+    """
+    Exception raised for resource validation errors
+    """
     def __init__(self, message):
         full_message = ("Error in resource properties: %s" % message)
         super(PropertyException, self).__init__(full_message)
@@ -39,6 +59,9 @@ class PropertyException(PMCFException):
 
 
 class ProvisionerException(PMCFException):
+    """
+    Exception raised for failures running provisioner classes
+    """
     def __init__(self, message):
         full_message = ("Error during provisioning: %s" % message)
         super(ProvisionerException, self).__init__(full_message)
@@ -46,6 +69,9 @@ class ProvisionerException(PMCFException):
 
 
 class AuditException(PMCFException):
+    """
+    Exception raised for failures during audit logging
+    """
     def __init__(self, message):
         full_message = ("Error during audit logging: %s" % message)
         super(AuditException, self).__init__(full_message)

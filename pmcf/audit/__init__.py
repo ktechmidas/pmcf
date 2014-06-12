@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.audit
+    :platform: Unix
+    :synopsis: module for audit logging in PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from pmcf.audit.base_audit import BaseAudit
 from pmcf.audit.noop_audit import NoopAudit
 from pmcf.audit.s3_audit import S3Audit

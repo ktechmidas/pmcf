@@ -24,21 +24,24 @@ Available cli libraries
 =======================
 
 
-The :mod:`pmcf.cli.cli` Module
-----------------------------------
+:mod:`pmcf.cli.cli`
+-------------------
 
 .. automodule:: pmcf.cli.cli
     :members: main
+    :noindex:
     :undoc-members:
 
 
-The :mod:`pmcf.cli.cmd` Module
-----------------------------------
+:mod:`pmcf.cli.cmd`
+-------------------
 
 .. automodule:: pmcf.cli.cmd
-    :members:
+    :members: __all__
+    :noindex:
     :undoc-members:
 
 .. autoclass:: PMCFCLI
     :members:
+    :noindex:
     :undoc-members:

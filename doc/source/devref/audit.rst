@@ -29,11 +29,12 @@ Available audit libraries
 =========================
 
 :mod:`pmcf.audit.base_audit`
----------------------------------------
+----------------------------
 
 
 .. automodule:: pmcf.audit.base_audit
     :members: __all__
+    :noindex:
     :undoc-members:
 
 .. autoclass:: BaseAudit
@@ -43,11 +44,12 @@ Available audit libraries
 
 
 :mod:`pmcf.audit.noop_audit`
----------------------------------------
+----------------------------
 
 
 .. automodule:: pmcf.audit.noop_audit
     :members: __all__
+    :noindex:
     :undoc-members:
 
 .. autoclass:: NoopAudit
@@ -57,11 +59,12 @@ Available audit libraries
 
 
 :mod:`pmcf.audit.s3_audit`
----------------------------------------
+--------------------------
 
 
 .. automodule:: pmcf.audit.s3_audit
     :members: __all__
+    :noindex:
     :undoc-members:
 
 .. autoclass:: S3Audit

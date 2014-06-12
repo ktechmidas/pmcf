@@ -32,6 +32,5 @@ Module Reference
    parsers
    policy
    provisioners
-   resources
    schema
    utils

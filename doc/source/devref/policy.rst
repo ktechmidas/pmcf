@@ -28,8 +28,8 @@ Available policy libraries
 ==========================
 
 
-The :mod:`pmcf.policy.base_policy` Module
-----------------------------------
+:mod:`pmcf.policy.base_policy`
+------------------------------
 
 .. automodule:: pmcf.policy.base_policy
     :noindex:
@@ -43,8 +43,8 @@ The :mod:`pmcf.policy.base_policy` Module
     :show-inheritance:
 
 
-The :mod:`pmcf.policy.json_policy` Module
-----------------------------------
+:mod:`pmcf.policy.json_policy`
+------------------------------
 
 .. automodule:: pmcf.policy.json_policy
     :noindex:

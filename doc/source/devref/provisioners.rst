@@ -19,15 +19,15 @@ Provisioners
 The provisioners classes in pmcf provide config management hooks when used in
 combination with outputs that run against public clouds implementing a
 metadata endpoint suitable for consumption by
-`cloud-init<http://cloudinit.readthedocs.org/en/latest/>_`
+`cloud-init <http://cloudinit.readthedocs.org/en/latest/>`_.
 
 
 Available provisioners libraries
 ================================
 
 
-The :mod:`pmcf.provisioners.awsfw` Module
-----------------------------------
+:mod:`pmcf.provisioners.awsfw`
+------------------------------
 
 .. automodule:: pmcf.provisioners.awsfw
     :noindex:
@@ -41,8 +41,8 @@ The :mod:`pmcf.provisioners.awsfw` Module
     :show-inheritance:
 
 
-The :mod:`pmcf.provisioners.base_provisioner` Module
-----------------------------------
+:mod:`pmcf.provisioners.base_provisioner`
+-----------------------------------------
 
 .. automodule:: pmcf.provisioners.base_provisioner
     :noindex:
@@ -56,8 +56,8 @@ The :mod:`pmcf.provisioners.base_provisioner` Module
     :show-inheritance:
 
 
-The :mod:`pmcf.provisioners.puppet` Module
-----------------------------------
+:mod:`pmcf.provisioners.puppet`
+-------------------------------
 
 .. automodule:: pmcf.provisioners.puppet
     :noindex:

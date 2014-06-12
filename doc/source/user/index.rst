@@ -13,12 +13,18 @@
       License for the specific language governing permissions and limitations
       under the License.
 
-Utils
-*****
 
-The utils classes in pmcf
+User Guide
+==========
+
+In this section you will find information on using the Piksel Managed Cloud Framework
 
 
-Available utils methods
-=======================
+Documentation
+-------------
+.. toctree::
+   :maxdepth: 1
 
+   configfile
+   cli
+   schema

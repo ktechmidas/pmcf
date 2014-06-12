@@ -24,12 +24,13 @@ Available config libraries
 ==========================
 
 
-The :mod:`pmcf.config.config` Module
-------------------------------------
+:mod:`pmcf.config.config`
+-------------------------
 
 
 .. automodule:: pmcf.config.config
-    :members:
+    :members: __all__
+    :noindex:
     :undoc-members:
 
 .. autoclass:: PMCFConfig

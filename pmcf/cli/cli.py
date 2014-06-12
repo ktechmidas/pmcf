@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.cli.cli
+    :platform: Unix
+    :synopsis: module for PMCF CLI programs - argument parsing and logging
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import argparse
 import logging
 

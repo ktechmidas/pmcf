@@ -4,12 +4,7 @@
    contain the root `toctree` directive.
 
 Documentation for the Piksel Managed Cloud Framework
-====================================================
-
-Contents:
-
-.. toctree::
-   :maxdepth: 2
+****************************************************
 
 Developer Docs
 ==============
@@ -18,6 +13,14 @@ Developer Docs
    :maxdepth: 2
 
    devref/index
+
+User Docs
+==============
+
+.. toctree::
+   :maxdepth: 2
+
+   user/index
 
 Indices and tables
 ==================

@@ -25,8 +25,8 @@ Available schema libraries
 ==========================
 
 
-The :mod:`pmcf.schema.base` Module
-----------------------------------
+:mod:`pmcf.schema.base`
+-----------------------
 
 .. automodule:: pmcf.schema.base
     :noindex:

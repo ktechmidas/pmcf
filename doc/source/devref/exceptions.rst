@@ -35,6 +35,12 @@ Available exceptions libraries
     :show-inheritance:
 
 
+.. autoclass:: PMCFException
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 .. autoclass:: AuditException
     :members:
     :undoc-members:
@@ -42,12 +48,6 @@ Available exceptions libraries
 
 
 .. autoclass:: ParserFailure
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-.. autoclass:: PMCFException
     :members:
     :undoc-members:
     :show-inheritance:

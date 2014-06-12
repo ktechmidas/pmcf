@@ -31,7 +31,7 @@ do
 done
 
 if [ "${force}" = yes ];then
-	rm -rf .venv
+	rm -rf .venv doc/build
 fi
 
 virtualenv -q .venv

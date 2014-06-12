@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.cli
+    :platform: Unix
+    :synopsis: module for PMCF CLI programs
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from pmcf.cli.cmd import PMCFCLI
 
 __all__ = [

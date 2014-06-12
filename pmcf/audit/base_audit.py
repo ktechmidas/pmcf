@@ -13,11 +13,11 @@
 #    under the License.
 
 """
-.. module:: pmcf.audit.base_audit
-   :platform: Unix
-   :synopsis: module containing abstract base class for audit classes
+..  module:: pmcf.audit.base_audit
+    :platform: Unix
+    :synopsis: module containing abstract base class for audit classes
 
-.. moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
 import abc
