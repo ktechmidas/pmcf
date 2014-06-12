@@ -13,25 +13,12 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+Utils
+*****
 
-Developer Guide
-===============
+The utils classes in pmcf
 
-In this section you will find information on PMCF's lower level programming APIs.
 
-Module Reference
-----------------
-.. toctree::
-   :maxdepth: 1
+Available utils methods
+======================
 
-   audit
-   cli
-   config
-   exceptions
-   outputs
-   parsers
-   policy
-   provisioners
-   resources
-   schema
-   utils

@@ -13,25 +13,22 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+Schema
+******
 
-Developer Guide
-===============
+The schema classes in pmcf implement the Draft 4 JSON Schema, and are
+responsible for validating the internal data structure for correctness and
+completeness
 
-In this section you will find information on PMCF's lower level programming APIs.
 
-Module Reference
-----------------
-.. toctree::
-   :maxdepth: 1
+Available schema libraries
+==========================
 
-   audit
-   cli
-   config
-   exceptions
-   outputs
-   parsers
-   policy
-   provisioners
-   resources
-   schema
-   utils
+
+The :mod:`pmcf.schema.base` Module
+----------------------------------
+
+.. automodule:: pmcf.schema.base
+    :noindex:
+    :members: __all__
+    :undoc-members:

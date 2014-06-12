@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+.. module:: pmcf.audit.base_audit
+   :platform: Unix
+   :synopsis: module containing abstract base class for audit classes
+
+.. moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import abc
 import logging
 
@@ -19,10 +27,29 @@ LOG = logging.getLogger(__name__)
 
 
 class BaseAudit(object):
+    """
+    Abstract base class for audit classes.
+
+    Only provides an interface, and can not be used directly
+    """
+
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def record_stack(self, stack, destination, credentials):
+        """
+        Abstract base method providing a signature.  Can not be used directly
+
+        :param stack: stack definition
+        :type stack: str.
+        :param destination: destination to copy stack to
+        :type destination: str.
+        :param credentials: credentials for copy command
+        :type credentials: dict.
+        :returns:  boolean
+        :raises: NotImplementedError
+        """
+
         raise NotImplementedError
 
 

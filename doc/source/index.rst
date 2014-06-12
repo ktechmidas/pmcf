@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to PMCF's documentation!
-================================
+Documentation for the Piksel Managed Cloud Framework
+====================================================
 
 Contents:
 
@@ -15,7 +15,7 @@ Developer Docs
 ==============
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    devref/index
 

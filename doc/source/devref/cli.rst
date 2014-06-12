@@ -13,25 +13,32 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+CLI
+***
 
-Developer Guide
-===============
+The cli classes in pmcf are called to parse the command line and pipeline the
+classes that actually do the work of parsing, building, auditing and outputting
+your stack definition.
 
-In this section you will find information on PMCF's lower level programming APIs.
+Available cli libraries
+=======================
 
-Module Reference
-----------------
-.. toctree::
-   :maxdepth: 1
 
-   audit
-   cli
-   config
-   exceptions
-   outputs
-   parsers
-   policy
-   provisioners
-   resources
-   schema
-   utils
+The :mod:`pmcf.cli.cli` Module
+----------------------------------
+
+.. automodule:: pmcf.cli.cli
+    :members: main
+    :undoc-members:
+
+
+The :mod:`pmcf.cli.cmd` Module
+----------------------------------
+
+.. automodule:: pmcf.cli.cmd
+    :members:
+    :undoc-members:
+
+.. autoclass:: PMCFCLI
+    :members:
+    :undoc-members:

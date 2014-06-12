@@ -13,25 +13,25 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+Config
+******
 
-Developer Guide
-===============
+The config classes in pmcf are called to read config files and overlay them
+with defaults and command line parameters in order to create a single config
+definition that will be in use throughout the rest of the run.
 
-In this section you will find information on PMCF's lower level programming APIs.
+Available config libraries
+==========================
 
-Module Reference
-----------------
-.. toctree::
-   :maxdepth: 1
 
-   audit
-   cli
-   config
-   exceptions
-   outputs
-   parsers
-   policy
-   provisioners
-   resources
-   schema
-   utils
+The :mod:`pmcf.config.config` Module
+------------------------------------
+
+
+.. automodule:: pmcf.config.config
+    :members:
+    :undoc-members:
+
+.. autoclass:: PMCFConfig
+    :members:
+    :undoc-members:

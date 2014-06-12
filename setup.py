@@ -2,9 +2,11 @@
 
 from setuptools import find_packages, setup
 
+from pmcf.version import VERSION
+
 setup(
     name="pmcf",
-    version="2014.1",
+    version=VERSION,
     description="Piksel Managed Cloud Framework",
     author="Stephen Gran",
     author_email="stephen.gran@piksel.com",

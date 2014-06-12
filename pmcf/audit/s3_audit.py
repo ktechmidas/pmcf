@@ -11,6 +11,13 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+"""
+.. module:: pmcf.audit.s3_audit
+   :platform: Unix
+   :synopsis: module containing S3 audit class
+
+.. moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
 
 import boto
 import logging
@@ -22,7 +29,24 @@ LOG = logging.getLogger(__name__)
 
 
 class S3Audit(BaseAudit):
+    """
+    S3 audit class.  Uploads stack definition to S3 bucket.
+    """
+
     def record_stack(self, stack, destination, credentials):
+        """
+        S3 implementation.  Uploads stack definition to configured S3 bucket.
+
+        :param stack: stack definition
+        :type stack: str.
+        :param destination: destination to copy stack to
+        :type destination: str.
+        :param credentials: credentials for copy command
+        :type credentials: dict.
+        :returns:  boolean
+        :raises: pmcf.exceptions.AuditException
+        """
+
         LOG.debug('recording stack definition to s3://%s/%s' %
                   (credentials['audit_output'], destination))
         try:
