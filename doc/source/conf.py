@@ -100,7 +100,16 @@ html_theme = 'default'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+#html_theme_options = {
+#    "relbarbgcolor": "#007dba",
+#    "footerbgcolor": "#03a74b",
+#    "sidebarbgcolor": "white",
+#    "relbartextcolor": "white",
+#    "relbarlinkcolor": "white",
+#    "sidebarlinkcolor": "black",
+#    "sidebartextcolor": "black",
+#}
+
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -110,11 +119,11 @@ html_theme = 'default'
 #html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = 'PMCF'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-#html_logo = None
+html_logo = 'images/logo.svg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
