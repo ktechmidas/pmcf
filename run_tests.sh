@@ -38,12 +38,12 @@ done
 
 if [ "${force}" = yes ];then
 	$(dirname $0)/tools/install_venv.sh -f
-	rm -rf .tox coverage testreports
+	rm -rf .tox coverage testreports nosereports
 fi
 
 echo "Running unit tests ..."
 
-mkdir -p testreports
+mkdir -p testreports nosereports
 tox -e $envlist || ret=$(($ret|$?))
 
 exit $ret
