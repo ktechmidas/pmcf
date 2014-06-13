@@ -84,7 +84,7 @@ class BaseParser(object):
         :param fname: Filename
         :type fname: str.
         :param args: Configuration parameters
-        :type instances: dict.
+        :type args: dict.
         :raises: :class:`pmcf.exceptions.ParserFailure`
         :returns: dict.
         """

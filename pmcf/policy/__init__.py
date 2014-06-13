@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.policy
+    :platform: Unix
+    :synopsis: module containing policy classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from pmcf.policy.base_policy import BasePolicy
 from pmcf.policy.json_policy import JSONPolicy
 

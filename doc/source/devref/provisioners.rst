@@ -26,21 +26,6 @@ Available provisioners libraries
 ================================
 
 
-:mod:`pmcf.provisioners.awsfw`
-------------------------------
-
-.. automodule:: pmcf.provisioners.awsfw
-    :noindex:
-    :members: __all__
-    :undoc-members:
-
-
-.. autoclass:: AWSFWProvisioner
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 :mod:`pmcf.provisioners.base_provisioner`
 -----------------------------------------
 
@@ -51,6 +36,20 @@ Available provisioners libraries
 
 
 .. autoclass:: BaseProvisioner
+    :members:
+    :undoc-members:
+
+
+:mod:`pmcf.provisioners.awsfw`
+------------------------------
+
+.. automodule:: pmcf.provisioners.awsfw
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: AWSFWProvisioner
     :members:
     :undoc-members:
     :show-inheritance:

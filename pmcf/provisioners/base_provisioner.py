@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.provisioners.base_provisioner
+    :platform: Unix
+    :synopsis: module containing abstract base class for provisioner classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import abc
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -28,6 +36,12 @@ LOG = logging.getLogger(__name__)
 
 
 class BaseProvisioner(object):
+    """
+    Abstract base class for provisioner classes.
+
+    Only provides an interface, and can not be used directly
+    """
+
     __metaclass__ = abc.ABCMeta
     _provides = None
 
@@ -36,21 +50,79 @@ class BaseProvisioner(object):
 
     @classmethod
     def provides(kls):
+        """
+        Accessor method for private data
+
+        :returns: str.
+        """
+
         return kls._provides
 
     @abc.abstractmethod
     def userdata(self, config, args):
+        """
+        Validates resource against local policy.
+
+        :param config: Config items for userdata
+        :type config: dict.
+        :param args: instance definition
+        :type args: dict.
+        :raises: :class:`NotImplementedError`
+        :returns: str.
+        """
+
         raise NotImplementedError
 
     def cfn_init(self, config, args):
-        return None
+        """
+        Return userdata suitable for consumption by cfn_init
+
+        :param config: Config items for userdata
+        :type config: dict.
+        :param args: instance definition
+        :type args: dict.
+        :raises: :class:`NotImplementedError`
+        :returns: str.
+        """
+
+        raise NotImplementedError
 
     def add_file(self, ud, filename, ftype='plain', compress=True):
+        """
+        Add data from file to userdata
+
+        :param ud: userdata object built so far
+        :type ud: :class:`email.mime.multipart.MIMEMultipart`
+        :param filename: filename of data to add to userdata
+        :type filename: str.
+        :param ftype: file Mimetype
+        :type ftype: str.
+        :param compress: whether to gzip file before adding
+        :type compress: bool.
+        :returns: str.
+        """
+
         fname = os.path.basename(filename)
         with open(filename) as fd:
             return self.add_data(ud, fd.read(), fname, ftype, compress)
 
-    def add_data(self, message, part, filename, ftype='plain', compress=True):
+    def add_data(self, ud, part, filename, ftype='plain', compress=True):
+        """
+        Add data from string to userdata
+
+        :param ud: userdata object built so far
+        :type ud: :class:`email.mime.multipart.MIMEMultipart`
+        :param part: string data to add to userdata
+        :type part: str.
+        :param filename: filename of data to add to userdata
+        :type filename: str.
+        :param ftype: file Mimetype
+        :type ftype: str.
+        :param compress: whether to gzip file before adding
+        :type compress: bool.
+        :returns: str.
+        """
+
         if compress:
             stringio = StringIO.StringIO()
             gz_file = gzip.GzipFile(filename=filename, fileobj=stringio,
@@ -64,13 +136,27 @@ class BaseProvisioner(object):
 
         sub_message.add_header('Content-Disposition',
                                'attachment; filename="%s"' % (filename))
-        message.attach(sub_message)
-        return message
+        ud.attach(sub_message)
+        return ud
 
     def make_skeleton(self):
+        """
+        Create empty skeleton to add userdata parts to
+
+        :returns: :class:`email.mime.multipart.MIMEMultipart`
+        """
+
         return MIMEMultipart(boundary=self.boundary)
 
     def resize(self, ud):
+        """
+        Checks size of userdata and aborts if it is too large
+
+        :param ud: userdata object built so far
+        :type ud: :class:`email.mime.multipart.MIMEMultipart`
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
         data = ud.as_string()
         if len(data) > 16384:
             raise ProvisionerException('userdata is too long')

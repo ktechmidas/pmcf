@@ -13,6 +13,14 @@
 #    under the License.
 
 
+"""
+..  module:: pmcf.schema.base
+    :platform: Unix
+    :synopsis: module containing base schema data
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
 definitions:

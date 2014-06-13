@@ -22,3 +22,7 @@ The utils classes in pmcf
 Available utils methods
 =======================
 
+.. automodule:: pmcf.utils
+    :noindex:
+    :members: import_from_string, error, sort_json, make_diff
+    :undoc-members:

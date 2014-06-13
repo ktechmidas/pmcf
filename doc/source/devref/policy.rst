@@ -40,7 +40,6 @@ Available policy libraries
 .. autoclass:: BasePolicy
     :members:
     :undoc-members:
-    :show-inheritance:
 
 
 :mod:`pmcf.policy.json_policy`

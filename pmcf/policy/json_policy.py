@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.policy.json_policy
+    :platform: Unix
+    :synopsis: module containing JSON implementation of policy class
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import json
 import logging
 
@@ -22,6 +30,12 @@ LOG = logging.getLogger(__name__)
 
 
 class JSONPolicy(BasePolicy):
+    """
+    Baseline Policy class.
+
+    This is the supported policy class.
+    """
+
     def __init__(self, json_file='/etc/pmcf/policy.json'):
         try:
             with open(json_file) as fd:
@@ -31,6 +45,17 @@ class JSONPolicy(BasePolicy):
                                   (json_file, e))
 
     def validate_resource(self, resource_type, resource_data):
+        """
+        Validates resource against local policy.
+
+        :param resource_type: Type of resource to validate
+        :type resource_type: str.
+        :param resource_data: Resource to validate
+        :type resource_data: dict.
+        :raises: :class:`NotImplementedError`
+        :returns: dict
+        """
+
         if not self.json_policy.get(resource_type):
             return True
         policy = self.json_policy.get(resource_type)

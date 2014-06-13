@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.provisioners
+    :platform: Unix
+    :synopsis: module containing provisioner classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from pmcf.provisioners.awsfw import AWSFWProvisioner
 from pmcf.provisioners.base_provisioner import BaseProvisioner
 from pmcf.provisioners.puppet import PuppetProvisioner

@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.utils
+    :platform: Unix
+    :synopsis: module containing utility functions
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import difflib
 import json
 import logging
@@ -22,6 +30,18 @@ LOG = logging.getLogger(__name__)
 
 
 def import_from_string(module, klass):
+    """
+    Imports a class from the string representation.  Used to autoload
+    implementation classes based on configuration parameters.
+
+    :param module: Name of module
+    :type module: str.
+    :param klass: Name of class
+    :type klass: str.
+    :raises: :class:`pmcf.exceptions.PropertyException`
+    :returns: object
+    """
+
     try:
         mod = __import__(module, fromlist=[klass])
         return getattr(mod, klass)
@@ -30,6 +50,16 @@ def import_from_string(module, klass):
 
 
 def error(resource, msg):
+    """
+    Wrapper for common resource error messages
+
+    :param resource: Resource raising exception
+    :type resource: object.
+    :param msg: Error message
+    :type msg: str.
+    :raises: :class:`pmcf.exceptions.PropertyException`
+    """
+
     res_type = getattr(resource, 'type', '<unknown type>')
     msg += ' in type %s' % res_type
     res_title = getattr(resource, 'title', None)
@@ -40,6 +70,14 @@ def error(resource, msg):
 
 
 def sort_json(string_data):
+    """
+    Sorts a json string, recursively
+
+    :param string_data: JSON-formatted string
+    :type string_data: str.
+    :returns: str.
+    """
+
     ret = ''
     data = json.loads(string_data)
     if isinstance(data, dict):
@@ -63,6 +101,16 @@ def sort_json(string_data):
 
 
 def make_diff(old, new):
+    """
+    Creates coloured diff output from 2 strings.
+
+    :param old: String to diff from
+    :type old: str.
+    :param new: String to diff to
+    :type new: str.
+    :returns: str.
+    """
+
     ret = ''
     old_data = json.loads(old)
     new_data = json.loads(new)

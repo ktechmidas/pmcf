@@ -29,21 +29,6 @@ Available parsers libraries
 ===========================
 
 
-:mod:`pmcf.parsers.awsfw_parser`
---------------------------------
-
-.. automodule:: pmcf.parsers.awsfw_parser
-    :noindex:
-    :members: __all__
-    :undoc-members:
-
-
-.. autoclass:: AWSFWParser
-    :members: _str_to_bool, _listify, _build_hc, build_lbs, build_fw, build_instances, build_ds, parse
-    :undoc-members:
-    :show-inheritance:
-
-
 :mod:`pmcf.parsers.base_parser`
 -------------------------------
 
@@ -55,6 +40,20 @@ Available parsers libraries
 
 .. autoclass:: BaseParser
     :members:
+    :undoc-members:
+
+
+:mod:`pmcf.parsers.awsfw_parser`
+--------------------------------
+
+.. automodule:: pmcf.parsers.awsfw_parser
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: AWSFWParser
+    :members: _str_to_bool, _listify, _build_hc, build_lbs, build_fw, build_instances, build_ds, parse
     :undoc-members:
     :show-inheritance:
 

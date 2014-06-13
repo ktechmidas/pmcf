@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.policy.base_policy
+    :platform: Unix
+    :synopsis: module containing abstract base class for policy classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import abc
 import logging
 
@@ -19,11 +27,27 @@ LOG = logging.getLogger(__name__)
 
 
 class BasePolicy(object):
+    """
+    Abstract base class for policy classes.
+
+    Only provides an interface, and can not be used directly
+    """
 
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def validate_resource(self, resource_type, resource_data):
+        """
+        Validates resource against local policy.
+
+        :param resource_type: Type of resource to validate
+        :type resource_type: str.
+        :param resource_data: Resource to validate
+        :type resource_data: dict.
+        :raises: :class:`NotImplementedError`
+        :returns: dict
+        """
+
         raise NotImplementedError
 
 

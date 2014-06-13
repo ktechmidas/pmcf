@@ -42,19 +42,18 @@ Available outputs libraries
 .. autoclass:: BaseOutput
     :members:
     :undoc-members:
-    :show-inheritance:
 
 
-:mod:`pmcf.outputs.c4cloudformation`
-------------------------------------
+:mod:`pmcf.outputs.json_output`
+-------------------------------
 
-.. automodule:: pmcf.outputs.c4cloudformation
+.. automodule:: pmcf.outputs.json_output
     :noindex:
     :members: __all__
     :undoc-members:
 
 
-.. autoclass:: C4AWSCFNOutput
+.. autoclass:: JSONOutput
     :members:
     :undoc-members:
     :show-inheritance:
@@ -75,16 +74,16 @@ Available outputs libraries
     :show-inheritance:
 
 
-:mod:`pmcf.outputs.json_output`
--------------------------------
+:mod:`pmcf.outputs.c4cloudformation`
+------------------------------------
 
-.. automodule:: pmcf.outputs.json_output
+.. automodule:: pmcf.outputs.c4cloudformation
     :noindex:
     :members: __all__
     :undoc-members:
 
 
-.. autoclass:: JSONOutput
+.. autoclass:: C4AWSCFNOutput
     :members:
     :undoc-members:
     :show-inheritance:

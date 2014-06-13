@@ -40,7 +40,6 @@ Available audit libraries
 .. autoclass:: BaseAudit
     :members:
     :undoc-members:
-    :show-inheritance:
 
 
 :mod:`pmcf.audit.noop_audit`
