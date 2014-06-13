@@ -17,4 +17,4 @@
 Schema for stacks
 =================
 
-My hands are typing
+`My hands are typing <http://xkcd.com/1296/>`_
