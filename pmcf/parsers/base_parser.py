@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.parsers.base_parser
+    :platform: Unix
+    :synopsis: module containing base parser class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import abc
 import logging
 import jsonschema
@@ -24,6 +32,12 @@ LOG = logging.getLogger(__name__)
 
 
 class BaseParser(object):
+    """
+    Abstract base class for parser classes.
+
+    Only provides an interface, and can not be used directly
+    """
+
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
@@ -40,12 +54,41 @@ class BaseParser(object):
 
     @abc.abstractmethod
     def parse(self, config, args={}):
+        """
+        Method signature for parsing file contents into internal
+        representation of data.
+
+        :param config: String representation of config from file
+        :type config: str.
+        :param args: Configuration parameters
+        :type instances: dict.
+        :raises: :class:`NotImplementedError`
+        :returns: dict.
+        """
+
         raise NotImplementedError
 
     def stack(self):
+        """
+        Accessor method for internal data storage.
+
+        :returns: dict.
+        """
+
         return self._stack
 
     def parse_file(self, fname, args={}):
+        """
+        Wrapper method for :py:meth:`parse` to pass in file contents
+
+        :param fname: Filename
+        :type fname: str.
+        :param args: Configuration parameters
+        :type instances: dict.
+        :raises: :class:`pmcf.exceptions.ParserFailure`
+        :returns: dict.
+        """
+
         try:
             with open(fname) as fd:
                 return self.parse(fd.read(), args)
@@ -53,6 +96,12 @@ class BaseParser(object):
             raise ParserFailure(str(e))
 
     def validate(self):
+        """
+        Validate resulting data structure against the internal
+        :class:`pmcf.schema.base_schema.BaseSchema schema`
+
+        :raises: :class:`pmcf.exceptions.ParserFailure`
+        """
         LOG.info('Start validation of stack')
         try:
             jsonschema.validate(self._stack, yaml.load(base_schema))
