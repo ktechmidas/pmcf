@@ -13,8 +13,32 @@
       License for the specific language governing permissions and limitations
       under the License.
 
+.. _cli:
 
 Command line arguments
 =======================
 
-My hands are typing
+positional arguments::
+
+    stackfile             path to stack (farm) definition file
+
+optional arguments::
+
+    -h, --help            show this help message and exit
+    -v, --verbose         set loglevel to verbose
+    -d, --debug           set loglevel to debug
+    -q, --quiet           set loglevel to quiet
+    -s STAGE, --stage STAGE
+                          run config for this stage
+    -p PROFILE, --profile PROFILE
+                          use config profile
+    -P POLICYFILE, --policyfile POLICYFILE
+                          alternate policy file
+    -c CONFIGFILE, --configfile CONFIGFILE
+                          alternate config file
+    -a ACTION, --action ACTION
+                          action (one of create, update, or delete)
+
+Sample usage::
+
+    pmcf -d -p c4-pml -a create -s stage stacks/ais-stage-001.xml

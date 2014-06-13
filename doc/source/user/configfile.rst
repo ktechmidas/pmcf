@@ -13,7 +13,6 @@
       License for the specific language governing permissions and limitations
       under the License.
 
-
 Configuration file
 ==================
 
@@ -28,7 +27,9 @@ environment.  These can be used by passing::
 
     -p profilename
 
-on the command line.
+on the command line.  Values missing from a profile block will be supplemented
+by values from the default block, and then overridden by values passed as
+:ref:`cli`
 
 Valid keys for a section in the config file are and their defaults are::
 
@@ -139,4 +140,26 @@ instance_secretkey
 
 stage
     Stage (dev, test, prod, etc).  Typically would be passed on the command
-    line, but is valid in the configuration file
+    line, but is valid in the configuration file.
+
+
+A full sample config file::
+
+    [default]
+    output = SequoiaAWSCFNOutput
+    parser = YamlParser
+    policy = JSONPolicy
+    provisioner = PuppetProvisioner
+    audit = S3Audit
+    audit_output = piksel-provisioning
+
+    [profile sequoia-dev]
+    region = eu-west-1
+    accesskey = XXXXX
+    secretkey = XXXXX
+
+    [profile sequoia-prod]
+    region = eu-west-1
+    accesskey = YYYYY
+    secretkey = YYYYY
+    stage = prod
