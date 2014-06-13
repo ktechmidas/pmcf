@@ -299,9 +299,9 @@ class AWSFWParser(BaseParser):
         AWSFW native XML structure.
 
         :param ds: dictionary created by xmltodict from AWSFW XML
-        :type farmname: dict.
+        :type ds: dict.
         :param args: Configuration parameters
-        :type instances: dict.
+        :type args: dict.
         :raises: :class:`pmcf.exceptions.ParserFailure`
         :returns: dict
         """
@@ -354,7 +354,7 @@ class AWSFWParser(BaseParser):
         :param config: String representation of config from file
         :type config: str.
         :param args: Configuration parameters
-        :type instances: dict.
+        :type args: dict.
         :raises: :class:`pmcf.exceptions.ParserFailure`
         :returns: dict
         """

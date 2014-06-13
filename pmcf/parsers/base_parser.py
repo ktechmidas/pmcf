@@ -61,7 +61,7 @@ class BaseParser(object):
         :param config: String representation of config from file
         :type config: str.
         :param args: Configuration parameters
-        :type instances: dict.
+        :type args: dict.
         :raises: :class:`NotImplementedError`
         :returns: dict.
         """

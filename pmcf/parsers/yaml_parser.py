@@ -45,7 +45,7 @@ class YamlParser(BaseParser):
         :param config: String representation of config from file
         :type config: str.
         :param args: Configuration parameters
-        :type instances: dict.
+        :type args: dict.
         :raises: :class:`pmcf.exceptions.ParserFailure`
         :returns: dict
         """
