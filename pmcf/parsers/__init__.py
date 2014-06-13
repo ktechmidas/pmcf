@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.parsers
+    :platform: Unix
+    :synopsis: module containing parser classes for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from pmcf.parsers.awsfw_parser import AWSFWParser
 from pmcf.parsers.base_parser import BaseParser
 from pmcf.parsers.yaml_parser import YamlParser

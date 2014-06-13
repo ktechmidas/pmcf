@@ -64,24 +64,24 @@ class AWSFWParser(BaseParser):
         This is necessary because because xmltodict does not produce
         consistent output.  Given::
 
-        <foo>
-          <bar>baz</bar>
-          <bar>qux</bar>
-        </foo>
+            <foo>
+              <bar>baz</bar>
+              <bar>qux</bar>
+            </foo>
 
         xmltodict will return a data structure of::
 
-        {'foo': {'bar': ['baz, 'qux']}}
+            {'foo': {'bar': ['baz, 'qux']}}
 
-        But:
+        But::
 
-        <foo>
-          <bar>baz</bar>
-        </foo>
+            <foo>
+              <bar>baz</bar>
+            </foo>
 
         xmltodict will return a data structure of::
 
-        {'foo': {'bar': 'baz}}
+            {'foo': {'bar': 'baz}}
 
         In order to consistently access subelements, it's safer to always
         transform them into a list.

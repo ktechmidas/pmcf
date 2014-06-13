@@ -12,6 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.parsers.yaml_parser
+    :platform: Unix
+    :synopsis: module containing supported parser class for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 import logging
 import yaml
 
@@ -22,7 +30,25 @@ LOG = logging.getLogger(__name__)
 
 
 class YamlParser(BaseParser):
+    """
+    Baseline Parser class.
+
+    This is the supported parser class, as it translates almost directly to
+    the supported internal schema.
+    """
+
     def parse(self, config, args={}):
+        """
+        Builds internal representation of data from the
+        YAML representation
+
+        :param config: String representation of config from file
+        :type config: str.
+        :param args: Configuration parameters
+        :type instances: dict.
+        :raises: :class:`pmcf.exceptions.ParserFailure`
+        :returns: dict
+        """
 
         LOG.info('Start parsing config')
         try:

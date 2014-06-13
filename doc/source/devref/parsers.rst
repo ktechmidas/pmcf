@@ -39,7 +39,7 @@ Available parsers libraries
 
 
 .. autoclass:: AWSFWParser
-    :members:
+    :members: _str_to_bool, _listify, _build_hc, build_lbs, build_fw, build_instances, build_ds, parse
     :undoc-members:
     :show-inheritance:
 
