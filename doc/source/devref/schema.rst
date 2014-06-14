@@ -16,19 +16,77 @@
 Schema
 ******
 
-The schema classes in pmcf implement the Draft 4 JSON Schema, and are
-responsible for validating the internal data structure for correctness and
-completeness
+The schema in pmcf implements the `Draft 4 JSON Schema
+<http://json-schema.org/>`_, and is responsible for validating the internal
+data structure for correctness and completeness.
 
+Most of the structure should be fairly straight  forward, if slightly verbose.
+References to other definitions are allowed, which can both make the schema
+more compact and slightly more difficult to read.
 
-Available schema libraries
-==========================
+This is the schema definition for a load balancer, which references the schema
+definition for a listener (a load balancer can have one or more listeners)::
 
-
-:mod:`pmcf.schema.base`
------------------------
-
-.. automodule:: pmcf.schema.base
-    :noindex:
-    :members: __all__
-    :undoc-members:
+    listener:
+        properties:
+            instance_port:
+                type: integer
+            protocol:
+                enum:
+                    - HTTP
+                    - HTTPS
+                    - TCP
+            instance_protocol:
+                enum:
+                    - HTTP
+                    - HTTPS
+                    - TCP
+            lb_port:
+                type: integer
+            sslCert:
+                type: string
+        required:
+            - instance_port
+            - protocol
+            - instance_protocol
+            - lb_port
+        additionalProperties: false
+    load_balancer:
+        properties:
+            name:
+                type: string
+            internal:
+                type: boolean
+            subnets:
+                type: array
+                minItems: 1
+            listener:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/listener"
+            policy:
+                type: array
+            sg:
+                type: array
+            healthcheck:
+                type: object
+                properties:
+                    path:
+                        type: string
+                    protocol:
+                        enum:
+                            - HTTP
+                            - HTTPS
+                            - TCP
+                    port:
+                        type: integer
+                required:
+                    - protocol
+                    - port
+                additionalProperties: false
+        required:
+            - name
+            - listener
+            - healthcheck
+        additionalProperties: false
