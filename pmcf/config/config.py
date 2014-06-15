@@ -69,7 +69,7 @@ class PMCFConfig(object):
             'instance_accesskey': None,
             'instance_secretkey': None,
             'region': None,
-            'stage': None,
+            'environment': None,
         }
 
     def get_config(self):

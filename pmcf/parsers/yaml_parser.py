@@ -59,18 +59,18 @@ class YamlParser(BaseParser):
         try:
             self._stack['config'] = {
                 'name': data['config']['name'],
-                'stage': args['stage']
+                'environment': args['environment']
             }
         except KeyError, e:
             raise ParserFailure(e)
 
         self._stack['config'].update(data['config'])
-        if data['config'].get('stages', None):
-            self._stack['config'].pop('stages', None)
-            if args['stage'] not in data['config']['stages']:
-                raise ParserFailure('stage %s not in %s' %
-                                    (args['stage'],
-                                     data['config']['stages']))
+        if data['config'].get('environment', None):
+            self._stack['config'].pop('environments', None)
+            if args['environment'] not in data['config']['environment']:
+                raise ParserFailure('environment %s not in %s' %
+                                    (args['environment'],
+                                     data['config']['environment']))
 
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']

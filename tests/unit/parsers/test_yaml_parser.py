@@ -37,9 +37,9 @@ class TestParser(object):
         assert_raises(ParserFailure, parser.parse_file, fname, {})
 
     @mock.patch('jsonschema.validate', _mock_validate)
-    def test_parser_raises_invalid_stage(self):
+    def test_parser_raises_invalid_environment(self):
         args = {
-            'stage': 'nosuchstage',
+            'environment': 'nosuchstage',
             'accesskey': '1234',
             'secretkey': '2345',
             'instance_accesskey': '12345',
@@ -70,7 +70,7 @@ class TestParser(object):
     @mock.patch('jsonschema.validate', _mock_validate)
     def test_instance_defaultsg(self):
         args = {
-            'stage': 'stage',
+            'environment': 'stage',
             'accesskey': '1234',
             'secretkey': '2345',
             'instance_accesskey': '12345',
@@ -91,7 +91,7 @@ class TestParserData(object):
     @mock.patch('jsonschema.validate', _mock_validate)
     def setup(self):
         args = {
-            'stage': 'stage',
+            'environment': 'stage',
             'accesskey': '1234',
             'secretkey': '2345',
             'instance_accesskey': '12345',
@@ -107,9 +107,9 @@ class TestParserData(object):
     def test_parser_config_has_valid_keys(self):
         keys = [
             'name',
-            'stage',
             'access',
             'secret',
+            'environment',
             'instance_access',
             'instance_secret',
             'subnets',

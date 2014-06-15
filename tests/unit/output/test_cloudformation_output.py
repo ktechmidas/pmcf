@@ -104,7 +104,7 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'audit': 'NoopAudit',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
@@ -120,7 +120,7 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'audit': 'S3Audit',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
@@ -135,7 +135,7 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
@@ -159,7 +159,7 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'strategy': 'prompt_inplace',
             'audit': 'NoopAudit',
             'tags': {
@@ -184,7 +184,7 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'strategy': 'prompt_inplace',
             'audit': 'NoopAudit',
             'tags': {
@@ -203,7 +203,7 @@ class TestAWSCFNOutput(object):
             'access': '1234',
             'secret': '2345',
             'audit': 'NoopAudit',
-            'stage': 'test',
+            'environment': 'test',
             'name': 'test'
         }
         assert_raises(ProvisionerException, cfno.run, '{"a": "b"}', metadata)

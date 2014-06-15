@@ -714,7 +714,7 @@ class TestParserData(object):
     @mock.patch('jsonschema.validate', _mock_validate)
     def setup(self):
         args = {
-            'stage': 'stage',
+            'environment': 'stage',
             'accesskey': '1234',
             'secretkey': '2345',
             'instance_accesskey': '12345',
@@ -730,7 +730,7 @@ class TestParserData(object):
     def test_parser_config_has_valid_keys(self):
         keys = [
             'name',
-            'stage',
+            'environment',
             'access',
             'secret',
             'instance_access',

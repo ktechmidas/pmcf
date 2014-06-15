@@ -53,7 +53,7 @@ class C4AWSCFNOutput(AWSCFNOutput):
         """
 
         try:
-            if metadata['stage'].lower() == 'prod':
+            if metadata['environment'].lower() == 'prod':
                 review_date = (datetime.date.today() +
                                datetime.timedelta(6*365/12)).isoformat()
             else:
@@ -61,11 +61,13 @@ class C4AWSCFNOutput(AWSCFNOutput):
                                datetime.timedelta(2*365/12)).isoformat()
 
             farmname = '-'.join(
-                [metadata['name'], metadata['stage'], metadata['version']]),
+                [metadata['name'],
+                    metadata['environment'],
+                    metadata['version']])
 
             metadata['tags'] = {
                 'Project': metadata['name'],
-                'Environment': metadata['stage'],
+                'Environment': metadata['environment'],
                 'CodeVersion': metadata['version'],
                 'Farm': farmname,
                 'ReviewDate': review_date,

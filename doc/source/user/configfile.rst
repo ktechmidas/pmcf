@@ -49,7 +49,7 @@ Valid keys for a section in the config file are and their defaults are::
     instance_accesskey = None
     instance_secretkey = None
     region = None
-    stage = None
+    environment = None
 
 This will not give you a working config file.  You must select at least a
 valid parser, policy, provisioner and output class.  Some outputs, such as
@@ -138,9 +138,9 @@ Config file values:
     present, only the AWSFWProvisioner uses this value.  Typically would be
     different in different profiles, and only stored at the profile level.
 
-:stage:
-    Stage (dev, test, prod, etc).  Typically would be passed on the command
-    line, but is valid in the configuration file.
+:environment:
+    Environment (dev, test, prod, etc).  Typically would be passed on the
+    command line, but is valid in the configuration file.
 
 
 A full sample config file::
@@ -162,4 +162,4 @@ A full sample config file::
     region = eu-west-1
     accesskey = YYYYY
     secretkey = YYYYY
-    stage = prod
+    environment = prod

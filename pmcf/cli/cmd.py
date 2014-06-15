@@ -53,14 +53,15 @@ class PMCFCLI(object):
         :returns:  boolean
         """
         try:
+            stack = self.parser.stack()
             self.parser.parse_file(self.args['stackfile'], self.args)
             for k, v in self.parser.stack()['resources'].iteritems():
                 for idx, res in enumerate(v):
                     data = self.parser.stack()['resources'][k][idx]
                     self.policy.validate_resource(k, data)
             data = self.output.add_resources(self.provisioner,
-                                             self.parser.stack()['resources'],
-                                             self.parser.stack()['config'])
+                                             stack['resources'],
+                                             stack['config'])
 
             try:
                 metadata = {
@@ -68,14 +69,14 @@ class PMCFCLI(object):
                     'secret': self.args['secretkey'],
                     'region': self.args['region'],
                     'name': self.parser.stack()['config']['name'],
-                    'stage': self.parser.stack()['config']['stage'],
+                    'environment': stack['config']['environment'],
                 }
             except KeyError, e:
                 raise ParserFailure(str(e))
 
             for k in ['owner', 'version', 'strategy']:
-                if self.parser.stack()['config'].get(k):
-                    metadata[k] = self.parser.stack()['config'][k]
+                if stack['config'].get(k):
+                    metadata[k] = stack['config'][k]
             metadata['audit'] = self.args.get('audit', 'NoopAudit')
             if self.args.get('audit_output', None):
                 metadata['audit_output'] = self.args['audit_output']

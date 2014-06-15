@@ -54,12 +54,13 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         try:
             metadata['tags'] = {
                 'Stack': metadata['name'],
-                'Stage': metadata['stage'],
+                'Stage': metadata['environment'],
             }
         except KeyError, e:
             raise ProvisionerException(str(e))
 
-        metadata['name'] = "%s-%s" % (metadata['name'], metadata['stage'])
+        metadata['name'] = "%s-%s" % (metadata['name'],
+                                      metadata['environment'])
 
         return super(self.__class__, self).run(data, metadata)
 

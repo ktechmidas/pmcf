@@ -26,7 +26,7 @@ def _mock_run(self, data, run):
 class TestC4CFNOutput(object):
 
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput.run', _mock_run)
-    def test_run_no_stage_raises(self):
+    def test_run_no_environment_raises(self):
         md = {
             'name': 'test',
             'owner': 'nobody',
@@ -39,7 +39,7 @@ class TestC4CFNOutput(object):
     def test_run_no_name_raises(self):
         md = {
             'owner': 'nobody',
-            'stage': 'dev',
+            'environment': 'dev',
             'version': '1.2',
         }
         cfno = C4AWSCFNOutput()
@@ -49,7 +49,7 @@ class TestC4CFNOutput(object):
     def test_run_no_owner_raises(self):
         md = {
             'name': 'test',
-            'stage': 'dev',
+            'environment': 'dev',
             'version': '1.2',
         }
         cfno = C4AWSCFNOutput()
@@ -60,7 +60,7 @@ class TestC4CFNOutput(object):
         md = {
             'name': 'test',
             'owner': 'nobody',
-            'stage': 'dev',
+            'environment': 'dev',
         }
         cfno = C4AWSCFNOutput()
         assert_raises(ProvisionerException, cfno.run, {}, md)
@@ -71,7 +71,7 @@ class TestC4CFNOutput(object):
         metadata = {
             'name': 'test',
             'owner': 'nobody',
-            'stage': 'dev',
+            'environment': 'dev',
             'version': '1.2',
         }
         assert_equals(cfno.run({}, metadata), True)
@@ -82,7 +82,7 @@ class TestC4CFNOutput(object):
         metadata = {
             'name': 'test',
             'owner': 'nobody',
-            'stage': 'prod',
+            'environment': 'prod',
             'version': '1.2',
         }
         assert_equals(cfno.run({}, metadata), True)

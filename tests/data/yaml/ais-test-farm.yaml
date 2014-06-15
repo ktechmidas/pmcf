@@ -1,6 +1,6 @@
 config:
   name: ais
-  stages:
+  environment:
       - dev
       - stage
       - qa

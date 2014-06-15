@@ -28,8 +28,8 @@ optional arguments::
     -v, --verbose         set loglevel to verbose
     -d, --debug           set loglevel to debug
     -q, --quiet           set loglevel to quiet
-    -s STAGE, --stage STAGE
-                          run config for this stage
+    -e ENVIRONMENT, --environment ENVIRONMENT
+                          run config for this environment
     -p PROFILE, --profile PROFILE
                           use config profile
     -P POLICYFILE, --policyfile POLICYFILE
@@ -41,4 +41,4 @@ optional arguments::
 
 Sample usage::
 
-    pmcf -d -p c4-pml -a create -s stage stacks/ais-stage-001.xml
+    pmcf -d -p c4-pml -a create -e stage stacks/ais-stage-001.xml

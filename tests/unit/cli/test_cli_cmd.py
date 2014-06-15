@@ -55,7 +55,7 @@ def _mock_stack(self):
         'config': {
             'name': 'test',
             'owner': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'version': 'test',
         }
     }

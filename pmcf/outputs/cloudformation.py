@@ -131,7 +131,7 @@ class AWSCFNOutput(JSONOutput):
             }
             dest = 'audit/%s/%s/%s-%s' % (
                 metadata['name'],
-                metadata['stage'],
+                metadata['environment'],
                 metadata['name'],
                 time.strftime('%Y%m%dT%H%M%S'))
             audit.record_stack(data, dest, creds)

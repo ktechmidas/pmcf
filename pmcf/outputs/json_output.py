@@ -48,7 +48,7 @@ class JSONOutput(BaseOutput):
 
         LOG.info('Start building template')
         data = Template()
-        desc = "%s %s stack" % (config['name'], config['stage'])
+        desc = "%s %s stack" % (config['name'], config['environment'])
         data.add_description(desc)
         data.add_version()
 
@@ -180,7 +180,7 @@ class JSONOutput(BaseOutput):
 
                 if inst['provisioner']['provider'] == 'awsfw_standalone':
                     args = inst['provisioner']['args']
-                    cfg['platform_environment'] = config['stage']
+                    cfg['platform_environment'] = config['environment']
                     cred_mapping = {
                         'instance_access': 'AWS_ACCESS_KEY_ID',
                         'instance_secret': 'AWS_SECRET_ACCESS_KEY',

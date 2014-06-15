@@ -74,7 +74,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -147,7 +147,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
         }
         res = {
             'instance': [],
@@ -236,7 +236,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -319,7 +319,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -398,7 +398,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -463,7 +463,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -530,7 +530,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'vpcid': 'vpc-123',
         }
         res = {
@@ -601,7 +601,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -658,7 +658,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -702,7 +702,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'instance': [],
@@ -747,7 +747,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'vpcid': 'vpc-123',
         }
         res = {
@@ -818,7 +818,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test',
+            'environment': 'test',
             'instance_access': '1234',
             'instance_secret': '2345',
         }
@@ -936,7 +936,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'load_balancer': [{
@@ -1032,7 +1032,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'load_balancer': [],
@@ -1126,7 +1126,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'load_balancer': [],
@@ -1217,7 +1217,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'load_balancer': [],
@@ -1296,7 +1296,7 @@ class TestJSONOutput(object):
 
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'load_balancer': [],
@@ -1328,7 +1328,7 @@ class TestJSONOutput(object):
         out = JSONOutput()
         cfg = {
             'name': 'test',
-            'stage': 'test'
+            'environment': 'test'
         }
         res = {
             'load_balancer': [],

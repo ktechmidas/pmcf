@@ -26,7 +26,7 @@ def _mock_run(self, data, run):
 class TestSequoiaCFNOutput(object):
 
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput.run', _mock_run)
-    def test_run_no_stage_raises(self):
+    def test_run_no_environment_raises(self):
         md = {
             'name': 'test',
         }
@@ -36,7 +36,7 @@ class TestSequoiaCFNOutput(object):
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput.run', _mock_run)
     def test_run_no_name_raises(self):
         md = {
-            'stage': 'dev',
+            'environment': 'dev',
         }
         cfno = SequoiaAWSCFNOutput()
         assert_raises(ProvisionerException, cfno.run, {}, md)
@@ -46,7 +46,7 @@ class TestSequoiaCFNOutput(object):
         cfno = SequoiaAWSCFNOutput()
         metadata = {
             'name': 'test',
-            'stage': 'dev',
+            'environment': 'dev',
         }
         assert_equals(cfno.run({}, metadata), True)
 
@@ -55,6 +55,6 @@ class TestSequoiaCFNOutput(object):
         cfno = SequoiaAWSCFNOutput()
         metadata = {
             'name': 'test',
-            'stage': 'prod',
+            'environment': 'prod',
         }
         assert_equals(cfno.run({}, metadata), True)
