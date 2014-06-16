@@ -114,10 +114,12 @@ class AWSCFNOutput(JSONOutput):
                         return True
 
                 data = json.dumps(json.loads(data))
+                cfn.validate_template(data)
                 cfn.update_stack(metadata['name'], data, tags=tags)
             else:
                 LOG.debug("stack %s doesn't exist, creating", metadata['name'])
                 data = json.dumps(json.loads(data))
+                cfn.validate_template(data)
                 cfn.create_stack(metadata['name'], data, tags=tags)
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))

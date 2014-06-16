@@ -29,6 +29,10 @@ def _mock_search_regions(svc):
     return [FakeRegion()]
 
 
+def _mock_validate_template(obj, data):
+    pass
+
+
 def _mock_create_stack(obj, name, data, tags):
     pass
 
@@ -95,6 +99,9 @@ class TestAWSCFNOutput(object):
                       '{"a": "b"}', {'region': 'nah'})
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     def test_run_connects(self):
@@ -110,6 +117,9 @@ class TestAWSCFNOutput(object):
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     @mock.patch('pmcf.audit.S3Audit.record_stack', _mock_audit_fails)
@@ -126,6 +136,9 @@ class TestAWSCFNOutput(object):
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     def test_run_with_tags_connects(self):
@@ -144,6 +157,9 @@ class TestAWSCFNOutput(object):
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
@@ -169,6 +185,9 @@ class TestAWSCFNOutput(object):
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
@@ -194,6 +213,9 @@ class TestAWSCFNOutput(object):
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack_fails)
     def test_run_stack_fails(self):
