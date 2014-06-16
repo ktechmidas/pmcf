@@ -29,7 +29,7 @@ LOG = logging.getLogger(__name__)
 
 class PuppetProvisioner(BaseProvisioner):
 
-    def userdata(self, config, args):
+    def userdata(self, args):
         """
         Validates resource against local policy.
 
