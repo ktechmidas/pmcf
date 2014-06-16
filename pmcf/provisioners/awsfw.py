@@ -35,13 +35,11 @@ class AWSFWProvisioner(BaseProvisioner):
     backwards-compatible manner with the existing AWSFW standalone installer.
     """
 
-    def userdata(self, config, args):
+    def userdata(self, args):
         """
         Validates resource against local policy.
 
-        :param config: Config items for userdata
-        :type config: dict.
-        :param args: instance definition
+        :param args: provisioner arguments
         :type args: dict.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: str.
@@ -52,14 +50,12 @@ class AWSFWProvisioner(BaseProvisioner):
         ud = self.add_file(ud, 'scripts/awsfw/part-handler')
         ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl', 'x-s3curl', False)
 
-        config['roles'] = ','.join(args['roles'])
-        config['rolebucket'] = args['roleBucket']
-        config['apps'] = ','.join(args['apps'])
-        config['appbucket'] = args['appBucket']
-        config['instantiatedby'] = 'create-farm'
+        args['roles'] = ','.join(args['roles'])
+        args['apps'] = ','.join(args['apps'])
+        args['instantiatedby'] = 'create-farm'
 
         awsfw_data = ''
-        for k, v in config.iteritems():
+        for k, v in args.iteritems():
             awsfw_data += 'export %s=%s\n' % (k, v)
 
         ud = self.add_data(ud, awsfw_data, 'vars')

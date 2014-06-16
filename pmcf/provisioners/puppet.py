@@ -33,9 +33,7 @@ class PuppetProvisioner(BaseProvisioner):
         """
         Validates resource against local policy.
 
-        :param config: Config items for userdata
-        :type config: dict.
-        :param args: instance definition
+        :param args: provisioner arguments
         :type args: dict.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: str.

@@ -26,18 +26,16 @@ class TestAWSFWProvisioner(object):
         self.config = {
             'foo': 'baz',
             'bar': 'womble',
-            'farm': 'test'
-        }
-
-    def setup(self):
-        args = {
+            'farm': 'test',
             'roles': ['test'],
             'roleBucket': 'somewhere',
             'apps': ['test'],
             'appBucket': 'somewhere',
         }
+
+    def setup(self):
         awsfwp = AWSFWProvisioner()
-        data = awsfwp.userdata(self.config, args)
+        data = awsfwp.userdata(self.config)
         self.message = email.message_from_string(data)
 
     def _decode(self, data):

@@ -31,7 +31,7 @@ class TestBaseProvisioner(object):
         assert_raises(NotImplementedError, self.provisioner.cfn_init, {}, {})
 
     def test_parse_raises(self):
-        assert_raises(NotImplementedError, self.provisioner.userdata, {}, {})
+        assert_raises(NotImplementedError, self.provisioner.userdata, {})
 
     def test_userdata_too_long(self):
         data = self.provisioner.make_skeleton()

@@ -48,13 +48,11 @@ class BaseProvisioner(object):
         self.boundary = '===============4206204907479218652=='
 
     @abc.abstractmethod
-    def userdata(self, config, args):
+    def userdata(self, args):
         """
         Validates resource against local policy.
 
-        :param config: Config items for userdata
-        :type config: dict.
-        :param args: instance definition
+        :param args: provisioner arguments
         :type args: dict.
         :raises: :class:`NotImplementedError`
         :returns: str.
