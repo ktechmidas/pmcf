@@ -17,6 +17,6 @@ from nose.tools import assert_equals
 from pmcf.provisioners.puppet import PuppetProvisioner
 
 
-class TestAWSFWProvisioner(object):
+class TestPuppetProvisioner(object):
     def test_userdata_contains_expected_data(self):
         assert_equals(None, PuppetProvisioner().userdata({}))

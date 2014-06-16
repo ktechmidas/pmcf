@@ -13,21 +13,35 @@
 #    under the License.
 
 """
-..  module:: pmcf.provisioners
+..  module:: pmcf.provisioners.chef
     :platform: Unix
-    :synopsis: module containing provisioner classes
+    :synopsis: module containing chef solo implementation of provisioner class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
-from pmcf.provisioners.awsfw import AWSFWProvisioner
+import logging
+
 from pmcf.provisioners.base_provisioner import BaseProvisioner
-from pmcf.provisioners.chef import ChefProvisioner
-from pmcf.provisioners.puppet import PuppetProvisioner
+
+LOG = logging.getLogger(__name__)
+
+
+class ChefProvisioner(BaseProvisioner):
+
+    def userdata(self, args):
+        """
+        Validates resource against local policy.
+
+        :param args: provisioner arguments
+        :type args: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        :returns: str.
+        """
+
+        return None
+
 
 __all__ = [
-    AWSFWProvisioner,
-    BaseProvisioner,
     ChefProvisioner,
-    PuppetProvisioner,
 ]

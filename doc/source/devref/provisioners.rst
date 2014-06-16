@@ -51,6 +51,21 @@ metadata endpoint suitable for consumption by
     :show-inheritance:
 
 
+:mod:`pmcf.provisioners.chef`
+===============================
+
+.. automodule:: pmcf.provisioners.chef
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: ChefProvisioner
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`pmcf.provisioners.puppet`
 ===============================
 

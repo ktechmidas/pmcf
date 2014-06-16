@@ -12,22 +12,11 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-"""
-..  module:: pmcf.provisioners
-    :platform: Unix
-    :synopsis: module containing provisioner classes
+from nose.tools import assert_equals
 
-..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
-"""
-
-from pmcf.provisioners.awsfw import AWSFWProvisioner
-from pmcf.provisioners.base_provisioner import BaseProvisioner
 from pmcf.provisioners.chef import ChefProvisioner
-from pmcf.provisioners.puppet import PuppetProvisioner
 
-__all__ = [
-    AWSFWProvisioner,
-    BaseProvisioner,
-    ChefProvisioner,
-    PuppetProvisioner,
-]
+
+class TestChefProvisioner(object):
+    def test_userdata_contains_expected_data(self):
+        assert_equals(None, ChefProvisioner().userdata({}))
