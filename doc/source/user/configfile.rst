@@ -97,7 +97,7 @@ Config file values:
     This is the provisioner class to use to provide userdata scripts suitable
     for consumption by `cloud-init
     <http://cloudinit.readthedocs.org/en/latest/>`_.  Must implement the
-    interface of :class:`pmcf.provisioner.base_provisioner.BaseProvisioner`,
+    interface of :class:`pmcf.provisioners.base_provisioner.BaseProvisioner`,
     typically by subclassing it.
 
 :verbose:
