@@ -95,7 +95,8 @@ class TestParserData(object):
             'accesskey': '1234',
             'secretkey': '2345',
             'instance_accesskey': '12345',
-            'instance_secretkey': '23456'
+            'instance_secretkey': '23456',
+            'audit_output': 'testbucket'
         }
         parser = yaml_parser.YamlParser()
         fname = 'tests/data/yaml/ais-test-farm.yaml'
@@ -113,6 +114,8 @@ class TestParserData(object):
             'instance_access',
             'instance_secret',
             'subnets',
+            'provisioner',
+            'profile',
         ]
         assert_equals(set(keys), set(self.data['config'].keys()))
 
