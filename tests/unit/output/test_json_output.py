@@ -1290,6 +1290,20 @@ class TestJSONOutput(object):
                         },
                     },
                     "Type": "AWS::AutoScaling::LaunchConfiguration"
+                },
+                "appHandle": {
+                    "Type": "AWS::CloudFormation::WaitConditionHandle"
+                },
+                "appWait": {
+                    "DependsOn": "ASGapp",
+                    "Properties": {
+                        "Handle": {
+                            "Ref": "appHandle"
+                        },
+                        "Timeout": 3600,
+                        "Count": 6,
+                    },
+                    "Type": "AWS::CloudFormation::WaitCondition"
                 }
             }
         }

@@ -88,6 +88,20 @@ class YamlParser(BaseParser):
                 if data['config'].get('subnets'):
                     lb['subnets'] = data['config']['subnets']
         for instance in self._stack['resources']['instance']:
+            if self._stack['config'].get('provisioner') and\
+                    self._stack['config']['provisioner'] ==\
+                    'PuppetProvisioner':
+                if not instance['provisioner']:
+                    instance['provisioner'] = {
+                        'provider': 'PuppetProvisioner',
+                        'args': {
+                            'name': instance['name'],
+                            'bucket': args['audit_output'],
+                            'profile': instance.get(
+                                'profile',
+                                self._stack['config']['profile'])
+                        }
+                    }
             found = False
             for sg in self._stack['resources']['secgroup']:
                 if sg['name'] == instance['name']:
