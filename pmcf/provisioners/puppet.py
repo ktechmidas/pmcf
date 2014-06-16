@@ -100,7 +100,7 @@ class PuppetProvisioner(BaseProvisioner):
                 "rolebased": {
                     "type": "s3",
                     "buckets": [args['bucket']],
-                    "roleName": {args['profile']}
+                    "roleName": args['profile'],
                 },
             },
         }

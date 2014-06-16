@@ -89,7 +89,7 @@ class TestPuppetProvisioner(object):
                         "/var/tmp/puppet/": "https://%s/%s/artifacts/%s" % (
                             "s3.amazonaws.com",
                             args['bucket'],
-                            args['artifact']
+                            args['artifact'],
                         )
                     },
                 },
@@ -98,7 +98,7 @@ class TestPuppetProvisioner(object):
                 "rolebased": {
                     "type": "s3",
                     "buckets": [args['bucket']],
-                    "roleName": {args['profile']}
+                    "roleName": args['profile'],
                 },
             },
         }
