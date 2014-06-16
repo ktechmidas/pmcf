@@ -28,8 +28,7 @@ class TestBaseParser(object):
         self.output = BaseOutput()
 
     def test_add_resources_raises(self):
-        assert_raises(NotImplementedError, self.output.add_resources,
-                      None, {}, {})
+        assert_raises(NotImplementedError, self.output.add_resources, {}, {})
 
     def test_run_raises(self):
         assert_raises(NotImplementedError, self.output.run, {})

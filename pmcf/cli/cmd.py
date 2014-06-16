@@ -40,8 +40,6 @@ class PMCFCLI(object):
         self.policy = import_from_string('pmcf.policy', args['policy'])(
             json_file=args['policyfile']
         )
-        self.provisioner = import_from_string('pmcf.provisioners',
-                                              args['provisioner'])()
         self.output = import_from_string('pmcf.outputs',
                                          args['output'])()
         self.args = args
@@ -59,8 +57,7 @@ class PMCFCLI(object):
                 for idx, res in enumerate(v):
                     data = self.parser.stack()['resources'][k][idx]
                     self.policy.validate_resource(k, data)
-            data = self.output.add_resources(self.provisioner,
-                                             stack['resources'],
+            data = self.output.add_resources(stack['resources'],
                                              stack['config'])
 
             try:

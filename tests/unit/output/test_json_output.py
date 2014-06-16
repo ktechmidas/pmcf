@@ -14,12 +14,10 @@
 
 import json
 import mock
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals
 import sys
 
-from pmcf.exceptions import ProvisionerException
 from pmcf.outputs import JSONOutput
-from pmcf.provisioners import AWSFWProvisioner
 
 
 def _mock_ud(self, cfg, args):
@@ -97,7 +95,7 @@ class TestJSONOutput(object):
                 'policy': [],
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid_internal(self):
@@ -172,7 +170,7 @@ class TestJSONOutput(object):
                 'policy': [],
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid_sg(self):
@@ -269,7 +267,7 @@ class TestJSONOutput(object):
                 'policy': [],
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid_ssl(self):
@@ -343,7 +341,7 @@ class TestJSONOutput(object):
                 'policy': [],
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid_access_log_policy(self):
@@ -429,7 +427,7 @@ class TestJSONOutput(object):
                 }]
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid(self):
@@ -486,7 +484,7 @@ class TestJSONOutput(object):
                 ]
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid_ref_vpc(self):
@@ -559,7 +557,7 @@ class TestJSONOutput(object):
                 }
             ]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid_ref(self):
@@ -629,7 +627,7 @@ class TestJSONOutput(object):
                 }
             ]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid_owner_form(self):
@@ -674,7 +672,7 @@ class TestJSONOutput(object):
                 ]
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid_short_form(self):
@@ -718,7 +716,7 @@ class TestJSONOutput(object):
                 ]
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     def test_sg_valid_short_form_vpc(self):
@@ -764,7 +762,7 @@ class TestJSONOutput(object):
                 ]
             }]
         }
-        tmpl = out.add_resources(None, res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -838,13 +836,13 @@ class TestJSONOutput(object):
                         'roleBucket': 'test',
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
             }]
         }
-        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -971,13 +969,13 @@ class TestJSONOutput(object):
                         'roleBucket': 'test',
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
             }]
         }
-        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -1051,13 +1049,13 @@ class TestJSONOutput(object):
                         'roleBucket': 'test',
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': ['app'],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
             }]
         }
-        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -1156,13 +1154,13 @@ class TestJSONOutput(object):
                         'roleBucket': 'test',
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': ['app'],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
             }]
         }
-        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -1236,13 +1234,13 @@ class TestJSONOutput(object):
                         'roleBucket': 'test',
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
             }]
         }
-        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -1314,46 +1312,14 @@ class TestJSONOutput(object):
                         'roleBucket': 'test',
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
             }]
         }
-        tmpl = out.add_resources(AWSFWProvisioner(), res, cfg)
+        tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
-
-    @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
-    def test_instance_invalid_bad_provisioner(self):
-        out = JSONOutput()
-        cfg = {
-            'name': 'test',
-            'environment': 'test'
-        }
-        res = {
-            'load_balancer': [],
-            'secgroup': [],
-            'instance': [{
-                'block_device': [],
-                'count': 6,
-                'image': 'ami-e97f849e',
-                'monitoring': False,
-                'name': 'app',
-                'provisioner': {
-                    'args': {
-                        'apps': ['ais-jetty/v2.54-02'],
-                        'appBucket': 'test',
-                        'roleBucket': 'test',
-                        'roles': ['jetty']
-                    },
-                    'provider': 'puppet'},
-                'sg': [],
-                'size': 'm1.large',
-                'sshKey': 'bootstrap'
-            }]
-        }
-        assert_raises(ProvisionerException, out.add_resources,
-                      AWSFWProvisioner(), res, cfg)
 
     def test_run(self):
         sys.stdout = open('/dev/null', 'w')

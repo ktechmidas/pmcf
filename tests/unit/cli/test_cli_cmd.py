@@ -19,7 +19,7 @@ from pmcf.cli.cmd import PMCFCLI
 from pmcf.exceptions import PropertyException
 
 
-def _mock_add_resources(self, prov, resource, config):
+def _mock_add_resources(self, resource, config):
     return ()
 
 

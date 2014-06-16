@@ -318,7 +318,7 @@ class TestParser(object):
                         'apps': ['ais-jetty/v2.54-02'],
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large'
             }
@@ -369,7 +369,7 @@ class TestParser(object):
                         'apps': ['ais-jetty/v2.54-02'],
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large'
             }
@@ -403,7 +403,7 @@ class TestParser(object):
                         'apps': ['ais-jetty/v2.54-02'],
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'
+                    'provider': 'AWSFWProvisioner'
                 },
                 'sg': [],
                 'size': 'm1.large'
@@ -477,7 +477,7 @@ class TestParser(object):
                         'apps': ['ais-jetty/v2.54-02'],
                         'roles': ['jetty']
                     },
-                    'provider': 'awsfw_standalone'},
+                    'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large'
             }
@@ -636,7 +636,7 @@ class TestParser(object):
                         'appBucket': 'testbucket',
                         'roleBucket': 'testbucket',
                     },
-                    'provider': 'awsfw_standalone'
+                    'provider': 'AWSFWProvisioner'
                 },
                 'size': 'm1.large'
             }
@@ -682,7 +682,7 @@ class TestParser(object):
                         'appBucket': 'testbucket',
                         'roleBucket': 'testbucket',
                     },
-                    'provider': 'awsfw_standalone'
+                    'provider': 'AWSFWProvisioner'
                 },
                 'size': 'm1.large'
             }

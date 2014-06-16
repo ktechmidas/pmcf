@@ -35,8 +35,6 @@ class AWSFWProvisioner(BaseProvisioner):
     backwards-compatible manner with the existing AWSFW standalone installer.
     """
 
-    _provides = 'awsfw_standalone'
-
     def userdata(self, config, args):
         """
         Validates resource against local policy.

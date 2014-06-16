@@ -56,9 +56,9 @@ definitions:
                         type: object
                     provider:
                         enum:
-                            - puppet
-                            - chef
-                            - awsfw_standalone
+                            - PuppetProvisioner
+                            - ChefProvisioner
+                            - AWSFWProvisioner
             sg:
                 type: array
             sshKey:

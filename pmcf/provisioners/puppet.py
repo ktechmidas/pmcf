@@ -29,8 +29,6 @@ LOG = logging.getLogger(__name__)
 
 class PuppetProvisioner(BaseProvisioner):
 
-    _provides = 'puppet'
-
     def userdata(self, config, args):
         """
         Validates resource against local policy.

@@ -58,7 +58,7 @@ class TestJSONPolicy(object):
                         "cloudwatch-monitoring/v1"
                     ]
                 },
-                "name": "awsfw_standalone"
+                "name": "AWSFWProvisioner"
             },
             "sg": [
                 "ais-stage-v2p54-02-app"
@@ -94,7 +94,7 @@ class TestJSONPolicy(object):
                         "cloudwatch-monitoring/v1"
                     ]
                 },
-                "name": "awsfw_standalone"
+                "name": "AWSFWProvisioner"
             },
             "sg": [
                 "ais-stage-v2p54-02-app"

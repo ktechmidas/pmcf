@@ -23,21 +23,19 @@
 import logging
 from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
-from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import autoscaling, ec2, elasticloadbalancing
+from pmcf.utils import import_from_string
 
 LOG = logging.getLogger(__name__)
 
 
 class JSONOutput(BaseOutput):
 
-    def add_resources(self, provisioner, resources, config):
+    def add_resources(self, resources, config):
         """
         Creates JSON-formatted string representation of stack resourcs
 
-        :param provisioner: Subclass :class:`pmcf.provisioners.BaseProvisioner`
-        :type provisioner: object.
         :param resources: Internal data structure of resources
         :type resources: dict.
         :param config: Config key/value pairs
@@ -172,13 +170,10 @@ class JSONOutput(BaseOutput):
             cfg = {}
             args = {}
             if inst.get('provisioner'):
-                if inst['provisioner']['provider'] != provisioner.provides():
-                    raise ProvisionerException('wrong provisoner for '
-                                               'instance: %s' %
-                                               inst['provisioner']['provider']
-                                               )
-
-                if inst['provisioner']['provider'] == 'awsfw_standalone':
+                provider = inst['provisioner']['provider']
+                provisioner = import_from_string('pmcf.provisioners',
+                                                 provider)()
+                if inst['provisioner']['provider'] == 'AWSFWProvisoner':
                     args = inst['provisioner']['args']
                     cfg['platform_environment'] = config['environment']
                     cred_mapping = {

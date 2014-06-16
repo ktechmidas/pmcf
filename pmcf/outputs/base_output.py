@@ -36,13 +36,11 @@ class BaseOutput(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def add_resources(self, provisioner, resources, config):
+    def add_resources(self, resources, config):
         """
         Converts internal data structure into format suitable for interface
         with public and private cloud providers
 
-        :param provisioner: Subclass :class:`pmcf.provisioners.BaseProvisioner`
-        :type provisioner: object.
         :param resources: Internal data structure of resources
         :type resources: dict.
         :param config: Config key/value pairs
