@@ -19,4 +19,4 @@ from pmcf.provisioners.puppet import PuppetProvisioner
 
 class TestAWSFWProvisioner(object):
     def test_userdata_contains_expected_data(self):
-        assert_equals(None, PuppetProvisioner().userdata({}, {}))
+        assert_equals(None, PuppetProvisioner().userdata({}))
