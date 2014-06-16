@@ -268,7 +268,20 @@ class JSONOutput(BaseOutput):
         LOG.info('Start running data')
         print data
         LOG.info('Finished running data')
+        self.do_audit(data, metadata)
         return True
+
+    def do_audit(self, data, metadata={}):
+        """
+        Records audit logs for current transaction
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        """
+
+        pass
 
 
 __all__ = [

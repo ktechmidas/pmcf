@@ -66,6 +66,20 @@ class BaseOutput(object):
 
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def do_audit(self, data, metadata={}):
+        """
+        Records audit logs for current transaction
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        :raises: :class:`NotImplementedError`
+        """
+
+        raise NotImplementedError
+
 
 __all__ = [
     BaseOutput,

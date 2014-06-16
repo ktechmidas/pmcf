@@ -122,6 +122,19 @@ class AWSCFNOutput(JSONOutput):
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
 
+        self.do_audit(data, metadata)
+        return True
+
+    def do_audit(self, data, metadata):
+        """
+        Records audit logs for current transaction
+
+        :param data: Stack definition
+        :type data: str.
+        :param metadata: Additional information for stack launch (tags, etc).
+        :type metadata: dict.
+        """
+
         try:
             audit = import_from_string('pmcf.audit', metadata['audit'])()
             creds = {
@@ -137,8 +150,6 @@ class AWSCFNOutput(JSONOutput):
             audit.record_stack(data, dest, creds)
         except AuditException, e:
             LOG.error(e)
-
-        return True
 
 
 __all__ = [

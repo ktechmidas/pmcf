@@ -33,3 +33,6 @@ class TestBaseParser(object):
 
     def test_run_raises(self):
         assert_raises(NotImplementedError, self.output.run, {})
+
+    def test_do_audit_raises(self):
+        assert_raises(NotImplementedError, self.output.do_audit, {}, {})
