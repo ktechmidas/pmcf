@@ -209,8 +209,9 @@ class JSONOutput(BaseOutput):
             if ci is not None:
                 lcargs['Metadata'] = ci
 
-            if inst.get('profile', None):
-                lcargs['IamInstanceProfile'] = inst['profile']
+            profile = inst.get('profile', config.get('profile', None))
+            if profile:
+                lcargs['IamInstanceProfile'] = profile
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 **lcargs

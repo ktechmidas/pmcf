@@ -21,6 +21,7 @@
 """
 
 import logging
+import os
 import yaml
 
 from pmcf.exceptions import ParserFailure
@@ -91,15 +92,16 @@ class YamlParser(BaseParser):
             if self._stack['config'].get('provisioner') and\
                     self._stack['config']['provisioner'] ==\
                     'PuppetProvisioner':
-                if not instance['provisioner']:
+                if not instance.get('provisioner', None):
                     instance['provisioner'] = {
                         'provider': 'PuppetProvisioner',
                         'args': {
                             'name': instance['name'],
                             'bucket': args['audit_output'],
-                            'profile': instance.get(
+                            'artifact': "%s.tar.gz" % instance['name'],
+                            'profile': os.path.basename(instance.get(
                                 'profile',
-                                self._stack['config']['profile'])
+                                self._stack['config']['profile']))
                         }
                     }
             found = False
