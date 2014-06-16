@@ -23,8 +23,9 @@
 import argparse
 import logging
 
+from pmcf.cli import PMCFCLI
+from pmcf.config import PMCFConfig
 from pmcf.exceptions import PMCFException
-from pmcf.utils import import_from_string
 
 
 def main():
@@ -42,12 +43,6 @@ def main():
                               help="set loglevel to quiet",
                               default=False,
                               action="store_true")
-    parser.add_argument("-C", "--configreader",
-                        default='PMCFConfig',
-                        help="use alternate config reader")
-    parser.add_argument("-r", "--runner",
-                        default='PMCFCLI',
-                        help="use alternate CLI implementation")
     parser.add_argument("-e", "--environment",
                         default='dev',
                         help="run config for this environment")
@@ -98,12 +93,9 @@ def main():
     LOG = logging.getLogger(__name__)
 
     try:
-        cfgkls = import_from_string('pmcf.config', args.configreader)
-        cfg = cfgkls(args.configfile, args.profile, args)
+        cfg = PMCFConfig(args.configfile, args.profile, args)
         options = cfg.get_config()
-
-        clikls = import_from_string('pmcf.cli', args.runner)
-        cli = clikls(options)
+        cli = PMCFCLI(options)
         return cli.run()
     except PMCFException, e:
         LOG.error(e.message)
