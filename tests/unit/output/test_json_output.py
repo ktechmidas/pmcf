@@ -20,7 +20,7 @@ import sys
 from pmcf.outputs import JSONOutput
 
 
-def _mock_ud(self, cfg, args):
+def _mock_ud(self, args):
     return ''
 
 

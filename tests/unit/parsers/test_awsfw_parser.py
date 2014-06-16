@@ -635,6 +635,7 @@ class TestParser(object):
                         'roles': ['jetty'],
                         'appBucket': 'testbucket',
                         'roleBucket': 'testbucket',
+                        'platform_environment': 'stage',
                     },
                     'provider': 'AWSFWProvisioner'
                 },
@@ -681,6 +682,7 @@ class TestParser(object):
                         'roles': ['jetty'],
                         'appBucket': 'testbucket',
                         'roleBucket': 'testbucket',
+                        'platform_environment': 'stage',
                     },
                     'provider': 'AWSFWProvisioner'
                 },
@@ -733,8 +735,8 @@ class TestParserData(object):
             'environment',
             'access',
             'secret',
-            'instance_access',
-            'instance_secret',
+            'instance_accesskey',
+            'instance_secretkey',
             'owner',
             'version',
             'strategy',

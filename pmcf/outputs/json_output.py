@@ -167,22 +167,13 @@ class JSONOutput(BaseOutput):
             data.add_resource(lbs[name])
 
         for inst in resources['instance']:
-            cfg = {}
-            args = {}
+            ud = None
             if inst.get('provisioner'):
+                args = inst['provisioner']['args']
                 provider = inst['provisioner']['provider']
                 provisioner = import_from_string('pmcf.provisioners',
                                                  provider)()
-                if inst['provisioner']['provider'] == 'AWSFWProvisoner':
-                    args = inst['provisioner']['args']
-                    cfg['platform_environment'] = config['environment']
-                    cred_mapping = {
-                        'instance_accesskey': 'AWS_ACCESS_KEY_ID',
-                        'instance_secretkey': 'AWS_SECRET_ACCESS_KEY',
-                    }
-                    for k, v in cred_mapping.iteritems():
-                        if config.get(k, None):
-                            cfg[v] = config[k]
+                ud = provisioner.userdata(args)
 
             lcargs = {
                 'ImageId': inst['image'],
@@ -197,7 +188,6 @@ class JSONOutput(BaseOutput):
                 else:
                     inst_sgs.append(sg)
             lcargs['SecurityGroups'] = inst_sgs
-            ud = provisioner.userdata(cfg, args)
             if ud is not None:
                 lcargs['UserData'] = Base64(ud)
 

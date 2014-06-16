@@ -319,9 +319,9 @@ class AWSFWParser(BaseParser):
             self._stack['config']['access'] = args['accesskey']
             self._stack['config']['secret'] = args['secretkey']
         if args.get('instance_accesskey') and args.get('instance_secretkey'):
-            self._stack['config']['instance_access'] =\
+            self._stack['config']['instance_accesskey'] =\
                 args['instance_accesskey']
-            self._stack['config']['instance_secret'] =\
+            self._stack['config']['instance_secretkey'] =\
                 args['instance_secretkey']
 
         if ds.get('ELB'):
@@ -331,6 +331,14 @@ class AWSFWParser(BaseParser):
                                  self._listify(ds['instances']))
 
         for instance in self._stack['resources']['instance']:
+            instance['provisioner']['args']['platform_environment'] =\
+                self._stack['config']['environment']
+            if self._stack['config'].get('instance_accesskey'):
+                instance['provisioner']['args']['AWS_ACCESS_KEY_ID'] =\
+                    self._stack['config']['instance_accesskey']
+            if self._stack['config'].get('instance_secretkey'):
+                instance['provisioner']['args']['AWS_SECRET_ACCESS_KEY'] =\
+                    self._stack['config']['instance_secretkey']
             if ds.get('key'):
                 instance['sshKey'] = ds['key']
             if ds.get('cloudwatch'):
