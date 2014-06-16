@@ -177,8 +177,8 @@ class JSONOutput(BaseOutput):
                     args = inst['provisioner']['args']
                     cfg['platform_environment'] = config['environment']
                     cred_mapping = {
-                        'instance_access': 'AWS_ACCESS_KEY_ID',
-                        'instance_secret': 'AWS_SECRET_ACCESS_KEY',
+                        'instance_accesskey': 'AWS_ACCESS_KEY_ID',
+                        'instance_secretkey': 'AWS_SECRET_ACCESS_KEY',
                     }
                     for k, v in cred_mapping.iteritems():
                         if config.get(k, None):
