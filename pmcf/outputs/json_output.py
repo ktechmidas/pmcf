@@ -170,26 +170,25 @@ class JSONOutput(BaseOutput):
         for inst in resources['instance']:
             ud = None
             ci = None
-            if inst.get('provisioner'):
-                args = inst['provisioner']['args']
-                provider = inst['provisioner']['provider']
-                provisioner = import_from_string('pmcf.provisioners',
-                                                 provider)()
-                if inst['provisioner']['provider'] != 'AWSFWProvisioner':
-                    waithandle = cfn.WaitConditionHandle(
-                        "%sHandle" % inst['name'],
-                    )
-                    args['WaitHandle'] = waithandle
-                    data.add_resource(waithandle)
-                    data.add_resource(cfn.WaitCondition(
-                        "%sWait" % inst['name'],
-                        DependsOn="ASG%s" % inst['name'],
-                        Handle=Ref(waithandle),
-                        Count=inst['count'],
-                        Timeout=3600
-                    ))
-                ud = provisioner.userdata(args)
-                ci = provisioner.cfn_init(args)
+            args = inst['provisioner']['args']
+            provider = inst['provisioner']['provider']
+            provisioner = import_from_string('pmcf.provisioners',
+                                             provider)()
+            if inst['provisioner']['provider'] != 'AWSFWProvisioner':
+                waithandle = cfn.WaitConditionHandle(
+                    "%sHandle" % inst['name'],
+                )
+                args['WaitHandle'] = waithandle
+                data.add_resource(waithandle)
+                data.add_resource(cfn.WaitCondition(
+                    "%sWait" % inst['name'],
+                    DependsOn="ASG%s" % inst['name'],
+                    Handle=Ref(waithandle),
+                    Count=inst['count'],
+                    Timeout=3600
+                ))
+            ud = provisioner.userdata(args)
+            ci = provisioner.cfn_init(args)
 
             lcargs = {
                 'ImageId': inst['image'],

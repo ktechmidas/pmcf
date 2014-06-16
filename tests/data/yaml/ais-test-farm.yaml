@@ -7,6 +7,8 @@ config:
       - prod
   subnets:
       - subnet-123
+  provisioner: PuppetProvisioner
+  profile: instance-profile/deploy-client
 resources:
   load_balancer:
     - name: app
@@ -39,8 +41,6 @@ resources:
       lb: app
       image: ami-0bceb93b
       sshKey: bootstrap
-      provisioner:
-        provider: puppet
       monitoring: False
       sg:
         - app
@@ -49,8 +49,6 @@ resources:
       count: 1
       image: ami-0bceb93b
       sshKey: bootstrap
-      provisioner:
-        provider: puppet
       monitoring: False
       size: m1.large
   secgroup:
