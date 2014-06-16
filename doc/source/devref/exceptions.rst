@@ -20,12 +20,8 @@ The exception classes in pmcf are raised on error, and are in a class tree
 allowing the cli classes to catch exceptions raised by all subclasses.
 
 
-Available exceptions libraries
-==============================
-
-
 :mod:`pmcf.exceptions`
-----------------------
+======================
 
 
 .. automodule:: pmcf.exceptions

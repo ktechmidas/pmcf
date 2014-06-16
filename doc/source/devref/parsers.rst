@@ -25,12 +25,8 @@ The parser module is selected by adding this to your config file::
     parsers = AWSFWParser
 
 
-Available parsers libraries
-===========================
-
-
 :mod:`pmcf.parsers.base_parser`
--------------------------------
+===============================
 
 .. automodule:: pmcf.parsers.base_parser
     :noindex:
@@ -44,7 +40,7 @@ Available parsers libraries
 
 
 :mod:`pmcf.parsers.awsfw_parser`
---------------------------------
+================================
 
 .. automodule:: pmcf.parsers.awsfw_parser
     :noindex:
@@ -59,7 +55,7 @@ Available parsers libraries
 
 
 :mod:`pmcf.parsers.yaml_parser`
---------------------------------
+================================
 
 .. automodule:: pmcf.parsers.yaml_parser
     :noindex:

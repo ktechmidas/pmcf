@@ -22,12 +22,8 @@ metadata endpoint suitable for consumption by
 `cloud-init <http://cloudinit.readthedocs.org/en/latest/>`_.
 
 
-Available provisioners libraries
-================================
-
-
 :mod:`pmcf.provisioners.base_provisioner`
------------------------------------------
+=========================================
 
 .. automodule:: pmcf.provisioners.base_provisioner
     :noindex:
@@ -41,7 +37,7 @@ Available provisioners libraries
 
 
 :mod:`pmcf.provisioners.awsfw`
-------------------------------
+==============================
 
 .. automodule:: pmcf.provisioners.awsfw
     :noindex:
@@ -56,7 +52,7 @@ Available provisioners libraries
 
 
 :mod:`pmcf.provisioners.puppet`
--------------------------------
+===============================
 
 .. automodule:: pmcf.provisioners.puppet
     :noindex:

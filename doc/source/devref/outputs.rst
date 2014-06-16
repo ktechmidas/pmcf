@@ -26,12 +26,8 @@ The output module is selected by adding this to your config file::
     output = C4AWSCFNOutput
 
 
-Available outputs libraries
-==============================
-
-
 :mod:`pmcf.outputs.base_output`
--------------------------------
+===============================
 
 .. automodule:: pmcf.outputs.base_output
     :noindex:
@@ -45,7 +41,7 @@ Available outputs libraries
 
 
 :mod:`pmcf.outputs.json_output`
--------------------------------
+===============================
 
 .. automodule:: pmcf.outputs.json_output
     :noindex:
@@ -60,7 +56,7 @@ Available outputs libraries
 
 
 :mod:`pmcf.outputs.cloudformation`
-----------------------------------
+==================================
 
 .. automodule:: pmcf.outputs.cloudformation
     :noindex:
@@ -75,7 +71,7 @@ Available outputs libraries
 
 
 :mod:`pmcf.outputs.c4cloudformation`
-------------------------------------
+====================================
 
 .. automodule:: pmcf.outputs.c4cloudformation
     :noindex:
@@ -90,7 +86,7 @@ Available outputs libraries
 
 
 :mod:`pmcf.outputs.sequoiacloudformation`
------------------------------------------
+=========================================
 
 .. automodule:: pmcf.outputs.sequoiacloudformation
     :noindex:

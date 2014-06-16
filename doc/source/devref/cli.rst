@@ -20,12 +20,9 @@ The cli classes in pmcf are called to parse the command line and pipeline the
 classes that actually do the work of parsing, building, auditing and outputting
 your stack definition.
 
-Available cli libraries
-=======================
-
 
 :mod:`pmcf.cli.cli`
--------------------
+===================
 
 .. automodule:: pmcf.cli.cli
     :members: main
@@ -34,7 +31,7 @@ Available cli libraries
 
 
 :mod:`pmcf.cli.cmd`
--------------------
+===================
 
 .. automodule:: pmcf.cli.cmd
     :members: __all__

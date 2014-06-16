@@ -25,11 +25,8 @@ The audit module is selected by adding this to your config file::
     audit = S3Audit
 
 
-Available audit libraries
-=========================
-
 :mod:`pmcf.audit.base_audit`
-----------------------------
+============================
 
 
 .. automodule:: pmcf.audit.base_audit
@@ -43,7 +40,7 @@ Available audit libraries
 
 
 :mod:`pmcf.audit.noop_audit`
-----------------------------
+============================
 
 
 .. automodule:: pmcf.audit.noop_audit
@@ -58,7 +55,7 @@ Available audit libraries
 
 
 :mod:`pmcf.audit.s3_audit`
---------------------------
+==========================
 
 
 .. automodule:: pmcf.audit.s3_audit

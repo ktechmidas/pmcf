@@ -19,8 +19,8 @@ Utils
 The utils classes in pmcf
 
 
-Available utils methods
-=======================
+:mod:`pmcf.utils`
+=================
 
 .. automodule:: pmcf.utils
     :noindex:

@@ -24,12 +24,8 @@ The policy module is selected by adding this to your config file::
     policy = JSONPolicy
 
 
-Available policy libraries
-==========================
-
-
 :mod:`pmcf.policy.base_policy`
-------------------------------
+==============================
 
 .. automodule:: pmcf.policy.base_policy
     :noindex:
@@ -43,7 +39,7 @@ Available policy libraries
 
 
 :mod:`pmcf.policy.json_policy`
-------------------------------
+==============================
 
 .. automodule:: pmcf.policy.json_policy
     :noindex:

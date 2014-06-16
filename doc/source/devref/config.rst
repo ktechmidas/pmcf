@@ -20,12 +20,9 @@ The config classes in pmcf are called to read config files and overlay them
 with defaults and command line parameters in order to create a single config
 definition that will be in use throughout the rest of the run.
 
-Available config libraries
-==========================
-
 
 :mod:`pmcf.config.config`
--------------------------
+=========================
 
 
 .. automodule:: pmcf.config.config
