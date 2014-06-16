@@ -168,12 +168,14 @@ class JSONOutput(BaseOutput):
 
         for inst in resources['instance']:
             ud = None
+            ci = None
             if inst.get('provisioner'):
                 args = inst['provisioner']['args']
                 provider = inst['provisioner']['provider']
                 provisioner = import_from_string('pmcf.provisioners',
                                                  provider)()
                 ud = provisioner.userdata(args)
+                ci = provisioner.cfn_init(args)
 
             lcargs = {
                 'ImageId': inst['image'],
@@ -190,6 +192,8 @@ class JSONOutput(BaseOutput):
             lcargs['SecurityGroups'] = inst_sgs
             if ud is not None:
                 lcargs['UserData'] = Base64(ud)
+            if ci is not None:
+                lcargs['MetaData'] = ci
 
             if inst.get('profile', None):
                 lcargs['IamInstanceProfile'] = inst['profile']

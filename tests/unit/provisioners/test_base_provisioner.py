@@ -27,8 +27,8 @@ class TestBaseProvisioner(object):
         BaseProvisioner.__abstractmethods__ = set()
         self.provisioner = BaseProvisioner()
 
-    def test_cfn_init_raises(self):
-        assert_raises(NotImplementedError, self.provisioner.cfn_init, {}, {})
+    def test_cfn_init_returns_none(self):
+        assert_equals(None, self.provisioner.cfn_init({}))
 
     def test_parse_raises(self):
         assert_raises(NotImplementedError, self.provisioner.userdata, {})

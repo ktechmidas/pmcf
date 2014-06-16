@@ -60,7 +60,7 @@ class BaseProvisioner(object):
 
         raise NotImplementedError
 
-    def cfn_init(self, config, args):
+    def cfn_init(self, args):
         """
         Return userdata suitable for consumption by cfn_init
 
@@ -72,7 +72,7 @@ class BaseProvisioner(object):
         :returns: str.
         """
 
-        raise NotImplementedError
+        return None
 
     def add_file(self, ud, filename, ftype='plain', compress=True):
         """
