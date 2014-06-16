@@ -817,8 +817,8 @@ class TestJSONOutput(object):
         cfg = {
             'name': 'test',
             'environment': 'test',
-            'instance_access': '1234',
-            'instance_secret': '2345',
+            'instance_accesskey': '1234',
+            'instance_secretkey': '2345',
         }
         res = {
             'load_balancer': [],
@@ -1241,6 +1241,82 @@ class TestJSONOutput(object):
             }]
         }
         tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    @mock.patch('pmcf.provisioners.PuppetProvisioner.cfn_init', _mock_ud)
+    @mock.patch('pmcf.provisioners.PuppetProvisioner.userdata', _mock_ud)
+    def test_instance_valid_puppet(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "ASGapp": {
+                    "Properties": {
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        },
+                        "DesiredCapacity": 6,
+                        "LaunchConfigurationName": {
+                            "Ref": "LCapp"
+                        },
+                        "MaxSize": 6,
+                        "MinSize": 6,
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "PropagateAtLaunch": True,
+                                "Value": "test::app"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
+                            }
+                        ]
+                    },
+                    "Type": "AWS::AutoScaling::AutoScalingGroup"
+                },
+                "LCapp": {
+                    "Metadata": "",
+                    "Properties": {
+                        "ImageId": "ami-e97f849e",
+                        "InstanceMonitoring": "false",
+                        "InstanceType": "m1.large",
+                        "KeyName": "bootstrap",
+                        "SecurityGroups": [],
+                        "UserData": {
+                            "Fn::Base64": ""
+                        },
+                    },
+                    "Type": "AWS::AutoScaling::LaunchConfiguration"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'instance': [{
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'monitoring': False,
+                'name': 'app',
+                'provisioner': {
+                    'args': {},
+                    'provider': 'PuppetProvisioner'},
+                'sg': [],
+                'size': 'm1.large',
+                'sshKey': 'bootstrap'
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        print tmpl
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)

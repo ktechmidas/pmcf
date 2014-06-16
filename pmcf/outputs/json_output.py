@@ -193,7 +193,7 @@ class JSONOutput(BaseOutput):
             if ud is not None:
                 lcargs['UserData'] = Base64(ud)
             if ci is not None:
-                lcargs['MetaData'] = ci
+                lcargs['Metadata'] = ci
 
             if inst.get('profile', None):
                 lcargs['IamInstanceProfile'] = inst['profile']

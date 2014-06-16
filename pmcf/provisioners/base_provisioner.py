@@ -62,14 +62,14 @@ class BaseProvisioner(object):
 
     def cfn_init(self, args):
         """
-        Return userdata suitable for consumption by cfn_init
+        Return metadata suitable for consumption by cfn_init
 
         :param config: Config items for userdata
         :type config: dict.
         :param args: instance definition
         :type args: dict.
         :raises: :class:`NotImplementedError`
-        :returns: str.
+        :returns: dict.
         """
 
         return None

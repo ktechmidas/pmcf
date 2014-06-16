@@ -21,6 +21,7 @@
 """
 
 import logging
+from troposphere import Join, Ref
 
 from pmcf.provisioners.base_provisioner import BaseProvisioner
 
@@ -39,7 +40,70 @@ class PuppetProvisioner(BaseProvisioner):
         :returns: str.
         """
 
-        return None
+        return Join('', [
+            "#!/bin/bash\n",
+            "error_exit() {\n",
+            "  cfn-signal -e 1 -r " + args['name'] + " '",
+            Ref(args['WaitHandle']),
+            "'\n",
+            "  exit 1\n",
+            "}\n",
+            "apt-get -y install python-setuptools\n",
+            "easy_install https://s3.amazonaws.com/cloudformation-examples/",
+            "aws-cfn-bootstrap-latest.tar.gz\n",
+            "cfn-init --region ",
+            Ref("AWS::Region"),
+            "-s ",
+            Ref("AWS::StackId"),
+            " -r " + args['name'],
+            " || error_exit 'Failed to run cfn-init'\n",
+            "for i in `seq 1 5`; do\n",
+            "  puppet apply --modulepath /var/tmp/puppet/modules ",
+            "/var/tmp/puppet/manifests/site.pp\n",
+            "done\n",
+            "cfn-signal -e $? -r " + args['name'] + " '",
+            Ref(args['WaitHandle']),
+            "'\n",
+            "rm -rf /var/tmp/puppet\n",
+        ])
+
+    def cfn_init(self, args):
+        """
+        Return metadata suitable for consumption by cfn_init
+
+        :param config: Config items for userdata
+        :type config: dict.
+        :param args: instance definition
+        :type args: dict.
+        :raises: :class:`NotImplementedError`
+        :returns: dict.
+        """
+
+        return {
+            "AWS::CloudFormation::Init": {
+                "config": {
+                    "packages": {
+                        "apt": {
+                            "puppet": [],
+                        },
+                    },
+                    "files": {
+                        "/var/tmp/puppet/": "https://%s/%s/artifacts/%s" % (
+                            "s3.amazonaws.com",
+                            args['bucket'],
+                            args['artifact']
+                        )
+                    },
+                },
+            },
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3",
+                    "buckets": [args['bucket']],
+                    "roleName": {args['profile']}
+                },
+            },
+        }
 
 
 __all__ = [
