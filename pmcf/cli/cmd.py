@@ -51,11 +51,10 @@ class PMCFCLI(object):
         :returns:  boolean
         """
         try:
-            stack = self.parser.stack()
-            self.parser.parse_file(self.args['stackfile'], self.args)
-            for k, v in self.parser.stack()['resources'].iteritems():
+            stack = self.parser.parse_file(self.args['stackfile'], self.args)
+            for k, v in stack['resources'].iteritems():
                 for idx, res in enumerate(v):
-                    data = self.parser.stack()['resources'][k][idx]
+                    data = stack['resources'][k][idx]
                     self.policy.validate_resource(k, data)
             data = self.output.add_resources(stack['resources'],
                                              stack['config'])
@@ -65,7 +64,7 @@ class PMCFCLI(object):
                     'access': self.args['accesskey'],
                     'secret': self.args['secretkey'],
                     'region': self.args['region'],
-                    'name': self.parser.stack()['config']['name'],
+                    'name': stack['config']['name'],
                     'environment': stack['config']['environment'],
                 }
             except KeyError, e:

@@ -32,18 +32,6 @@ def _mock_cli_init_jsonfile_option(self, json_file):
 
 
 def _mock_parse_file(self, fname, args):
-    pass
-
-
-def _mock_run_succeeds(self, data, metadata):
-    return False
-
-
-def _mock_run_fails(self, data, metadata):
-    raise PropertyException('test')
-
-
-def _mock_stack(self):
     return {
         'resources': {
             'instance': [{}],
@@ -59,6 +47,14 @@ def _mock_stack(self):
             'version': 'test',
         }
     }
+
+
+def _mock_run_succeeds(self, data, metadata):
+    return False
+
+
+def _mock_run_fails(self, data, metadata):
+    raise PropertyException('test')
 
 
 class TestCliCmd(object):
@@ -103,8 +99,6 @@ class TestCliCmd(object):
                 _mock_cli_init_no_options)
     @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.parse_file',
                 _mock_parse_file)
-    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.stack',
-                _mock_stack)
     @mock.patch('pmcf.policy.JSONPolicy.__init__',
                 _mock_cli_init_jsonfile_option)
     @mock.patch('pmcf.policy.JSONPolicy.validate_resource',
@@ -141,8 +135,6 @@ class TestCliCmd(object):
                 _mock_cli_init_no_options)
     @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.parse_file',
                 _mock_parse_file)
-    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.stack',
-                _mock_stack)
     @mock.patch('pmcf.policy.JSONPolicy.__init__',
                 _mock_cli_init_jsonfile_option)
     @mock.patch('pmcf.policy.JSONPolicy.validate_resource',
