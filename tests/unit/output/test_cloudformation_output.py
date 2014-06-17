@@ -194,6 +194,60 @@ class TestAWSCFNOutput(object):
                 _mock_create_stack)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack)
+    def test_run_with_iam_caps_succeeds(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'strategy': 'inplace',
+            'audit': 'NoopAudit',
+            'tags': {
+                'Name': 'test'
+            }
+        }
+        data = '{"Resources": {"foo": {"Type": "AWS::IAM::Thing"}}}'
+        assert_equals(cfno.run(data, metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
+    def test_run_with_no_iam_caps_succeeds(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'strategy': 'inplace',
+            'audit': 'NoopAudit',
+            'tags': {
+                'Name': 'test'
+            }
+        }
+        data = '{"Resources": {"foo": {"Type": "AWS::AMI::Thing"}}}'
+        assert_equals(cfno.run(data, metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._show_prompt',
                 _mock_return_false)
     def test_run_with_prompt_false_succeeds(self):
