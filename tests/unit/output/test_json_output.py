@@ -26,6 +26,92 @@ def _mock_ud(self, args):
 
 class TestJSONOutput(object):
 
+    def test_role_valid(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "Policytest": {
+                    "Properties": {
+                        "PolicyDocument": {
+                            "Statement": [{
+                                "Action": [
+                                    "s3:GetObject"
+                                ],
+                                "Effect": "Allow",
+                                "Resource": [
+                                    "arn:aws:s3:::%s/%s/%s/%s/%s" % (
+                                        "wibble",
+                                        "infrastructure",
+                                        "test",
+                                        "test",
+                                        "foo.zip"
+                                    ),
+                                    "arn:aws:s3:::%s/%s/%s/%s/%s" % (
+                                        "wibble",
+                                        "application",
+                                        "test",
+                                        "test",
+                                        "bar.zip"
+                                    )
+                                ]
+                            }],
+                            "Version": "2012-10-17"
+                        },
+                        "PolicyName": "iam-test-test",
+                        "Roles": [{"Ref": "Roletest"}]
+                    },
+                    "Type": "AWS::IAM::Policy"
+                },
+                "Profiletest": {
+                    "Properties": {
+                        "Path": "/test/test/",
+                        "Roles": [{"Ref": "Roletest"}]
+                    },
+                    "Type": "AWS::IAM::InstanceProfile"
+                },
+                "Roletest": {
+                    "Properties": {
+                        "AssumeRolePolicyDocument": {
+                            "Statement": [{
+                                "Action": [
+                                    "sts:AssumeRole"
+                                ],
+                                "Effect": "Allow",
+                                "Principal": {
+                                    "Service": ["ec2.amazonaws.com"]
+                                }
+                            }],
+                            "Version": "2012-10-17"
+                        },
+                        "Path": "/test/test/"
+                    },
+                    "Type": "AWS::IAM::Role"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test',
+            'artifact_bucket': 'wibble',
+        }
+        res = {
+            'instance': [],
+            'secgroup': [],
+            'role': [{
+                'name': 'test',
+                'access': {
+                    'infrastructure': 'foo.zip',
+                    'application': 'bar.zip',
+                }
+            }],
+            'load_balancer': []
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_lb_valid(self):
         out = JSONOutput()
         ret = {
