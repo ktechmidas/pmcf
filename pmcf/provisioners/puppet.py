@@ -53,7 +53,7 @@ class PuppetProvisioner(BaseProvisioner):
             "aws-cfn-bootstrap-latest.tar.gz\n",
             "cfn-init --region ",
             Ref("AWS::Region"),
-            "-s ",
+            " -s ",
             Ref("AWS::StackId"),
             " -r LC" + args['name'],
             " || error_exit 'Failed to run cfn-init'\n",
@@ -87,10 +87,10 @@ class PuppetProvisioner(BaseProvisioner):
                             "puppet": [],
                         },
                     },
-                    "files": {
-                        "/var/tmp/puppet/": "https://%s/%s/artifacts/%s" % (
-                            "s3.amazonaws.com",
+                    "sources": {
+                        "/var/tmp/puppet": "https://%s.%s/artifacts/%s" % (
                             args['bucket'],
+                            "s3.amazonaws.com",
                             args['artifact']
                         )
                     },

@@ -46,7 +46,7 @@ class TestPuppetProvisioner(object):
                     {
                         "Ref": "AWS::Region"
                     },
-                    "-s ",
+                    " -s ",
                     {
                         "Ref": "AWS::StackId"
                     },
@@ -85,10 +85,10 @@ class TestPuppetProvisioner(object):
                             "puppet": [],
                         },
                     },
-                    "files": {
-                        "/var/tmp/puppet/": "https://%s/%s/artifacts/%s" % (
-                            "s3.amazonaws.com",
+                    "sources": {
+                        "/var/tmp/puppet": "https://%s.%s/artifacts/%s" % (
                             args['bucket'],
+                            "s3.amazonaws.com",
                             args['artifact'],
                         )
                     },

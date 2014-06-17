@@ -4,7 +4,7 @@ config:
       - infra
   vpcid: vpc-1c50bd79
   defaultsg: sg-1ca66079
-  strategy: prompt_inplace
+  strategy: inplace
   subnets:
     - subnet-be7571f8
     - subnet-d7e61db2
