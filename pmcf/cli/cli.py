@@ -61,7 +61,7 @@ def main():
     parser.add_argument("--poll",
                         default=False,
                         action="store_true",
-                        help="Poll until completion")
+                        help="poll until completion")
     parser.add_argument("stackfile",
                         help="path to stack (farm) definition file")
     args = parser.parse_args()

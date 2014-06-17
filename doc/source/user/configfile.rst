@@ -50,6 +50,7 @@ Valid keys for a section in the config file are and their defaults are::
     instance_secretkey = None
     region = None
     environment = None
+    poll = False
 
 This will not give you a working config file.  You must select at least a
 valid parser, policy, provisioner and output class.  Some outputs, such as
@@ -141,6 +142,11 @@ Config file values:
 :environment:
     Environment (dev, test, prod, etc).  Typically would be passed on the
     command line, but is valid in the configuration file.
+
+:poll:
+    Whether to poll until stack creation/update completes.  Typically would be
+    passed on the command line, but is valid in the configuration file.
+    Defaults to False
 
 
 A full sample config file::

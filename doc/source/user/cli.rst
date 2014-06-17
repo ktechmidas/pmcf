@@ -38,6 +38,7 @@ optional arguments::
                           alternate config file
     -a ACTION, --action ACTION
                           action (one of create, update, or delete)
+    --poll                poll until completion
 
 Sample usage::
 
