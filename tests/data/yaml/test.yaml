@@ -1,0 +1,30 @@
+config:
+  name: infrastructure
+  environments:
+      - infra
+  vpcid: vpc-1c50bd79
+  defaultsg: sg-1ca66079
+  strategy: prompt_inplace
+  subnets:
+    - subnet-be7571f8
+    - subnet-d7e61db2
+    - subnet-ca09eebd
+  provisioner: PuppetProvisioner
+  profile: arn:aws:iam::562745238198:instance-profile/deploy-client
+  audit_output: piksel-provisioning
+resources:
+  instance:
+    - name: puppetlibrary
+      count: 1
+      image: ami-896c96fe
+      sshKey: bootstrap
+      monitoring: False
+      sg:
+        - puppetlibrary
+      size: t1.micro
+  secgroup:
+    - name: puppetlibrary
+      rules:
+        - port: 80
+          protocol: tcp
+          source_cidr: 0.0.0.0/0

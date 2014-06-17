@@ -55,7 +55,7 @@ class PuppetProvisioner(BaseProvisioner):
             Ref("AWS::Region"),
             "-s ",
             Ref("AWS::StackId"),
-            " -r " + args['name'],
+            " -r LC" + args['name'],
             " || error_exit 'Failed to run cfn-init'\n",
             "for i in `seq 1 5`; do\n",
             "  puppet apply --modulepath /var/tmp/puppet/modules ",

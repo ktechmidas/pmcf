@@ -50,7 +50,7 @@ class TestPuppetProvisioner(object):
                     {
                         "Ref": "AWS::StackId"
                     },
-                    " -r test",
+                    " -r LCtest",
                     " || error_exit 'Failed to run cfn-init'\n",
                     "for i in `seq 1 5`; do\n",
                     "  puppet apply --modulepath /var/tmp/puppet/modules ",

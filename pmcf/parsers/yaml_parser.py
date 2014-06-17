@@ -97,7 +97,7 @@ class YamlParser(BaseParser):
                         'provider': 'PuppetProvisioner',
                         'args': {
                             'name': instance['name'],
-                            'bucket': args['audit_output'],
+                            'bucket': self._stack['config']['audit_output'],
                             'artifact': "%s.tar.gz" % instance['name'],
                             'profile': os.path.basename(instance.get(
                                 'profile',

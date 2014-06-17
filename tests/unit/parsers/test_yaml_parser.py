@@ -107,6 +107,7 @@ class TestParserData(object):
 
     def test_parser_config_has_valid_keys(self):
         keys = [
+            'audit_output',
             'name',
             'access',
             'secret',

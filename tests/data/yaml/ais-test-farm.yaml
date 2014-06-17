@@ -9,6 +9,7 @@ config:
       - subnet-123
   provisioner: PuppetProvisioner
   profile: instance-profile/deploy-client
+  audit_output: piksel-provisioning
 resources:
   load_balancer:
     - name: app
