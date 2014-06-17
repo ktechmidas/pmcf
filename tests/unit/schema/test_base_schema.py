@@ -112,11 +112,6 @@ class TestBaseSchema(object):
         self.data['resources']['instance'][0]['wobble'] = True
         assert_raises(ValidationError, jsonschema.validate, self.data, schema)
 
-    def test_schema_no_instance_invalid(self):
-        schema = yaml.load(base_schema)
-        self.data['resources']['instance'].pop(0)
-        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
-
     def test_schema_one_instance_invalid_no_count(self):
         schema = yaml.load(base_schema)
         self.data['resources']['instance'][0].pop('count')

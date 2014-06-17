@@ -235,7 +235,6 @@ properties:
                 type: array
             instance:
                 type: array
-                minItems: 1
                 items:
                     $ref: "#/definitions/instance"
             load_balancer:
@@ -246,6 +245,13 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/secgroup"
+        required:
+            - cdn
+            - db
+            - instance
+            - load_balancer
+            - secgroup
+        additionalProperties: false
     tags:
         type: object
 required:
