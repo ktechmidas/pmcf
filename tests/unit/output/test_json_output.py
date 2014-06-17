@@ -77,6 +77,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'secgroup': [],
+            'role': [],
             'load_balancer': [{
                 'listener': [
                     {
@@ -150,6 +151,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'secgroup': [],
+            'role': [],
             'load_balancer': [{
                 'listener': [
                     {
@@ -238,6 +240,7 @@ class TestJSONOutput(object):
         }
         res = {
             'instance': [],
+            'role': [],
             'secgroup': [{
                 'name': 'elb',
                 'rules': [
@@ -322,6 +325,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'secgroup': [],
+            'role': [],
             'load_balancer': [{
                 'listener': [
                     {
@@ -401,6 +405,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'secgroup': [],
+            'role': [],
             'load_balancer': [{
                 'listener': [
                     {
@@ -466,6 +471,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'load_balancer': [],
+            'role': [],
             'secgroup': [{
                 'name': 'test',
                 'rules': [
@@ -534,6 +540,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'load_balancer': [],
+            'role': [],
             'secgroup': [
                 {
                     'name': 'womble',
@@ -604,6 +611,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'load_balancer': [],
+            'role': [],
             'secgroup': [
                 {
                     'name': 'womble',
@@ -661,6 +669,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'load_balancer': [],
+            'role': [],
             'secgroup': [{
                 'name': 'test',
                 'rules': [
@@ -705,6 +714,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'load_balancer': [],
+            'role': [],
             'secgroup': [{
                 'name': 'test',
                 'rules': [
@@ -751,6 +761,7 @@ class TestJSONOutput(object):
         res = {
             'instance': [],
             'load_balancer': [],
+            'role': [],
             'secgroup': [{
                 'name': 'test',
                 'rules': [
@@ -823,6 +834,7 @@ class TestJSONOutput(object):
         res = {
             'load_balancer': [],
             'secgroup': [],
+            'role': [],
             'instance': [{
                 'block_device': [],
                 'count': 6,
@@ -955,6 +967,7 @@ class TestJSONOutput(object):
                 'policy': [],
             }],
             'secgroup': [],
+            'role': [],
             'instance': [{
                 'block_device': [],
                 'count': 6,
@@ -1035,6 +1048,7 @@ class TestJSONOutput(object):
         res = {
             'load_balancer': [],
             'secgroup': [],
+            'role': [],
             'instance': [{
                 'block_device': [],
                 'count': 6,
@@ -1128,6 +1142,7 @@ class TestJSONOutput(object):
         }
         res = {
             'load_balancer': [],
+            'role': [],
             'secgroup': [
                 {
                     'name': 'app',
@@ -1220,6 +1235,7 @@ class TestJSONOutput(object):
         res = {
             'load_balancer': [],
             'secgroup': [],
+            'role': [],
             'instance': [{
                 'block_device': [],
                 'count': 6,
@@ -1315,6 +1331,7 @@ class TestJSONOutput(object):
         res = {
             'load_balancer': [],
             'secgroup': [],
+            'role': [],
             'instance': [{
                 'block_device': [],
                 'count': 6,
@@ -1388,6 +1405,7 @@ class TestJSONOutput(object):
         res = {
             'load_balancer': [],
             'secgroup': [],
+            'role': [],
             'instance': [{
                 'block_device': [],
                 'count': 6,

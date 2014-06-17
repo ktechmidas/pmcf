@@ -30,6 +30,7 @@ class TestBaseSchema(object):
                 'load_balancer': [],
                 'db': [],
                 'cdn': [],
+                'role': [],
                 'instance': [
                     {
                         'count': 3,

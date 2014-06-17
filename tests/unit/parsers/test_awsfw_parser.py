@@ -750,6 +750,7 @@ class TestParserData(object):
             'secgroup',
             'cdn',
             'db',
+            'role',
         ]
         assert_equals(set(keys), set(self.data['resources'].keys()))
 

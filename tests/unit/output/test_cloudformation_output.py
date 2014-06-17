@@ -33,11 +33,11 @@ def _mock_validate_template(obj, data):
     pass
 
 
-def _mock_create_stack(obj, name, data, tags):
+def _mock_create_stack(obj, name, data, capabilities, tags):
     pass
 
 
-def _mock_create_stack_fails(obj, name, data, tags):
+def _mock_create_stack_fails(obj, name, data, capabilities, tags):
     raise boto.exception.BotoServerError('I fail', 'nope')
 
 

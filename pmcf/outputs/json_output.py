@@ -24,7 +24,7 @@ import logging
 from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
 from pmcf.outputs.base_output import BaseOutput
-from pmcf.resources.aws import autoscaling, ec2, elasticloadbalancing
+from pmcf.resources.aws import autoscaling, ec2, iam, elasticloadbalancing
 from pmcf.resources.aws import cloudformation as cfn
 from pmcf.utils import import_from_string
 
@@ -50,6 +50,63 @@ class JSONOutput(BaseOutput):
         desc = "%s %s stack" % (config['name'], config['environment'])
         data.add_description(desc)
         data.add_version()
+
+        for role in resources['role']:
+            assume_policy_doc = {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": ["ec2.amazonaws.com"]
+                    },
+                    "Action": ["sts:AssumeRole"]
+                }]
+            }
+
+            s3_res = []
+            if role['access'].get('infrastructure'):
+                s3_res.append("arn:aws:s3:::%s/infrastructure/%s/%s/%s" % (
+                    config['artifact_bucket'],
+                    role['name'],
+                    config['environment'],
+                    role['access']['infrastructure']
+                ))
+            if role['access'].get('application'):
+                s3_res.append("arn:aws:s3:::%s/application/%s/%s/%s" % (
+                    config['artifact_bucket'],
+                    role['name'],
+                    config['environment'],
+                    role['access']['application']
+                ))
+            policy_doc = {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Action": ["s3:GetObject"],
+                    "Resource": s3_res,
+                }]
+            }
+
+            iam_role = iam.Role(
+                "Role%s" % role['name'],
+                AssumeRolePolicyDocument=assume_policy_doc,
+                Path='/%s/%s/' % (role['name'], config['environment'])
+            )
+            data.add_resource(iam_role)
+
+            data.add_resource(iam.PolicyType(
+                "Policy%s" % role['name'],
+                PolicyName='iam-%s-%s' % (role['name'], config['environment']),
+                PolicyDocument=policy_doc,
+                Roles=[Ref(iam_role)]
+            ))
+
+            data.add_resource(iam.InstanceProfile(
+                "Profile%s" % role['name'],
+                Path="/%s/%s/" % (
+                    role['name'], config['environment']),
+                Roles=[Ref(iam_role)]
+            ))
 
         sgs = {}
         for sg in resources['secgroup']:

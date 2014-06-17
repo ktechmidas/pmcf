@@ -75,6 +75,24 @@ class AWSCFNOutput(JSONOutput):
             return False
         return True
 
+    def _need_iam_caps(self, data):
+        """
+        Checks for IAM resources in a stack definition
+
+        :param data: Stack definition
+        :type data: str.
+        :returns: boolean
+        """
+
+        json_data = json.loads(data)
+        if not json_data.get('Resources'):
+            return False
+        for k in json_data['Resources'].keys():
+            if json_data['Resources'][k].get('Type', '').find('IAM') > 0:
+                LOG.debug('Found IAM resources, adding IAM capability')
+                return True
+        return False
+
     def run(self, data, metadata={}):
         """
         Interfaces with public and private cloud providers.
@@ -105,6 +123,10 @@ class AWSCFNOutput(JSONOutput):
 
         tags = metadata.get('tags', {})
 
+        capabilities = None
+        if self._need_iam_caps(data):
+            capabilities = ['CAPABILITY_IAM']
+
         try:
             if metadata.get('strategy', 'BLUEGREEN') != 'BLUEGREEN' and \
                     self._stack_exists(cfn, metadata['name']):
@@ -115,12 +137,14 @@ class AWSCFNOutput(JSONOutput):
 
                 data = json.dumps(json.loads(data))
                 cfn.validate_template(data)
-                cfn.update_stack(metadata['name'], data, tags=tags)
+                cfn.update_stack(metadata['name'], data,
+                                 capabilities=capabilities, tags=tags)
             else:
                 LOG.debug("stack %s doesn't exist, creating", metadata['name'])
                 data = json.dumps(json.loads(data))
                 cfn.validate_template(data)
-                cfn.create_stack(metadata['name'], data, tags=tags)
+                cfn.create_stack(metadata['name'], data,
+                                 capabilities=capabilities, tags=tags)
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
 
