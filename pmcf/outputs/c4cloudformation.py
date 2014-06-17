@@ -37,7 +37,7 @@ class C4AWSCFNOutput(AWSCFNOutput):
     tagging policy.
     """
 
-    def run(self, data, metadata={}):
+    def run(self, data, metadata={}, poll=False):
         """
         Interfaces with public and private cloud providers.
 
@@ -48,6 +48,8 @@ class C4AWSCFNOutput(AWSCFNOutput):
         :type data: str.
         :param metadata: Additional information for stack launch (tags, etc).
         :type metadata: dict.
+        :param poll: Whether to poll until completion
+        :type poll: boolean.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: boolean
         """
@@ -76,7 +78,7 @@ class C4AWSCFNOutput(AWSCFNOutput):
         except KeyError, e:
             raise ProvisionerException(str(e))
 
-        return super(self.__class__, self).run(data, metadata)
+        return super(self.__class__, self).run(data, metadata, poll)
 
 
 __all__ = [

@@ -77,8 +77,7 @@ class PMCFCLI(object):
             if self.args.get('audit_output', None):
                 metadata['audit_output'] = self.args['audit_output']
 
-            self.output.run(data, metadata)
-            return False
+            return not self.output.run(data, metadata, self.args['poll'])
         except PMCFException, e:
             LOG.error(e.message)
             return True

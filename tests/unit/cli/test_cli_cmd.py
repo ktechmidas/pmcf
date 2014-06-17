@@ -49,11 +49,11 @@ def _mock_parse_file(self, fname, args):
     }
 
 
-def _mock_run_succeeds(self, data, metadata):
-    return False
+def _mock_run_succeeds(self, data, metadata, poll):
+    return True
 
 
-def _mock_run_fails(self, data, metadata):
+def _mock_run_fails(self, data, metadata, poll):
     raise PropertyException('test')
 
 
@@ -124,6 +124,7 @@ class TestCliCmd(object):
             'secretkey': '3456',
             'instance_accesskey': '1234',
             'instance_secretkey': '3456',
+            'poll': False,
             'region': 'eu-west-1',
             'audit': 'NoopAudit',
             'audit_output': 'foobar',

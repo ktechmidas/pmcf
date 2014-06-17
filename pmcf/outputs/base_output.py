@@ -51,7 +51,7 @@ class BaseOutput(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def run(self, data, metadata={}):
+    def run(self, data, metadata={}, poll=False):
         """
         Interfaces with public and private cloud providers
 
@@ -59,6 +59,8 @@ class BaseOutput(object):
         :type data: str.
         :param metadata: Additional information for stack launch (tags, etc).
         :type metadata: dict.
+        :param poll: Whether to poll until completion
+        :type poll: boolean.
         :raises: :class:`NotImplementedError`
         """
 

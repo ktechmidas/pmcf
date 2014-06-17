@@ -61,6 +61,7 @@ class PMCFConfig(object):
             'provisioner': 'BaseProvisioner',
             'verbose': None,
             'debug': None,
+            'poll': False,
             'quiet': None,
             'policyfile': None,
             'stackfile': None,

@@ -58,6 +58,10 @@ def main():
     parser.add_argument("-a", "--action",
                         default='create',
                         help="action (one of create, update, or delete)")
+    parser.add_argument("--poll",
+                        default=False,
+                        action="store_true",
+                        help="Poll until completion")
     parser.add_argument("stackfile",
                         help="path to stack (farm) definition file")
     args = parser.parse_args()

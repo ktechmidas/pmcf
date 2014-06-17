@@ -93,7 +93,7 @@ class AWSCFNOutput(JSONOutput):
                 return True
         return False
 
-    def run(self, data, metadata={}):
+    def run(self, data, metadata={}, poll=False):
         """
         Interfaces with public and private cloud providers.
 
@@ -101,6 +101,8 @@ class AWSCFNOutput(JSONOutput):
         :type data: str.
         :param metadata: Additional information for stack launch (tags, etc).
         :type metadata: dict.
+        :param poll: Whether to poll until completion
+        :type poll: boolean.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: boolean
         """
@@ -145,10 +147,24 @@ class AWSCFNOutput(JSONOutput):
                 cfn.validate_template(data)
                 cfn.create_stack(metadata['name'], data,
                                  capabilities=capabilities, tags=tags)
+
+            self.do_audit(data, metadata)
+
+            if poll:
+                while True:
+                    stack = cfn.describe_stacks(metadata['name'])[0]
+                    if stack.stack_status.endswith('COMPLETE') or\
+                            stack.stack_status.endswith('FAILED'):
+                        break
+                    time.sleep(3)
+                stack = cfn.describe_stacks(metadata['name'])[0]
+                if stack.stack_status.endswith('FAILED'):
+                    return False
+                return True
+
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
 
-        self.do_audit(data, metadata)
         return True
 
     def do_audit(self, data, metadata):

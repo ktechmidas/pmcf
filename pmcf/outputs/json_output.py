@@ -314,7 +314,7 @@ class JSONOutput(BaseOutput):
             indent = 4
         return data.to_json(indent=indent)
 
-    def run(self, data, metadata={}):
+    def run(self, data, metadata={}, poll=False):
         """
         Prints out stack definition as json-formatted string
 
@@ -322,6 +322,8 @@ class JSONOutput(BaseOutput):
         :type data: str.
         :param metadata: Additional information for stack launch (tags, etc).
         :type metadata: dict.
+        :param poll: Whether to poll until completion
+        :type poll: boolean.
         :returns: boolean
         """
 
