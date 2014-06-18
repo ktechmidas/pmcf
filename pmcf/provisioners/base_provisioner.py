@@ -60,6 +60,24 @@ class BaseProvisioner(object):
 
         raise NotImplementedError
 
+    def wants_profile(self):
+        """
+        Whether a provisioner implementation wants a profile to be created
+
+        :returns: boolean.
+        """
+
+        return False
+
+    def wants_wait(self):
+        """
+        Whether a provisioner implementation wants a wait condition created
+
+        :returns: boolean.
+        """
+
+        return False
+
     def cfn_init(self, args):
         """
         Return metadata suitable for consumption by cfn_init

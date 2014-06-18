@@ -178,7 +178,7 @@ class JSONOutput(BaseOutput):
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',
                                              provider)()
-            if inst['provisioner']['provider'] != 'AWSFWProvisioner':
+            if provisioner.wants_wait():
                 waithandle = cfn.WaitConditionHandle(
                     "%sHandle" % inst['name'],
                 )
@@ -192,6 +192,7 @@ class JSONOutput(BaseOutput):
                     Timeout=3600
                 ))
 
+            if provisioner.wants_profile():
                 assume_policy_doc = {
                     "Version": "2012-10-17",
                     "Statement": [{

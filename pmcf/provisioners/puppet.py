@@ -30,6 +30,24 @@ LOG = logging.getLogger(__name__)
 
 class PuppetProvisioner(BaseProvisioner):
 
+    def wants_profile(self):
+        """
+        Whether a provisioner implementation wants a profile to be created
+
+        :returns: boolean.
+        """
+
+        return True
+
+    def wants_wait(self):
+        """
+        Whether a provisioner implementation wants a wait condition created
+
+        :returns: boolean.
+        """
+
+        return True
+
     def userdata(self, args):
         """
         Validates resource against local policy.
