@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.provisioners.chef
     :platform: Unix
-    :synopsis: module containing chef solo implementation of provisioner class
+    :synopsis: module containing chef solo provisioner class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

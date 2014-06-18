@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.config.config
     :platform: Unix
-    :synopsis: module containing config class for PMCF
+    :synopsis: module containing config class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.parsers.base_parser
     :platform: Unix
-    :synopsis: module containing base parser class for PMCF
+    :synopsis: module containing abstract base parser class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

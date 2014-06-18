@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.outputs.c4cloudformation
     :platform: Unix
-    :synopsis: module containing Channel4 output class for PMCF
+    :synopsis: module containing Channel4 output class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

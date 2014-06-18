@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.outputs.cloudformation
     :platform: Unix
-    :synopsis: module containing AWS Cloudformation output class for PMCF
+    :synopsis: module containing AWS Cloudformation output class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

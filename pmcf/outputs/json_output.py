@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.outputs.json_output
     :platform: Unix
-    :synopsis: module containing JSON output class for PMCF
+    :synopsis: module containing JSON output class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

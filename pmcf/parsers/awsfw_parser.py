@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.parsers.awsfw_parser
     :platform: Unix
-    :synopsis: module containing parsers for PMCF
+    :synopsis: module containing AWSFW parser class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

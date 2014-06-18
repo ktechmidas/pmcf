@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.parsers.yaml_parser
     :platform: Unix
-    :synopsis: module containing supported parser class for PMCF
+    :synopsis: module containing YAML parser class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

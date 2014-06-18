@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.audit.base_audit
     :platform: Unix
-    :synopsis: module containing abstract base class for audit classes
+    :synopsis: module containing abstract base audit classes
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

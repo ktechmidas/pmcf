@@ -20,11 +20,18 @@ User Guide
 In this section you will find information on using the Piksel Managed Cloud Framework
 
 
-Documentation
--------------
+Configuring runtime behaviour
+-----------------------------
 .. toctree::
    :maxdepth: 1
 
    configfile
    cli
+
+
+Configuring stacks
+------------------
+.. toctree::
+   :maxdepth: 1
+
    schema

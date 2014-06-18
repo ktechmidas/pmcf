@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.provisioners.awsfw
     :platform: Unix
-    :synopsis: module containing AWSFW implementation of provisioner class
+    :synopsis: module containing AWSFW provisioner class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

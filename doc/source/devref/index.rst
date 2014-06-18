@@ -34,3 +34,11 @@ Module Reference
    provisioners
    schema
    utils
+
+
+Extending PMCF for local requirements
+-------------------------------------
+.. toctree::
+   :maxdepth: 1
+
+   extending

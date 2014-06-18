@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.provisioners.base_provisioner
     :platform: Unix
-    :synopsis: module containing abstract base class for provisioner classes
+    :synopsis: module containing abstract base provisioner class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

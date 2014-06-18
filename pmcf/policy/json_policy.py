@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.policy.json_policy
     :platform: Unix
-    :synopsis: module containing JSON implementation of policy class
+    :synopsis: module containing JSON policy class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

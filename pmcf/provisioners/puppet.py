@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.provisioners.puppet
     :platform: Unix
-    :synopsis: module containing puppet implementation of provisioner class
+    :synopsis: module containing puppet provisioner class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """

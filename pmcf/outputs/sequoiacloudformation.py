@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.outputs.sequoiacloudformation
     :platform: Unix
-    :synopsis: module containing Sequoia output class for PMCF
+    :synopsis: module containing Sequoia output class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
