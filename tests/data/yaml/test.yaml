@@ -10,7 +10,6 @@ config:
     - subnet-d7e61db2
     - subnet-ca09eebd
   provisioner: PuppetProvisioner
-  profile: arn:aws:iam::562745238198:instance-profile/deploy-client
   audit_output: piksel-provisioning
 resources:
   instance:
