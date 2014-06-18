@@ -22,6 +22,7 @@
 
 import argparse
 import logging
+import sys
 
 from pmcf.cli import PMCFCLI
 from pmcf.config import PMCFConfig
@@ -67,7 +68,7 @@ def main():
     args = parser.parse_args()
 
     # Log everything, and send it to stderr.
-    FORMAT = "[%(asctime)-15s] [%(levelname)s] %(message)s"
+    FORMAT = "[%(asctime)-15s] [%(levelname)s] %(name)s: %(message)s"
 
     # Simple coloured output
     logging.addLevelName(logging.DEBUG,
@@ -106,4 +107,4 @@ def main():
         return True
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

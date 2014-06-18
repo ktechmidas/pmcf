@@ -69,6 +69,8 @@ class AWSCFNOutput(JSONOutput):
         :returns: boolean
         """
 
+        LOG.info('Checking for existance of stack %s' % stack)
+        LOG.info('Please ignore boto error messages')
         try:
             cfn.describe_stacks(stack)
         except boto.exception.BotoServerError:
@@ -132,7 +134,7 @@ class AWSCFNOutput(JSONOutput):
         try:
             if metadata.get('strategy', 'BLUEGREEN') != 'BLUEGREEN' and \
                     self._stack_exists(cfn, metadata['name']):
-                LOG.debug('stack %s exists, updating', metadata['name'])
+                LOG.info('stack %s exists, updating', metadata['name'])
                 if metadata['strategy'] == 'prompt_inplace':
                     if not self._show_prompt(cfn, metadata['name'], data):
                         return True
@@ -142,29 +144,63 @@ class AWSCFNOutput(JSONOutput):
                 cfn.update_stack(metadata['name'], data,
                                  capabilities=capabilities, tags=tags)
             else:
-                LOG.debug("stack %s doesn't exist, creating", metadata['name'])
+                LOG.info("stack %s doesn't exist, creating", metadata['name'])
                 data = json.dumps(json.loads(data))
                 cfn.validate_template(data)
                 cfn.create_stack(metadata['name'], data,
                                  capabilities=capabilities, tags=tags)
 
             self.do_audit(data, metadata)
-
-            if poll:
-                while True:
-                    stack = cfn.describe_stacks(metadata['name'])[0]
-                    if stack.stack_status.endswith('COMPLETE') or\
-                            stack.stack_status.endswith('FAILED'):
-                        break
-                    time.sleep(3)
-                stack = cfn.describe_stacks(metadata['name'])[0]
-                if stack.stack_status.endswith('FAILED'):
-                    return False
-                return True
+            return self.do_poll(cfn, metadata['name'], poll)
 
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
 
+    def do_poll(self, cfn, name, poll):
+        """
+        Polls until stack is complete
+
+        :param cfn: Cloudformation connection object
+        :type cfn: object.
+        :param name: Stack name
+        :type name: str.
+        :param poll: Whether to actually poll
+        :type poll: boolean.
+        """
+
+        if poll:
+            LOG.info('Polling until %s is complete' % name)
+            LOG.info('%30s | %30s | %20s | %s' % (
+                'resource_id',
+                'resource_type',
+                'resource_status',
+                'resource_status_reason'))
+            seen_events = set()
+            stack = None
+            while True:
+                stack = cfn.describe_stacks(name)[0]
+                all_events = stack.describe_events()
+                for event in sorted(all_events, key=lambda x: x.timestamp):
+                    if event.event_id in seen_events:
+                        continue
+                    LOG.info('%30s | %30s | %20s | %s' % (
+                        event.logical_resource_id,
+                        event.resource_type,
+                        event.resource_status,
+                        event.resource_status_reason))
+                    seen_events.add(event.event_id)
+                if stack.stack_status.endswith('COMPLETE') or\
+                        stack.stack_status.endswith('FAILED'):
+                    break
+                time.sleep(3)
+            if stack.stack_status.endswith('FAILED') or\
+                    stack.stack_status.startswith('ROLLBACK') or\
+                    stack.stack_status.startswith('DELETE'):
+                return False
+            if len(stack.outputs) > 0:
+                LOG.info('Stack outputs')
+                for output in stack.outputs:
+                    LOG.info('%s: %s' % (output.description, output.value))
         return True
 
     def do_audit(self, data, metadata):
