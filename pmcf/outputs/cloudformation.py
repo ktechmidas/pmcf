@@ -170,7 +170,7 @@ class AWSCFNOutput(JSONOutput):
 
         if poll:
             LOG.info('Polling until %s is complete' % name)
-            LOG.info('%30s | %30s | %20s | %s' % (
+            LOG.info('%20s | %30s | %20s | %s' % (
                 'resource_id',
                 'resource_type',
                 'resource_status',
@@ -183,7 +183,7 @@ class AWSCFNOutput(JSONOutput):
                 for event in sorted(all_events, key=lambda x: x.timestamp):
                     if event.event_id in seen_events:
                         continue
-                    LOG.info('%30s | %30s | %20s | %s' % (
+                    LOG.info('%20s | %30s | %20s | %s' % (
                         event.logical_resource_id,
                         event.resource_type,
                         event.resource_status,
