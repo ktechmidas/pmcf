@@ -40,7 +40,7 @@ class PuppetProvisioner(BaseProvisioner):
         :returns: str.
         """
 
-        return Join('', [
+        script = Join('', [
             "#!/bin/bash\n",
             "error_exit() {\n",
             "  cfn-signal -e 1 -r " + args['name'] + " '",
@@ -66,6 +66,7 @@ class PuppetProvisioner(BaseProvisioner):
             "'\n",
             "rm -rf /var/tmp/puppet\n",
         ])
+        return script
 
     def cfn_init(self, args):
         """
@@ -91,7 +92,7 @@ class PuppetProvisioner(BaseProvisioner):
                         "/var/tmp/puppet": "https://%s.%s/artifacts/%s" % (
                             args['bucket'],
                             "s3.amazonaws.com",
-                            args['artifact']
+                            args['infrastructure']
                         )
                     },
                 },

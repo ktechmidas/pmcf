@@ -89,16 +89,18 @@ class YamlParser(BaseParser):
                 if data['config'].get('subnets'):
                     lb['subnets'] = data['config']['subnets']
         for instance in self._stack['resources']['instance']:
-            if self._stack['config'].get('provisioner') and\
-                    self._stack['config']['provisioner'] ==\
-                    'PuppetProvisioner':
-                if not instance.get('provisioner', None):
+            if not instance.get('provisioner', None):
+                if self._stack['config'].get('provisioner', '') ==\
+                        'PuppetProvisioner':
+                    bucket = self._stack['config'].get(
+                        'bucket',
+                        self._stack['config']['audit_output'])
                     instance['provisioner'] = {
                         'provider': 'PuppetProvisioner',
                         'args': {
                             'name': instance['name'],
-                            'bucket': self._stack['config']['audit_output'],
-                            'artifact': "%s.tar.gz" % instance['name'],
+                            'bucket': bucket,
+                            'infrastructure': "%s.tar.gz" % instance['name'],
                             'profile': os.path.basename(instance.get(
                                 'profile',
                                 self._stack['config']['profile']))

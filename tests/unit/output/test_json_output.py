@@ -31,6 +31,17 @@ class TestJSONOutput(object):
         ret = {
             "AWSTemplateFormatVersion": "2010-09-09",
             "Description": "test test stack",
+            "Outputs": {
+                "InstanceProfiletest": {
+                    "Description": "Name of test InstanceProfile",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "Profiletest",
+                            "Arn"
+                        ]
+                    }
+                }
+            },
             "Resources": {
                 "Policytest": {
                     "Properties": {

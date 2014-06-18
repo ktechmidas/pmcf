@@ -38,7 +38,14 @@ class TestBaseSchema(object):
                         'lb': 'app',
                         'monitoring': False,
                         'name': 'app',
-                        'provisioner': {'provider': 'PuppetProvisioner'},
+                        'provisioner': {
+                            'provider': 'PuppetProvisioner',
+                            'args': {
+                                'bucket': 'sand',
+                                'name': 'test',
+                                'profile': 'test',
+                            }
+                        },
                         'sg': ['app'],
                         'size': 'm1.large',
                         'sshKey': 'bootstrap'

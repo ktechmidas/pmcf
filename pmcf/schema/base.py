@@ -24,6 +24,57 @@
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
 definitions:
+    puppetprovisioner:
+        type: object
+        properties:
+            provider:
+                enum:
+                    - PuppetProvisioner
+            args:
+                type:
+                    object
+                properties:
+                    infrastructure:
+                        type: string
+                    application:
+                        type: string
+                    bucket:
+                        type: string
+                    name:
+                        type: string
+                    profile:
+                        type: string
+                required:
+                    - name
+                    - bucket
+                    - profile
+                additionalProperties: false
+        required:
+            - provider
+            - args
+        additionalProperties: false
+    awsfwprovisioner:
+        type: object
+        properties:
+            provider:
+                enum:
+                    - AWSFWProvisioner
+            args:
+                type:
+                    object
+                properties:
+                    apps:
+                        type: array
+                    roles:
+                        type: array
+                required:
+                    - apps
+                    - roles
+                additionalProperties: false
+        required:
+            - provider
+            - args
+        additionalProperties: false
     instance:
         properties:
             block_device:
@@ -51,14 +102,9 @@ definitions:
                 type: string
             provisioner:
                 type: object
-                properties:
-                    args:
-                        type: object
-                    provider:
-                        enum:
-                            - PuppetProvisioner
-                            - ChefProvisioner
-                            - AWSFWProvisioner
+                oneOf:
+                    - $ref: "#/definitions/puppetprovisioner"
+                    - $ref: "#/definitions/awsfwprovisioner"
             sg:
                 type: array
             sshKey:

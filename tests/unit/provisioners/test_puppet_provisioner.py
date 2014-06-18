@@ -72,7 +72,7 @@ class TestPuppetProvisioner(object):
 
     def test_ci_contains_expected_data(self):
         args = {
-            'artifact': 'zip.tgz',
+            'infrastructure': 'zip.tgz',
             'bucket': 'testbucket',
             'profile': 'instance-blah',
         }
@@ -89,7 +89,7 @@ class TestPuppetProvisioner(object):
                         "/var/tmp/puppet": "https://%s.%s/artifacts/%s" % (
                             args['bucket'],
                             "s3.amazonaws.com",
-                            args['artifact'],
+                            args['infrastructure'],
                         )
                     },
                 },
