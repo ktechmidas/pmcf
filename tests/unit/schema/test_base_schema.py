@@ -42,8 +42,6 @@ class TestBaseSchema(object):
                             'provider': 'PuppetProvisioner',
                             'args': {
                                 'bucket': 'sand',
-                                'name': 'test',
-                                'profile': 'test',
                             }
                         },
                         'sg': ['app'],

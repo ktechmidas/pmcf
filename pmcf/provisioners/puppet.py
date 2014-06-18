@@ -40,7 +40,7 @@ class PuppetProvisioner(BaseProvisioner):
         :returns: str.
         """
 
-        script = Join('', [
+        script = [
             "#!/bin/bash\n",
             "error_exit() {\n",
             "  cfn-signal -e 1 -r " + args['name'] + " '",
@@ -51,22 +51,47 @@ class PuppetProvisioner(BaseProvisioner):
             "apt-get -y install python-setuptools\n",
             "easy_install https://s3.amazonaws.com/cloudformation-examples/",
             "aws-cfn-bootstrap-latest.tar.gz\n",
+            "ret=0\n",
             "cfn-init --region ",
             Ref("AWS::Region"),
-            " -s ",
+            " -c bootstrap -s ",
             Ref("AWS::StackId"),
             " -r LC" + args['name'],
             " || error_exit 'Failed to run cfn-init'\n",
-            "for i in `seq 1 5`; do\n",
-            "  puppet apply --modulepath /var/tmp/puppet/modules ",
-            "/var/tmp/puppet/manifests/site.pp\n",
-            "done\n",
-            "cfn-signal -e $? -r " + args['name'] + " '",
+        ]
+        if args.get('infrastructure'):
+            script.extend([
+                "cfn-init --region ",
+                Ref("AWS::Region"),
+                " -c infra -s ",
+                Ref("AWS::StackId"),
+                " -r LC" + args['name'],
+                " || error_exit 'Failed to run cfn-init'\n",
+                "for i in `seq 1 5`; do\n",
+                "  puppet apply --modulepath /var/tmp/puppet/modules ",
+                "/var/tmp/puppet/manifests/site.pp\n",
+                "ret=$?\n",
+                "test $ret != 0 || break\n",
+                "done\n",
+            ])
+        if args.get('application'):
+            script.extend([
+                "cfn-init --region ",
+                Ref("AWS::Region"),
+                " -c app -s ",
+                Ref("AWS::StackId"),
+                " -r LC" + args['name'],
+                " || error_exit 'Failed to run cfn-init'\n",
+            ])
+
+        script.extend([
+            "test $ret = 0 || sleep 3600\n",
+            "cfn-signal -e $ret -r " + args['name'] + " '",
             Ref(args['WaitHandle']),
             "'\n",
             "rm -rf /var/tmp/puppet\n",
         ])
-        return script
+        return Join('', script)
 
     def cfn_init(self, args):
         """
@@ -80,31 +105,63 @@ class PuppetProvisioner(BaseProvisioner):
         :returns: dict.
         """
 
-        return {
+        ret = {
             "AWS::CloudFormation::Init": {
-                "config": {
+                "configSets": {
+                    "bootstrap": ["bootstrap"]
+                },
+                "bootstrap": {
                     "packages": {
                         "apt": {
                             "puppet": [],
-                        },
-                    },
-                    "sources": {
-                        "/var/tmp/puppet": "https://%s.%s/artifacts/%s" % (
-                            args['bucket'],
-                            "s3.amazonaws.com",
-                            args['infrastructure']
-                        )
-                    },
-                },
+                            "python-boto": [],
+                        }
+                    }
+                }
             },
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
                     "type": "s3",
                     "buckets": [args['bucket']],
-                    "roleName": args['profile'],
-                },
-            },
+                    "roleName": args['role']
+                }
+            }
         }
+
+        if args.get('infrastructure'):
+            ret['AWS::CloudFormation::Init']['configSets']['infra'] = ['infra']
+            ret['AWS::CloudFormation::Init']['infra'] = {
+                "sources": {
+                    "/var/tmp/puppet": "https://%s.%s/%s/%s/%s/%s/%s" % (
+                        args['bucket'],
+                        "s3.amazonaws.com",
+                        "artifacts",
+                        "infrastructure",
+                        args['name'],
+                        args['environment'],
+                        args['infrastructure']
+                    )
+                }
+            }
+        if args.get('application'):
+            ret['AWS::CloudFormation::Init']['configSets']['app'] = [
+                'app'
+            ]
+            ret['AWS::CloudFormation::Init']['app'] = {
+                "sources": {
+                    "/var/tmp/puppet": "https://%s.%s/%s/%s/%s/%s/%s" % (
+                        args['bucket'],
+                        "s3.amazonaws.com",
+                        "artifacts",
+                        "application",
+                        args['name'],
+                        args['environment'],
+                        args['application']
+                    )
+                }
+            }
+
+        return ret
 
 
 __all__ = [

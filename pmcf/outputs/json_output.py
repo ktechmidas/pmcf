@@ -51,74 +51,6 @@ class JSONOutput(BaseOutput):
         data.add_description(desc)
         data.add_version()
 
-        for role in resources['role']:
-            assume_policy_doc = {
-                "Version": "2012-10-17",
-                "Statement": [{
-                    "Effect": "Allow",
-                    "Principal": {
-                        "Service": ["ec2.amazonaws.com"]
-                    },
-                    "Action": ["sts:AssumeRole"]
-                }]
-            }
-
-            iam_role = iam.Role(
-                "Role%s" % role['name'],
-                AssumeRolePolicyDocument=assume_policy_doc,
-                Path='/%s/%s/' % (role['name'], config['environment'])
-            )
-            data.add_resource(iam_role)
-
-            s3_res = []
-            if role['access'].get('infrastructure'):
-                s3_res.append("arn:aws:s3:::%s/infrastructure/%s/%s/%s" % (
-                    config['artifact_bucket'],
-                    role['name'],
-                    config['environment'],
-                    role['access']['infrastructure']
-                ))
-            if role['access'].get('application'):
-                s3_res.append("arn:aws:s3:::%s/application/%s/%s/%s" % (
-                    config['artifact_bucket'],
-                    role['name'],
-                    config['environment'],
-                    role['access']['application']
-                ))
-            if len(s3_res) > 0:
-                policy_doc = {
-                    "Version": "2012-10-17",
-                    "Statement": [{
-                        "Effect": "Allow",
-                        "Action": ["s3:GetObject"],
-                        "Resource": s3_res,
-                    }]
-                }
-
-                data.add_resource(iam.PolicyType(
-                    "Policy%s" % role['name'],
-                    PolicyName='iam-%s-%s' % (
-                        role['name'], config['environment']),
-                    PolicyDocument=policy_doc,
-                    Roles=[Ref(iam_role)]
-                ))
-
-            ip = iam.InstanceProfile(
-                "Profile%s" % role['name'],
-                Path="/%s/%s/" % (
-                    role['name'], config['environment']),
-                Roles=[Ref(iam_role)]
-            )
-            data.add_resource(ip)
-
-            data.add_output(
-                Output(
-                    "InstanceProfile%s" % role['name'],
-                    Description="Name of %s InstanceProfile" % role['name'],
-                    Value=GetAtt(ip, "Arn")
-                )
-            )
-
         sgs = {}
         for sg in resources['secgroup']:
             rules = []
@@ -239,6 +171,10 @@ class JSONOutput(BaseOutput):
             ud = None
             ci = None
             args = inst['provisioner']['args']
+            args.update({
+                'environment': config['environment'],
+                'name': inst['name'],
+            })
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',
                                              provider)()
@@ -255,6 +191,70 @@ class JSONOutput(BaseOutput):
                     Count=inst['count'],
                     Timeout=3600
                 ))
+
+                assume_policy_doc = {
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Effect": "Allow",
+                        "Principal": {
+                            "Service": ["ec2.amazonaws.com"]
+                        },
+                        "Action": ["sts:AssumeRole"]
+                    }]
+                }
+
+                iam_role = iam.Role(
+                    "Role%s" % inst['name'],
+                    AssumeRolePolicyDocument=assume_policy_doc,
+                    Path='/%s/%s/' % (inst['name'], config['environment'])
+                )
+                data.add_resource(iam_role)
+                args.update({'role': Ref(iam_role)})
+
+                s3_res = []
+                if inst['provisioner']['args'].get('infrastructure'):
+                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
+                        inst['provisioner']['args']['bucket'],
+                        "infrastructure",
+                        inst['name'],
+                        config['environment'],
+                        inst['provisioner']['args']['infrastructure']
+                    ))
+                if inst['provisioner']['args'].get('application'):
+                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
+                        inst['provisioner']['args']['bucket'],
+                        "application",
+                        inst['name'],
+                        config['environment'],
+                        inst['provisioner']['args']['application']
+                    ))
+                if len(s3_res) > 0:
+                    policy_doc = {
+                        "Version": "2012-10-17",
+                        "Statement": [{
+                            "Effect": "Allow",
+                            "Action": ["s3:GetObject"],
+                            "Resource": s3_res,
+                        }]
+                    }
+
+                    data.add_resource(iam.PolicyType(
+                        "Policy%s" % inst['name'],
+                        PolicyName='iam-%s-%s' % (
+                            inst['name'], config['environment']),
+                        PolicyDocument=policy_doc,
+                        Roles=[Ref(iam_role)]
+                    ))
+
+                ip = iam.InstanceProfile(
+                    "Profile%s" % inst['name'],
+                    Path="/%s/%s/" % (
+                        inst['name'], config['environment']),
+                    Roles=[Ref(iam_role)]
+                )
+                data.add_resource(ip)
+                args.update({'profile': Ref(ip)})
+
             ud = provisioner.userdata(args)
             ci = provisioner.cfn_init(args)
 
@@ -276,9 +276,8 @@ class JSONOutput(BaseOutput):
             if ci is not None:
                 lcargs['Metadata'] = ci
 
-            profile = inst.get('profile', config.get('profile', None))
-            if profile:
-                lcargs['IamInstanceProfile'] = profile
+            if args.get('profile'):
+                lcargs['IamInstanceProfile'] = args['profile']
             lc = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 **lcargs

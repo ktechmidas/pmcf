@@ -40,14 +40,8 @@ definitions:
                         type: string
                     bucket:
                         type: string
-                    name:
-                        type: string
-                    profile:
-                        type: string
                 required:
-                    - name
                     - bucket
-                    - profile
                 additionalProperties: false
         required:
             - provider

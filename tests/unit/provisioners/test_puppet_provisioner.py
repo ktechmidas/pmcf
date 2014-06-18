@@ -42,21 +42,19 @@ class TestPuppetProvisioner(object):
                     "apt-get -y install python-setuptools\n",
                     "easy_install " + uri,
                     "aws-cfn-bootstrap-latest.tar.gz\n",
+                    "ret=0\n",
                     "cfn-init --region ",
                     {
                         "Ref": "AWS::Region"
                     },
-                    " -s ",
+                    " -c bootstrap -s ",
                     {
                         "Ref": "AWS::StackId"
                     },
                     " -r LCtest",
                     " || error_exit 'Failed to run cfn-init'\n",
-                    "for i in `seq 1 5`; do\n",
-                    "  puppet apply --modulepath /var/tmp/puppet/modules ",
-                    "/var/tmp/puppet/manifests/site.pp\n",
-                    "done\n",
-                    "cfn-signal -e $? -r test '",
+                    "test $ret = 0 || sleep 3600\n",
+                    "cfn-signal -e $ret -r test '",
                     {
                         "Ref": "blah"
                     },
@@ -74,33 +72,46 @@ class TestPuppetProvisioner(object):
         args = {
             'infrastructure': 'zip.tgz',
             'bucket': 'testbucket',
-            'profile': 'instance-blah',
+            'role': 'instance-blah',
+            'name': 'test',
+            'environment': 'dev',
         }
 
         ci_data = {
             "AWS::CloudFormation::Init": {
-                "config": {
+                "bootstrap": {
                     "packages": {
                         "apt": {
                             "puppet": [],
-                        },
-                    },
-                    "sources": {
-                        "/var/tmp/puppet": "https://%s.%s/artifacts/%s" % (
-                            args['bucket'],
-                            "s3.amazonaws.com",
-                            args['infrastructure'],
-                        )
-                    },
+                            "python-boto": [],
+                        }
+                    }
                 },
+                "configSets": {
+                    "bootstrap": ["bootstrap"],
+                    "infra": ["infra"],
+                },
+                "infra": {
+                    "sources": {
+                        "/var/tmp/puppet":
+                            "https://%s.%s/artifacts/%s/%s/%s/%s" % (
+                                args['bucket'],
+                                "s3.amazonaws.com",
+                                "infrastructure",
+                                "test",
+                                "dev",
+                                args['infrastructure'],
+                            )
+                    }
+                }
             },
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
                     "type": "s3",
                     "buckets": [args['bucket']],
-                    "roleName": args['profile'],
-                },
-            },
+                    "roleName": args['role'],
+                }
+            }
         }
 
         data = PuppetProvisioner().cfn_init(args)

@@ -26,103 +26,6 @@ def _mock_ud(self, args):
 
 class TestJSONOutput(object):
 
-    def test_role_valid(self):
-        out = JSONOutput()
-        ret = {
-            "AWSTemplateFormatVersion": "2010-09-09",
-            "Description": "test test stack",
-            "Outputs": {
-                "InstanceProfiletest": {
-                    "Description": "Name of test InstanceProfile",
-                    "Value": {
-                        "Fn::GetAtt": [
-                            "Profiletest",
-                            "Arn"
-                        ]
-                    }
-                }
-            },
-            "Resources": {
-                "Policytest": {
-                    "Properties": {
-                        "PolicyDocument": {
-                            "Statement": [{
-                                "Action": [
-                                    "s3:GetObject"
-                                ],
-                                "Effect": "Allow",
-                                "Resource": [
-                                    "arn:aws:s3:::%s/%s/%s/%s/%s" % (
-                                        "wibble",
-                                        "infrastructure",
-                                        "test",
-                                        "test",
-                                        "foo.zip"
-                                    ),
-                                    "arn:aws:s3:::%s/%s/%s/%s/%s" % (
-                                        "wibble",
-                                        "application",
-                                        "test",
-                                        "test",
-                                        "bar.zip"
-                                    )
-                                ]
-                            }],
-                            "Version": "2012-10-17"
-                        },
-                        "PolicyName": "iam-test-test",
-                        "Roles": [{"Ref": "Roletest"}]
-                    },
-                    "Type": "AWS::IAM::Policy"
-                },
-                "Profiletest": {
-                    "Properties": {
-                        "Path": "/test/test/",
-                        "Roles": [{"Ref": "Roletest"}]
-                    },
-                    "Type": "AWS::IAM::InstanceProfile"
-                },
-                "Roletest": {
-                    "Properties": {
-                        "AssumeRolePolicyDocument": {
-                            "Statement": [{
-                                "Action": [
-                                    "sts:AssumeRole"
-                                ],
-                                "Effect": "Allow",
-                                "Principal": {
-                                    "Service": ["ec2.amazonaws.com"]
-                                }
-                            }],
-                            "Version": "2012-10-17"
-                        },
-                        "Path": "/test/test/"
-                    },
-                    "Type": "AWS::IAM::Role"
-                }
-            }
-        }
-
-        cfg = {
-            'name': 'test',
-            'environment': 'test',
-            'artifact_bucket': 'wibble',
-        }
-        res = {
-            'instance': [],
-            'secgroup': [],
-            'role': [{
-                'name': 'test',
-                'access': {
-                    'infrastructure': 'foo.zip',
-                    'application': 'bar.zip',
-                }
-            }],
-            'load_balancer': []
-        }
-        tmpl = out.add_resources(res, cfg)
-        assert_equals(json.loads(tmpl), ret)
-
     def test_lb_valid(self):
         out = JSONOutput()
         ret = {
@@ -1152,13 +1055,13 @@ class TestJSONOutput(object):
                 'image': 'ami-e97f849e',
                 'monitoring': False,
                 'name': 'app',
-                'profile': 'deploy-client',
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
                         'appBucket': 'test',
                         'roleBucket': 'test',
-                        'roles': ['jetty']
+                        'roles': ['jetty'],
+                        'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
                 'sg': ['app'],
@@ -1258,13 +1161,13 @@ class TestJSONOutput(object):
                 'image': 'ami-e97f849e',
                 'monitoring': False,
                 'name': 'app',
-                'profile': 'deploy-client',
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
                         'appBucket': 'test',
                         'roleBucket': 'test',
-                        'roles': ['jetty']
+                        'roles': ['jetty'],
+                        'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
                 'sg': ['app'],
@@ -1339,13 +1242,13 @@ class TestJSONOutput(object):
                 'image': 'ami-e97f849e',
                 'monitoring': False,
                 'name': 'app',
-                'profile': 'deploy-client',
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
                         'appBucket': 'test',
                         'roleBucket': 'test',
-                        'roles': ['jetty']
+                        'roles': ['jetty'],
+                        'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
                 'sg': [],
@@ -1393,6 +1296,9 @@ class TestJSONOutput(object):
                 "LCapp": {
                     "Metadata": "",
                     "Properties": {
+                        "IamInstanceProfile": {
+                            "Ref": "Profileapp"
+                        },
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
                         "InstanceType": "m1.large",
@@ -1403,6 +1309,39 @@ class TestJSONOutput(object):
                         },
                     },
                     "Type": "AWS::AutoScaling::LaunchConfiguration"
+                },
+                "Profileapp": {
+                    "Properties": {
+                        "Path": "/app/test/",
+                        "Roles": [
+                            {
+                                "Ref": "Roleapp"
+                            }
+                        ]
+                    },
+                    "Type": "AWS::IAM::InstanceProfile"
+                },
+                "Roleapp": {
+                    "Properties": {
+                        "AssumeRolePolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Action": [
+                                        "sts:AssumeRole"
+                                    ],
+                                    "Effect": "Allow",
+                                    "Principal": {
+                                        "Service": [
+                                            "ec2.amazonaws.com"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "Version": "2012-10-17"
+                        },
+                        "Path": "/app/test/"
+                    },
+                    "Type": "AWS::IAM::Role"
                 },
                 "appHandle": {
                     "Type": "AWS::CloudFormation::WaitConditionHandle"
