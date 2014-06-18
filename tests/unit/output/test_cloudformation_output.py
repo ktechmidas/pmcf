@@ -15,10 +15,41 @@
 import boto
 import mock
 from nose.tools import assert_equals, assert_raises
+import random
 import sys
+import time
 
 from pmcf.exceptions import AuditException, ProvisionerException
 from pmcf.outputs import AWSCFNOutput
+
+
+class Output(object):
+    def __init__(self):
+        self.description = 'a'
+        self.value = 'a'
+
+
+class Event(object):
+    def __init__(self, same=False):
+        self.timestamp = time.localtime()
+        self.logical_resource_id = 'a'
+        self.resource_type = 'a'
+        self.resource_status = 'a'
+        self.resource_status_reason = 'a'
+        if same:
+            self.event_id = 1
+        else:
+            self.event_id = random.randint(1, 100)
+
+
+class Stack(object):
+    def __init__(self, ret='CREATE_COMPLETE', same_event=False):
+        self.stack_status = ret
+        self.same_event = same_event
+        self.outputs = [Output(), Output()]
+
+    def describe_events(self):
+        return [Event(self.same_event), Event(self.same_event)]
 
 
 def _mock_search_regions(svc):
@@ -85,6 +116,35 @@ def _mock_return_false(self, cfn, name, data):
 
 def _mock_audit_fails(self, stack, dest, credentials):
     raise AuditException('I fail')
+
+
+def _mock_describe_stack_returns_mock_stack(self, stack):
+    return [Stack()]
+
+
+def _mock_describe_stack_returns_failed_mock_stack(self, stack):
+    return [Stack(ret='CREATE_FAILED')]
+
+
+def _mock_describe_stack_returns_rollback_mock_stack(self, stack):
+    return [Stack(ret='ROLLBACK_COMPLETE')]
+
+
+def _mock_describe_stack_returns_mock_stack_same_event(self, stack):
+    return [Stack(same_event=True)]
+
+
+def _mock_describe_stack_returns_mock_stack_different_status(self, stack):
+    _mock_describe_stack_returns_mock_stack_different_status.counter += 1
+    if _mock_describe_stack_returns_mock_stack_different_status.counter < 2:
+        return [Stack(ret='CREATE_IN_PROGRESS')]
+    return [Stack()]
+
+_mock_describe_stack_returns_mock_stack_different_status.counter = 0
+
+
+def _mock_sleep(sleep_time):
+    pass
 
 
 class TestAWSCFNOutput(object):
@@ -342,3 +402,58 @@ class TestAWSCFNOutput(object):
         )
         sys.stdout = open('/dev/null', 'w')
         assert_equals(True, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
+
+    def test_do_poll_false_returns_true(self):
+        cfno = AWSCFNOutput()
+        assert_equals(True, cfno.do_poll(None, 'test', False))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_returns_mock_stack)
+    def test_do_poll_true_returns_true(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_returns_failed_mock_stack)
+    def test_do_poll_true_returns_false_on_failure(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno.do_poll(cfn, 'test', True))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_returns_rollback_mock_stack)
+    def test_do_poll_true_returns_false_on_rollback(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno.do_poll(cfn, 'test', True))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_returns_mock_stack_same_event)
+    def test_do_poll_true_returns_true_multiple_same_events(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_returns_mock_stack_different_status)
+    @mock.patch('time.sleep', _mock_sleep)
+    def test_do_poll_true_returns_true_multiple_loops(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno.do_poll(cfn, 'test', True))
