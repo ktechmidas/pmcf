@@ -49,6 +49,10 @@ def _mock_parse_file(self, fname, args):
     }
 
 
+def _mock_validate(self):
+    pass
+
+
 def _mock_run_succeeds(self, data, metadata, poll):
     return True
 
@@ -97,6 +101,8 @@ class TestCliCmd(object):
 
     @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.__init__',
                 _mock_cli_init_no_options)
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.validate',
+                _mock_validate)
     @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.parse_file',
                 _mock_parse_file)
     @mock.patch('pmcf.policy.JSONPolicy.__init__',
@@ -136,6 +142,8 @@ class TestCliCmd(object):
                 _mock_cli_init_no_options)
     @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.parse_file',
                 _mock_parse_file)
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.validate',
+                _mock_validate)
     @mock.patch('pmcf.policy.JSONPolicy.__init__',
                 _mock_cli_init_jsonfile_option)
     @mock.patch('pmcf.policy.JSONPolicy.validate_resource',

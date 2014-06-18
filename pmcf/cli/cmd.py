@@ -56,6 +56,7 @@ class PMCFCLI(object):
                 for idx, res in enumerate(v):
                     data = stack['resources'][k][idx]
                     self.policy.validate_resource(k, data)
+            self.parser.validate()
             data = self.output.add_resources(stack['resources'],
                                              stack['config'])
 

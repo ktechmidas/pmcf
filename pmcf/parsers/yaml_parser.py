@@ -126,7 +126,6 @@ class YamlParser(BaseParser):
                 else:
                     instance['sg'].append('default')
 
-        self.validate()
         LOG.debug('stack: %s' % self._stack)
         LOG.info('Finished parsing config')
         return self._stack

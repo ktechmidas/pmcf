@@ -374,7 +374,6 @@ class AWSFWParser(BaseParser):
             raise ParserFailure(e.message)
 
         self.build_ds(data['c4farm'], args)
-        self.validate()
         LOG.debug('stack: %s' % self._stack)
         LOG.info('Finished parsing farm config')
         return self._stack
