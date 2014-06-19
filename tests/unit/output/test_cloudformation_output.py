@@ -17,7 +17,7 @@ import mock
 from nose.tools import assert_equals, assert_raises
 import random
 import sys
-import time
+import datetime
 
 from pmcf.exceptions import AuditException, ProvisionerException
 from pmcf.outputs import AWSCFNOutput
@@ -31,7 +31,7 @@ class Output(object):
 
 class Event(object):
     def __init__(self, same=False):
-        self.timestamp = time.localtime()
+        self.timestamp = datetime.datetime.utcnow()
         self.logical_resource_id = 'a'
         self.resource_type = 'a'
         self.resource_status = 'a'

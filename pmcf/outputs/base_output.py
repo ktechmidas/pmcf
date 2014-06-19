@@ -21,6 +21,7 @@
 """
 
 import abc
+import datetime
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -39,6 +40,13 @@ class BaseOutput(object):
     """
 
     __metaclass__ = abc.ABCMeta
+
+    def __init__(self):
+        """
+        Constructor method.  Just records start time
+        """
+
+        self.start_time = datetime.datetime.utcnow()
 
     @abc.abstractmethod
     def add_resources(self, resources, config):
