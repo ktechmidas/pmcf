@@ -90,10 +90,13 @@ def sort_json(string_data):
         ret += "}"
     elif isinstance(data, list):
         ret += "["
+        seen = False
         for k in data:
+            seen = True
             ret += sort_json(json.dumps(k))
             ret += ", "
-        ret = ret[:-2]
+        if seen:
+            ret = ret[:-2]
         ret += "]"
     else:
         ret += json.dumps(data)
@@ -127,6 +130,7 @@ def make_diff(old, new):
         return COLORS[start] + line + COLORS[end]
 
     old = sort_json(old)
+    new = sort_json(new)
     old = json.dumps(json.loads(old), indent=4)
     new = json.dumps(json.loads(new), indent=4)
 
