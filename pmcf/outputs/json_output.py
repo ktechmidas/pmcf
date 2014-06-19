@@ -37,6 +37,7 @@ class JSONOutput(BaseOutput):
     def add_resources(self, resources, config):
         """
         Creates JSON-formatted string representation of stack resourcs
+        suitable for use with AWS Cloudformation
 
         :param resources: Internal data structure of resources
         :type resources: dict.
@@ -325,7 +326,7 @@ class JSONOutput(BaseOutput):
 
     def run(self, data, metadata={}, poll=False):
         """
-        Prints out stack definition as json-formatted string
+        Pretty-prints stack definition as json-formatted string
 
         :param data: Stack definition
         :type data: str.

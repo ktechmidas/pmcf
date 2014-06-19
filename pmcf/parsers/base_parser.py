@@ -35,6 +35,10 @@ class BaseParser(object):
     """
     Abstract base class for parser classes.
 
+    The PMCF Parser classes are responsible for converting the DSL into the
+    internal data representation.  They also are responsible for validation
+    of the resulting internal data structure.
+
     Only provides an interface, and can not be used directly
     """
 

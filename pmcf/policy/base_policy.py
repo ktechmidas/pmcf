@@ -30,6 +30,9 @@ class BasePolicy(object):
     """
     Abstract base class for policy classes.
 
+    The PMCF Policy classes are responsible for constraining the available
+    resource options and for setting resource defaults.
+
     Only provides an interface, and can not be used directly
     """
 

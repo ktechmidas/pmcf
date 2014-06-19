@@ -30,6 +30,11 @@ class BaseOutput(object):
     """
     Abstract base class for output classes.
 
+    The PMCF Output classes are responsible for converting the internal data
+    structure into a format suitable for use with public and private clouds.
+    The format is then either printed to stdout or used as part of an API
+    call to the cloud provider.
+
     Only provides an interface, and can not be used directly
     """
 

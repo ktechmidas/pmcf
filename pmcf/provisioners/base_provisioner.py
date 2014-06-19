@@ -39,6 +39,9 @@ class BaseProvisioner(object):
     """
     Abstract base class for provisioner classes.
 
+    The PMCF Provisioner classes are responsible for providing userdata and/or
+    cfn-init metadata suitable for use with cfn-init and/or cloud-init.
+
     Only provides an interface, and can not be used directly
     """
 

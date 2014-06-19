@@ -30,6 +30,9 @@ class BaseAudit(object):
     """
     Abstract base class for audit classes.
 
+    The PMCF Audit classes are responsible for transparently logging an audit
+    trail of stack updates and creations.
+
     Only provides an interface, and can not be used directly
     """
 
@@ -39,6 +42,9 @@ class BaseAudit(object):
     def record_stack(self, stack, destination, credentials):
         """
         Abstract base method providing a signature.  Can not be used directly
+
+        In implementation classes, this is the method that would record an
+        audit log.
 
         :param stack: stack definition
         :type stack: str.

@@ -79,7 +79,8 @@ class AWSCFNOutput(JSONOutput):
 
     def _need_iam_caps(self, data):
         """
-        Checks for IAM resources in a stack definition
+        Checks for IAM resources in a stack definition and adds the necessary
+        IAM capabilities to the stack definition if present.
 
         :param data: Stack definition
         :type data: str.
@@ -97,7 +98,8 @@ class AWSCFNOutput(JSONOutput):
 
     def run(self, data, metadata={}, poll=False):
         """
-        Interfaces with public and private cloud providers.
+        Interfaces with public and private cloud providers - responsible for
+        actual stack creation and update in AWS.
 
         :param data: Stack definition
         :type data: str.
@@ -157,7 +159,7 @@ class AWSCFNOutput(JSONOutput):
 
     def do_poll(self, cfn, name, poll):
         """
-        Polls until stack is complete
+        Polls remote API until stack is complete
 
         :param cfn: Cloudformation connection object
         :type cfn: object.
@@ -170,10 +172,10 @@ class AWSCFNOutput(JSONOutput):
         if poll:
             LOG.info('Polling until %s is complete' % name)
             LOG.info('%20s | %30s | %20s | %s' % (
-                'resource_id',
-                'resource_type',
-                'resource_status',
-                'resource_status_reason'))
+                'resource id',
+                'resource type',
+                'resource status',
+                'resource status reason'))
             seen_events = set()
             stack = None
             while True:
