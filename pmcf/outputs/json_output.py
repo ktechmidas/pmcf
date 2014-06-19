@@ -190,7 +190,7 @@ class JSONOutput(BaseOutput):
                     "%sWait" % inst['name'],
                     DependsOn="ASG%s" % inst['name'],
                     Handle=Ref(waithandle),
-                    Count=inst['count'],
+                    Count=1,
                     Timeout=3600
                 ))
 
@@ -224,11 +224,9 @@ class JSONOutput(BaseOutput):
                         inst['provisioner']['args']['infrastructure']
                     ))
                 if inst['provisioner']['args'].get('application'):
-                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
+                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s" % (
                         inst['provisioner']['args']['bucket'],
                         "application",
-                        inst['name'],
-                        config['environment'],
                         inst['provisioner']['args']['application']
                     ))
                 if len(s3_res) > 0:
