@@ -20,6 +20,7 @@
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
+import json
 import logging
 from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
@@ -320,10 +321,7 @@ class JSONOutput(BaseOutput):
             data.add_resource(asg)
 
         LOG.info('Finished building template')
-        indent = None
-        if LOG.isEnabledFor(logging.DEBUG):
-            indent = 4
-        return data.to_json(indent=indent)
+        return data.to_json(indent=None)
 
     def run(self, data, metadata={}, poll=False):
         """
@@ -339,7 +337,10 @@ class JSONOutput(BaseOutput):
         """
 
         LOG.info('Start running data')
-        print data
+        indent = None
+        if LOG.isEnabledFor(logging.DEBUG):
+            indent = 4
+        print json.dumps(json.loads(data), indent=indent)
         LOG.info('Finished running data')
         self.do_audit(data, metadata)
         return True

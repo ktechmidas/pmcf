@@ -1466,4 +1466,4 @@ class TestJSONOutput(object):
 
     def test_run(self):
         sys.stdout = open('/dev/null', 'w')
-        assert_equals(True, JSONOutput().run('', {}))
+        assert_equals(True, JSONOutput().run('{}', {}))

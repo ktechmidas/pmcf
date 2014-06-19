@@ -139,7 +139,6 @@ class AWSCFNOutput(JSONOutput):
                     if not self._show_prompt(cfn, metadata['name'], data):
                         return True
 
-                data = json.dumps(json.loads(data))
                 cfn.validate_template(data)
                 cfn.update_stack(metadata['name'], data,
                                  capabilities=capabilities, tags=tags)
