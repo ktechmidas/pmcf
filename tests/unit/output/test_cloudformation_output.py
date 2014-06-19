@@ -30,8 +30,13 @@ class Output(object):
 
 
 class Event(object):
-    def __init__(self, same=False):
-        self.timestamp = datetime.datetime.utcnow()
+    def __init__(self, same=False, in_past=False):
+        if in_past:
+            self.timestamp = datetime.datetime.utcnow() -\
+                datetime.timedelta(random.random())
+        else:
+            self.timestamp = datetime.datetime.utcnow() +\
+                datetime.timedelta(random.random())
         self.logical_resource_id = 'a'
         self.resource_type = 'a'
         self.resource_status = 'a'
@@ -43,13 +48,16 @@ class Event(object):
 
 
 class Stack(object):
-    def __init__(self, ret='CREATE_COMPLETE', same_event=False):
+    def __init__(self, ret='CREATE_COMPLETE',
+                 same_event=False, in_past=False):
         self.stack_status = ret
         self.same_event = same_event
+        self.in_past = in_past
         self.outputs = [Output(), Output()]
 
     def describe_events(self):
-        return [Event(self.same_event), Event(self.same_event)]
+        return [Event(self.same_event, self.in_past),
+                Event(self.same_event, self.in_past)]
 
 
 def _mock_search_regions(svc):
@@ -132,6 +140,10 @@ def _mock_describe_stack_returns_rollback_mock_stack(self, stack):
 
 def _mock_describe_stack_returns_mock_stack_same_event(self, stack):
     return [Stack(same_event=True)]
+
+
+def _mock_describe_stack_returns_mock_stack_old_events(self, stack):
+    return [Stack(in_past=True)]
 
 
 def _mock_describe_stack_returns_mock_stack_different_status(self, stack):
@@ -440,6 +452,16 @@ class TestAWSCFNOutput(object):
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_same_event)
     def test_do_poll_true_returns_true_multiple_same_events(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_returns_mock_stack_old_events)
+    def test_do_poll_true_returns_true_multiple_old_events(self):
         cfno = AWSCFNOutput()
         cfn = boto.connect_cloudformation(
             aws_access_key_id='access',
