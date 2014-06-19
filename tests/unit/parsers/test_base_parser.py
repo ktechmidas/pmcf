@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nose.tools import assert_raises
+from nose.tools import assert_equals, assert_raises
 
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers import BaseParser
@@ -40,3 +40,13 @@ class TestBaseParser(object):
 
     def test_parse_file_missing_file_raises(self):
         assert_raises(ParserFailure, self.parser.parse_file, 'missing')
+
+    def test_parse_file_raises(self):
+        assert_raises(NotImplementedError, self.parser.parse_file, 'README.md')
+
+    def test_validate_succeeds(self):
+        assert_equals(None, self.parser.validate())
+
+    def test_validate_fails_on_bad_schema(self):
+        self.parser._stack['monkey'] = 'business'
+        assert_raises(ParserFailure, self.parser.validate)
