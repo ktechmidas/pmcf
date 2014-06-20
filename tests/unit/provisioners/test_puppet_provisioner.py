@@ -97,7 +97,14 @@ class TestPuppetProvisioner(object):
                                 "test",
                                 "dev",
                                 args['infrastructure'],
-                            )
+                            ),
+                        "/etc/puppet":
+                            "https://%s.%s/artifacts/%s/%s" % (
+                                args['bucket'],
+                                "s3.amazonaws.com",
+                                "infrastructure",
+                                'hiera.tar.gz',
+                            ),
                     }
                 }
             },

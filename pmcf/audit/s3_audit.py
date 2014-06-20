@@ -48,8 +48,8 @@ class S3Audit(BaseAudit):
         :raises: :class:`pmcf.exceptions.AuditException`
         """
 
-        LOG.debug('recording stack definition to s3://%s/%s' %
-                  (credentials['audit_output'], destination))
+        LOG.info('recording stack definition to s3://%s/%s' % (
+            credentials['audit_output'], destination))
         try:
             s3 = boto.connect_s3(
                 aws_access_key_id=credentials['access'],
@@ -63,7 +63,7 @@ class S3Audit(BaseAudit):
                 boto.exception.BotoServerError), e:
             raise AuditException(e)
 
-        LOG.debug('Audit logging successful')
+        LOG.info('Audit logging successful')
         return True
 
 

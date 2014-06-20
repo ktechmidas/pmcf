@@ -155,6 +155,12 @@ class PuppetProvisioner(BaseProvisioner):
             init['configSets']['startup'].append('infra')
             init['infra'] = {
                 "sources": {
+                    "/etc/puppet": "https://%s.%s/%s/%s/hiera.tar.gz" % (
+                        args['bucket'],
+                        "s3.amazonaws.com",
+                        "artifacts",
+                        "infrastructure",
+                    ),
                     "/var/tmp/puppet": "https://%s.%s/%s/%s/%s/%s/%s" % (
                         args['bucket'],
                         "s3.amazonaws.com",

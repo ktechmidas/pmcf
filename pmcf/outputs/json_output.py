@@ -223,6 +223,11 @@ class JSONOutput(BaseOutput):
                         config['environment'],
                         inst['provisioner']['args']['infrastructure']
                     ))
+                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s" % (
+                        inst['provisioner']['args']['bucket'],
+                        "infrastructure",
+                        "hiera.tar.gz"
+                    ))
                 if inst['provisioner']['args'].get('application'):
                     s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s" % (
                         inst['provisioner']['args']['bucket'],
