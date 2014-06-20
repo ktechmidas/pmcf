@@ -59,48 +59,61 @@ class PuppetProvisioner(BaseProvisioner):
         """
 
         script = [
-            "#!/bin/bash\n",
-            "error_exit() {\n",
-            "  cfn-signal -e 1 -r " + args['name'] + " '",
+            '#!/bin/bash\n',
+            'error_exit() {\n',
+            '   cfn-signal -e 1 -r "$1" \'',
             Ref(args['WaitHandle']),
-            "'\n",
-            "  exit 1\n",
-            "}\n",
-            "apt-get -y install python-setuptools\n",
-            "easy_install https://s3.amazonaws.com/cloudformation-examples/",
-            "aws-cfn-bootstrap-latest.tar.gz\n",
-            "ret=0\n",
-            "cfn-init --region ",
+            '\'\n',
+            '   exit 1\n',
+            '}\n\n',
+            'err=""\n',
+            'apt-get -y install python-setuptools\n',
+            'easy_install https://s3.amazonaws.com/cloudformation-examples/',
+            'aws-cfn-bootstrap-latest.tar.gz\n',
+            'cfn-init --region ',
             Ref("AWS::Region"),
-            " -c startup -s ",
+            ' -c startup -s ',
             Ref("AWS::StackId"),
-            " -r LC" + args['name'],
-            " || error_exit 'Failed to run cfn-init'\n",
+            ' -r LC%s' % args['name'],
+            ' || error_exit "Failed to run cfn-init"\n',
+            '\nret=0\n',
         ]
+
         if args.get('infrastructure'):
             script.extend([
-                "for i in `seq 1 5`; do\n",
-                "  puppet apply --modulepath /var/tmp/puppet/modules ",
-                "/var/tmp/puppet/manifests/site.pp\n",
-                "ret=$?\n",
-                "test $ret != 0 || break\n",
-                "done\n",
+                'for i in `seq 1 5`; do\n',
+                '   puppet apply --modulepath /var/tmp/puppet/modules ',
+                '/var/tmp/puppet/manifests/site.pp\n',
+                '   ret=$?\n',
+                '   test $ret != 0 || break\n',
+                'done\n\n',
+                'if test $ret != 0; then\n',
+                '   err="Failed to run puppet"\n',
+                'fi\n',
             ])
+
         if args.get('application'):
             script.extend([
-                "/srv/apps/bin/deploy deploy %s %s\n" % (
+                '\n/srv/apps/bin/deploy deploy %s %s\n' % (
                     args['name'],
-                    args['infrastructure']),
-                "ret=$(($ret|$?))\n",
+                    args['application']
+                ),
+                'ret=$(($ret|$?))\n',
+                'err="$err Failed to install application"\n',
             ])
 
         script.extend([
-            "test $ret = 0 || sleep 3600\n",
-            "cfn-signal -e $ret -r " + args['name'] + " '",
+            '\nif test "$ret" != 0; then\n',
+            '   sleep 3600\n',
+            '   error_exit "$err"\n',
+            'else\n',
+            '   cfn-signal -e $ret -r Success \'',
             Ref(args['WaitHandle']),
             "'\n",
-            "rm -rf /var/tmp/puppet\n",
+            'fi\n',
+            'rm -rf /var/tmp/puppet\n',
         ])
+
         return Join('', script)
 
     def cfn_init(self, args):

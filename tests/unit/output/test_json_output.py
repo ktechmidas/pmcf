@@ -1353,7 +1353,7 @@ class TestJSONOutput(object):
                             "Ref": "appHandle"
                         },
                         "Timeout": 3600,
-                        "Count": 6,
+                        "Count": 1,
                     },
                     "Type": "AWS::CloudFormation::WaitCondition"
                 }

@@ -27,45 +27,42 @@ class TestPuppetProvisioner(object):
         }
         uri = "https://s3.amazonaws.com/cloudformation-examples/"
         script = {
-            "Fn::Join": [
-                "",
+            'Fn::Join': [
+                '',
                 [
-                    "#!/bin/bash\n",
-                    "error_exit() {\n",
-                    "  cfn-signal -e 1 -r test '",
-                    {
-                        "Ref": "blah"
-                    },
+                    '#!/bin/bash\n',
+                    'error_exit() {\n',
+                    '   cfn-signal -e 1 -r "$1" \'',
+                    {'Ref': 'blah'},
                     "'\n",
-                    "  exit 1\n",
-                    "}\n",
-                    "apt-get -y install python-setuptools\n",
-                    "easy_install " + uri,
-                    "aws-cfn-bootstrap-latest.tar.gz\n",
-                    "ret=0\n",
-                    "cfn-init --region ",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    " -c bootstrap -s ",
-                    {
-                        "Ref": "AWS::StackId"
-                    },
-                    " -r LCtest",
-                    " || error_exit 'Failed to run cfn-init'\n",
-                    "test $ret = 0 || sleep 3600\n",
-                    "cfn-signal -e $ret -r test '",
-                    {
-                        "Ref": "blah"
-                    },
+                    '   exit 1\n',
+                    '}\n\n',
+                    'err=""\n',
+                    'apt-get -y install python-setuptools\n',
+                    'easy_install ' + uri,
+                    'aws-cfn-bootstrap-latest.tar.gz\n',
+                    'cfn-init --region ',
+                    {'Ref': 'AWS::Region'},
+                    ' -c startup -s ',
+                    {'Ref': 'AWS::StackId'},
+                    ' -r LCtest',
+                    ' || error_exit "Failed to run cfn-init"\n',
+                    '\nret=0\n',
+                    '\nif test "$ret" != 0; then\n',
+                    '   sleep 3600\n',
+                    '   error_exit "$err"\n',
+                    'else\n',
+                    "   cfn-signal -e $ret -r Success '",
+                    {'Ref': 'blah'},
                     "'\n",
-                    "rm -rf /var/tmp/puppet\n"
+                    'fi\n',
+                    'rm -rf /var/tmp/puppet\n'
                 ]
             ]
         }
-
         data = PuppetProvisioner().userdata(args)
         data = json.loads(json.dumps(data, cls=awsencode))
+        print data
         assert_equals(data, script)
 
     def test_ci_contains_expected_data(self):
@@ -88,8 +85,7 @@ class TestPuppetProvisioner(object):
                     }
                 },
                 "configSets": {
-                    "bootstrap": ["bootstrap"],
-                    "infra": ["infra"],
+                    "startup": ["bootstrap", "infra"],
                 },
                 "infra": {
                     "sources": {
