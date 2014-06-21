@@ -35,6 +35,7 @@ Valid keys for a section in the config file are and their defaults are::
 
     audit = NoopAudit
     audit_output = None
+    action = create
     output = BaseOutput
     parser = BaseParser
     policy = BasePolicy
@@ -147,6 +148,11 @@ Config file values:
     Whether to poll until stack creation/update completes.  Typically would be
     passed on the command line, but is valid in the configuration file.
     Defaults to False
+
+:action:
+    What action to take on the resulting stack definition.  Typically would be
+    passed on the command line, but is valid in the configuration file.
+    Defaults to 'create'
 
 
 A full sample config file::
