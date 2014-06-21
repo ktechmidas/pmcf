@@ -58,6 +58,7 @@ def main():
                         help="alternate config file")
     parser.add_argument("-a", "--action",
                         default='create',
+                        choices=['create', 'update', 'delete'],
                         help="action (one of create, update, or delete)")
     parser.add_argument("--poll",
                         default=False,

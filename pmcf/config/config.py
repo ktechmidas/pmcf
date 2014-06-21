@@ -53,6 +53,7 @@ class PMCFConfig(object):
             self.profile_name = "profile " + profile_name
 
         self.options = {
+            'action': 'create',
             'audit': 'NoopAudit',
             'audit_output': None,
             'output': 'BaseOutput',
