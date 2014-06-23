@@ -42,7 +42,12 @@ class AccessKey(iam.AccessKey):
 
 
 class Group(iam.Group):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Path'):
+            if self.properties['Path'][0] != '/' and\
+                    self.properties['Path'][-1] != '/':
+                error(self, "Path must begin and end with `/`")
 
 
 class InstanceProfile(iam.InstanceProfile):
@@ -52,9 +57,21 @@ class InstanceProfile(iam.InstanceProfile):
         except ValueError, e:
             error(self, e.message)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Path'):
+            if self.properties['Path'][0] != '/' and\
+                    self.properties['Path'][-1] != '/':
+                error(self, "Path must begin and end with `/`")
+
 
 class LoginProfile(iam.LoginProfile):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Path'):
+            if self.properties['Path'][0] != '/' and\
+                    self.properties['Path'][-1] != '/':
+                error(self, "Path must begin and end with `/`")
 
 
 class Policy(iam.Policy):
@@ -72,6 +89,13 @@ class PolicyType(iam.PolicyType):
         except ValueError, e:
             error(self, e.message)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Path'):
+            if self.properties['Path'][0] != '/' and\
+                    self.properties['Path'][-1] != '/':
+                error(self, "Path must begin and end with `/`")
+
 
 class Role(iam.Role):
     def JSONrepr(self):
@@ -80,9 +104,21 @@ class Role(iam.Role):
         except ValueError, e:
             error(self, e.message)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Path'):
+            if self.properties['Path'][0] != '/' and\
+                    self.properties['Path'][-1] != '/':
+                error(self, "Path must begin and end with `/`")
+
 
 class User(iam.User):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if self.properties.get('Path'):
+            if self.properties['Path'][0] != '/' and\
+                    self.properties['Path'][-1] != '/':
+                error(self, "Path must begin and end with `/`")
 
 
 class UserToGroupAddition(iam.UserToGroupAddition):

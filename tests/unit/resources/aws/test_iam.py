@@ -63,13 +63,13 @@ class TestIAMResource(TestResource):
     def test_group_valid_path(self):
         data = {
             'Properties': {
-                'Path': 'groups/blah'
+                'Path': '/groups/blah/'
             },
             'Type': u'AWS::IAM::Group'
         }
         g = iam.Group(
             'test',
-            Path='groups/blah'
+            Path='/groups/blah/'
         )
         assert_equals(self._data_for_resource(g), data)
 
