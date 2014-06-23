@@ -53,11 +53,11 @@ def _mock_validate(self):
     pass
 
 
-def _mock_run_succeeds(self, data, metadata, poll):
+def _mock_run_succeeds(self, data, metadata, poll, action):
     return True
 
 
-def _mock_run_fails(self, data, metadata, poll):
+def _mock_run_fails(self, data, metadata, poll, action):
     raise PropertyException('test')
 
 
@@ -134,6 +134,7 @@ class TestCliCmd(object):
             'region': 'eu-west-1',
             'audit': 'NoopAudit',
             'audit_output': 'foobar',
+            'action': 'create',
         }
         cli = PMCFCLI(options)
         assert_equals(False, cli.run())

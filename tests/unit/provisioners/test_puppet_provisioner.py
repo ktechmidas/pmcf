@@ -24,6 +24,8 @@ class TestPuppetProvisioner(object):
         args = {
             'name': 'test',
             'WaitHandle': 'blah',
+            'infrastructure': 'foo.zip',
+            'application': 'bar.zip',
         }
         uri = "https://s3.amazonaws.com/cloudformation-examples/"
         script = {
@@ -48,6 +50,18 @@ class TestPuppetProvisioner(object):
                     ' -r LCtest',
                     ' || error_exit "Failed to run cfn-init"\n',
                     '\nret=0\n',
+                    'for i in `seq 1 5`; do\n',
+                    '   puppet apply --modulepath /var/tmp/puppet/modules ',
+                    '/var/tmp/puppet/manifests/site.pp\n',
+                    '   ret=$?\n',
+                    '   test $ret != 0 || break\n',
+                    'done\n\n',
+                    'if test $ret != 0; then\n',
+                    '   err="Failed to run puppet"\n',
+                    'fi\n',
+                    '\n/srv/apps/bin/deploy deploy test bar.zip\n',
+                    'ret=$(($ret|$?))\n',
+                    'err="$err Failed to install application"\n',
                     '\nif test "$ret" != 0; then\n',
                     '   sleep 3600\n',
                     '   error_exit "$err"\n',
@@ -62,7 +76,6 @@ class TestPuppetProvisioner(object):
         }
         data = PuppetProvisioner().userdata(args)
         data = json.loads(json.dumps(data, cls=awsencode))
-        print data
         assert_equals(data, script)
 
     def test_ci_contains_expected_data(self):

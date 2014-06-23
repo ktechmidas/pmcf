@@ -1263,6 +1263,7 @@ class TestJSONOutput(object):
     @mock.patch('pmcf.provisioners.PuppetProvisioner.userdata', _mock_ud)
     def test_instance_valid_puppet(self):
         out = JSONOutput()
+        b = 'arn:aws:s3:::test/artifacts/'
         ret = {
             "AWSTemplateFormatVersion": "2010-09-09",
             "Description": "test test stack",
@@ -1309,6 +1310,25 @@ class TestJSONOutput(object):
                         },
                     },
                     "Type": "AWS::AutoScaling::LaunchConfiguration"
+                },
+                'Policyapp': {
+                    'Properties': {
+                        'PolicyDocument': {
+                            'Statement': [{
+                                'Action': ['s3:GetObject'],
+                                'Effect': 'Allow',
+                                'Resource': [
+                                    b + 'infrastructure/app/test/foo.zip',
+                                    b + 'infrastructure/hiera.tar.gz',
+                                    b + 'application/bar.zip'
+                                ]
+                            }],
+                            'Version': '2012-10-17'
+                        },
+                        'PolicyName': 'iam-app-test',
+                        'Roles': [{'Ref': 'Roleapp'}]
+                    },
+                    'Type': 'AWS::IAM::Policy'
                 },
                 "Profileapp": {
                     "Properties": {
@@ -1375,8 +1395,13 @@ class TestJSONOutput(object):
                 'monitoring': False,
                 'name': 'app',
                 'provisioner': {
-                    'args': {},
-                    'provider': 'PuppetProvisioner'},
+                    'args': {
+                        'infrastructure': 'foo.zip',
+                        'application': 'bar.zip',
+                        'bucket': 'test',
+                    },
+                    'provider': 'PuppetProvisioner',
+                },
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'

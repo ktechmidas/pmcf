@@ -21,6 +21,7 @@ class TestPMCFConfig(object):
     def test_create_succeeds(self):
         cfg = PMCFConfig('/etc/testfile', 'testprofile', {})
         opts = {
+            'action': 'create',
             'debug': None,
             'instance_accesskey': None,
             'instance_secretkey': None,
@@ -50,6 +51,7 @@ class TestPMCFConfig(object):
         cfg = PMCFConfig('tests/data/etc/pmcf.conf', 'default', {})
 
         opts = {
+            'action': 'create',
             'debug': None,
             'instance_accesskey': None,
             'instance_secretkey': None,

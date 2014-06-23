@@ -36,7 +36,7 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
     tagging policy.
     """
 
-    def run(self, data, metadata={}, poll=False):
+    def run(self, data, metadata={}, poll=False, action='create'):
         """
         Interfaces with public and private cloud providers.
 
@@ -49,6 +49,8 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         :type metadata: dict.
         :param poll: Whether to poll until completion
         :type poll: boolean.
+        :param action: Action to take on the stack
+        :type action: str.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: boolean
         """
