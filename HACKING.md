@@ -41,6 +41,6 @@ purely from the venv), do the following:
   * echo '{}' > .local/policy.json
 
 * Run with your local config:
-  * PYTHONNPATH=. tools/with_venv.sh python pmcf/cli/cli.py -v \
+  * PYTHONPATH=. tools/with_venv.sh python pmcf/cli/cli.py -v \
     -c .local/pmcf.conf -P .local/policy.json \
     -p sequoia -e infra --poll buildhelper.yaml
