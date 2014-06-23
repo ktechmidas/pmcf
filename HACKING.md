@@ -31,3 +31,16 @@ To create or update the virtual environment and populate it with the
 dependencies necessary to run tests and builds of the software, run
 ``./tools/install_venv.sh -f``
 This can be run independently of running the test suite to refresh the venv
+
+To run the script without installing dependencies on your system (that is,
+purely from the venv), do the following:
+
+* Create a local config file (and optionally policy file):
+  * cp tests/data/etc/pmcf.conf .local
+  * $EDITOR .local/pmcf.conf - adjust to suit your needs
+  * echo '{}' > .local/policy.json
+
+* Run with your local config:
+  * PYTHONNPATH=. tools/with_venv.sh python pmcf/cli/cli.py -v \
+    -c .local/pmcf.conf -P .local/policy.json \
+    -p sequoia -e infra --poll buildhelper.yaml
