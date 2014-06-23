@@ -306,7 +306,7 @@ class JSONOutput(BaseOutput):
             inst['min'] = inst.get('min', inst['count'])
             inst['max'] = inst.get('max', inst['count'])
             asgargs = {
-                'AvailabilityZones': GetAZs(''),
+                'AvailabilityZones': inst.get('zones', GetAZs('')),
                 'DesiredCapacity': inst['count'],
                 'LaunchConfigurationName': Ref(lc),
                 'MaxSize': inst['min'],

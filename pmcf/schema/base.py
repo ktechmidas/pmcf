@@ -105,6 +105,8 @@ definitions:
                 type: string
             size:
                 type: string
+            zones:
+                type: array
         required:
             - count
             - image
