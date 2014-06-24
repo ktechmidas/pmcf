@@ -124,6 +124,9 @@ class TestPuppetProvisioner(object):
                                        "/var/tmp/puppet/modules "
                                        "/var/tmp/puppet/manifests/site.pp",
                             "env": {
+                                "FACTER_ec2_region": {"Ref": "AWS::Region"},
+                                "FACTER_ec2_resource": "test",
+                                "FACTER_ec2_stack": {"Ref": "AWS::StackId"},
                                 "FACTER_stage": "dev",
                                 "FACTER_app": "test"
                             }
@@ -167,4 +170,5 @@ class TestPuppetProvisioner(object):
         }
 
         data = PuppetProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
         assert_equals(data, ci_data)

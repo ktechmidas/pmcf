@@ -153,6 +153,9 @@ class PuppetProvisioner(BaseProvisioner):
                         "env": {
                             "FACTER_app": args['name'],
                             "FACTER_stage": args['environment'],
+                            "FACTER_ec2_region": Ref("AWS::Region"),
+                            "FACTER_ec2_resource": args['name'],
+                            "FACTER_ec2_stack": Ref("AWS::StackId"),
                         }
                     },
                     "02-clean_puppet": {
