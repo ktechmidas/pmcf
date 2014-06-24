@@ -25,52 +25,44 @@ class TestPuppetProvisioner(object):
             'name': 'test',
             'WaitHandle': 'blah',
             'infrastructure': 'foo.zip',
-            'application': 'bar.zip',
         }
         uri = "https://s3.amazonaws.com/cloudformation-examples/"
+
         script = {
-            'Fn::Join': [
-                '',
+            "Fn::Join": [
+                "",
                 [
-                    '#!/bin/bash\n',
-                    'error_exit() {\n',
-                    '   cfn-signal -e 1 -r "$1" \'',
-                    {'Ref': 'blah'},
+                    "#!/bin/bash\n",
+                    "error_exit() {\n",
+                    "   cfn-signal -e 1 -r \"$1\" '",
+                    {
+                        "Ref": "blah"
+                    },
                     "'\n",
-                    '   exit 1\n',
-                    '}\n\n',
-                    'err=""\n',
-                    'apt-get -y install python-setuptools\n',
-                    'easy_install ' + uri,
-                    'aws-cfn-bootstrap-latest.tar.gz\n',
-                    'cfn-init --region ',
-                    {'Ref': 'AWS::Region'},
-                    ' -c startup -s ',
-                    {'Ref': 'AWS::StackId'},
-                    ' -r LCtest',
-                    ' || error_exit "Failed to run cfn-init"\n',
-                    '\nret=0\n',
-                    'for i in `seq 1 5`; do\n',
-                    '   puppet apply --modulepath /var/tmp/puppet/modules ',
-                    '/var/tmp/puppet/manifests/site.pp\n',
-                    '   ret=$?\n',
-                    '   test $ret != 0 || break\n',
-                    'done\n\n',
-                    'if test $ret != 0; then\n',
-                    '   err="Failed to run puppet"\n',
-                    'fi\n',
-                    '\n/srv/apps/bin/deploy deploy test bar.zip\n',
-                    'ret=$(($ret|$?))\n',
-                    'err="$err Failed to install application"\n',
-                    '\nif test "$ret" != 0; then\n',
-                    '   sleep 3600\n',
-                    '   error_exit "$err"\n',
-                    'else\n',
-                    "   cfn-signal -e $ret -r Success '",
-                    {'Ref': 'blah'},
+                    "   exit 1\n",
+                    "}\n\n",
+                    "err=\"\"\n",
+                    "apt-get -y install python-setuptools\n",
+                    "easy_install %s" % uri,
+                    "aws-cfn-bootstrap-latest.tar.gz\n",
+                    "if cfn-init --region ",
+                    {
+                        "Ref": "AWS::Region"
+                    },
+                    " -c startup -s ",
+                    {
+                        "Ref": "AWS::StackId"
+                    },
+                    " -r LCtest",
+                    "; then\n",
+                    "cfn-signal -e 0 -r Success '",
+                    {
+                        "Ref": "blah"
+                    },
                     "'\n",
-                    'fi\n',
-                    'rm -rf /var/tmp/puppet\n'
+                    "else\n",
+                    "    error_exit \"Failed to run cfn-init\"\n",
+                    "fi\n"
                 ]
             ]
         }
@@ -81,6 +73,7 @@ class TestPuppetProvisioner(object):
     def test_ci_contains_expected_data(self):
         args = {
             'infrastructure': 'zip.tgz',
+            'application': 'bar.zip',
             'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
@@ -88,19 +81,23 @@ class TestPuppetProvisioner(object):
         }
 
         ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3",
+                    "buckets": [args['bucket']],
+                    "roleName": args['role'],
+                }
+            },
             "AWS::CloudFormation::Init": {
                 "bootstrap": {
                     "packages": {
                         "apt": {
-                            "puppet": [],
                             "python-boto": [],
+                            "puppet": []
                         }
                     }
                 },
-                "configSets": {
-                    "startup": ["bootstrap", "infra"],
-                },
-                "infra": {
+                "infraLoad": {
                     "sources": {
                         "/var/tmp/puppet":
                             "https://%s.%s/artifacts/%s/%s/%s/%s" % (
@@ -119,13 +116,52 @@ class TestPuppetProvisioner(object):
                                 'hiera.tar.gz',
                             ),
                     }
-                }
-            },
-            "AWS::CloudFormation::Authentication": {
-                "rolebased": {
-                    "type": "s3",
-                    "buckets": [args['bucket']],
-                    "roleName": args['role'],
+                },
+                "infraPuppetRun": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "/var/tmp/puppet/manifests/site.pp",
+                            "env": {
+                                "FACTER_stage": "dev",
+                                "FACTER_app": "test"
+                            }
+                        },
+                        "02-clean_puppet": {
+                            "command": "rm -rf /var/tmp/puppet"
+                        }
+                    }
+                },
+                "deployRun": {
+                    "commands": {
+                        "01-run_deploy": {
+                            "command": "/srv/apps/bin/deploy %s %s %s %s" % (
+                                "deploy",
+                                args['name'],
+                                args['environment'],
+                                args['application']
+                            )
+                        }
+                    }
+                },
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "infra"
+                        },
+                        {
+                            "ConfigSet": "app"
+                        }
+                    ],
+                    "infra": [
+                        "infraLoad",
+                        "infraPuppetRun"
+                    ],
+                    "app": [
+                        "deployRun"
+                    ],
                 }
             }
         }

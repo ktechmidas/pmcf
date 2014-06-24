@@ -54,7 +54,6 @@ class PuppetProvisioner(BaseProvisioner):
 
         :param args: provisioner arguments
         :type args: dict.
-        :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: str.
         """
 
@@ -70,49 +69,19 @@ class PuppetProvisioner(BaseProvisioner):
             'apt-get -y install python-setuptools\n',
             'easy_install https://s3.amazonaws.com/cloudformation-examples/',
             'aws-cfn-bootstrap-latest.tar.gz\n',
-            'cfn-init --region ',
+            'if cfn-init --region ',
             Ref("AWS::Region"),
             ' -c startup -s ',
             Ref("AWS::StackId"),
             ' -r LC%s' % args['name'],
-            ' || error_exit "Failed to run cfn-init"\n',
-            '\nret=0\n',
-        ]
-
-        if args.get('infrastructure'):
-            script.extend([
-                'for i in `seq 1 5`; do\n',
-                '   puppet apply --modulepath /var/tmp/puppet/modules ',
-                '/var/tmp/puppet/manifests/site.pp\n',
-                '   ret=$?\n',
-                '   test $ret != 0 || break\n',
-                'done\n\n',
-                'if test $ret != 0; then\n',
-                '   err="Failed to run puppet"\n',
-                'fi\n',
-            ])
-
-        if args.get('application'):
-            script.extend([
-                '\n/srv/apps/bin/deploy deploy %s %s\n' % (
-                    args['name'],
-                    args['application']
-                ),
-                'ret=$(($ret|$?))\n',
-                'err="$err Failed to install application"\n',
-            ])
-
-        script.extend([
-            '\nif test "$ret" != 0; then\n',
-            '   sleep 3600\n',
-            '   error_exit "$err"\n',
-            'else\n',
-            '   cfn-signal -e $ret -r Success \'',
+            '; then\n',
+            'cfn-signal -e 0 -r Success \'',
             Ref(args['WaitHandle']),
-            "'\n",
+            '\'\n',
+            'else\n',
+            '    error_exit "Failed to run cfn-init"\n',
             'fi\n',
-            'rm -rf /var/tmp/puppet\n',
-        ])
+        ]
 
         return Join('', script)
 
@@ -124,13 +93,12 @@ class PuppetProvisioner(BaseProvisioner):
         :type config: dict.
         :param args: instance definition
         :type args: dict.
-        :raises: :class:`NotImplementedError`
         :returns: dict.
         """
 
         init = {
             "configSets": {
-                "startup": ["bootstrap"]
+                "startup": ["bootstrap"],
             },
             "bootstrap": {
                 "packages": {
@@ -152,8 +120,12 @@ class PuppetProvisioner(BaseProvisioner):
         }
 
         if args.get('infrastructure'):
-            init['configSets']['startup'].append('infra')
-            init['infra'] = {
+            init['configSets']['infra'] = [
+                'infraLoad',
+                'infraPuppetRun',
+            ]
+            init['configSets']['startup'].append({"ConfigSet": "infra"})
+            init['infraLoad'] = {
                 "sources": {
                     "/etc/puppet": "https://%s.%s/%s/%s/hiera.tar.gz" % (
                         args['bucket'],
@@ -170,6 +142,39 @@ class PuppetProvisioner(BaseProvisioner):
                         args['environment'],
                         args['infrastructure']
                     )
+                }
+            }
+            init['infraPuppetRun'] = {
+                "commands": {
+                    "01-run_puppet": {
+                        "command": "puppet apply --modulepath " +
+                                   "/var/tmp/puppet/modules " +
+                                   "/var/tmp/puppet/manifests/site.pp",
+                        "env": {
+                            "FACTER_app": args['name'],
+                            "FACTER_stage": args['environment'],
+                        }
+                    },
+                    "02-clean_puppet": {
+                        "command": "rm -rf /var/tmp/puppet"
+                    }
+                }
+            }
+
+        if args.get('application'):
+            init['configSets']['app'] = [
+                'deployRun',
+            ]
+            init['configSets']['startup'].append({"ConfigSet": "app"})
+            init['deployRun'] = {
+                "commands": {
+                    "01-run_deploy": {
+                        "command": "/srv/apps/bin/deploy deploy %s %s %s" % (
+                            args['name'],
+                            args['environment'],
+                            args['application']
+                        )
+                    }
                 }
             }
 
