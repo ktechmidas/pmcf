@@ -73,6 +73,20 @@ class TestIAMResource(TestResource):
         )
         assert_equals(self._data_for_resource(g), data)
 
+    def test_group_invalid_bad_path_start(self):
+        g = iam.Group(
+            'test',
+            Path='groups/blah/'
+        )
+        assert_raises(PropertyException, g.JSONrepr)
+
+    def test_group_invalid_bad_path_end(self):
+        g = iam.Group(
+            'test',
+            Path='/groups/blah'
+        )
+        assert_raises(PropertyException, g.JSONrepr)
+
     def test_instance_profile_valid(self):
         data = {
             'Properties': {
@@ -87,6 +101,22 @@ class TestIAMResource(TestResource):
             Roles=['a', 'b']
         )
         assert_equals(self._data_for_resource(ip), data)
+
+    def test_instance_profile_invalid_bad_path_start(self):
+        ip = iam.InstanceProfile(
+            'test',
+            Path='foo/bar/',
+            Roles=['a', 'b']
+        )
+        assert_raises(PropertyException, ip.JSONrepr)
+
+    def test_instance_profile_invalid_bad_path_end(self):
+        ip = iam.InstanceProfile(
+            'test',
+            Path='/foo/bar',
+            Roles=['a', 'b']
+        )
+        assert_raises(PropertyException, ip.JSONrepr)
 
     def test_instance_profile_invalid_no_path(self):
         ip = iam.InstanceProfile(
@@ -179,6 +209,22 @@ class TestIAMResource(TestResource):
         )
         assert_raises(PropertyException, r.JSONrepr)
 
+    def test_role_invalid_bad_path_start(self):
+        r = iam.Role(
+            'test',
+            Path='foo/bar/',
+            AssumeRolePolicyDocument={'a': 'b'},
+        )
+        assert_raises(PropertyException, r.JSONrepr)
+
+    def test_role_invalid_bad_path_end(self):
+        r = iam.Role(
+            'test',
+            Path='/foo/bar',
+            AssumeRolePolicyDocument={'a': 'b'},
+        )
+        assert_raises(PropertyException, r.JSONrepr)
+
     def test_role_invalid_no_path(self):
         r = iam.Role(
             'test',
@@ -198,6 +244,20 @@ class TestIAMResource(TestResource):
             Path='/'
         )
         assert_equals(self._data_for_resource(u), data)
+
+    def test_user_invalid_bad_path_start(self):
+        r = iam.User(
+            'test',
+            Path='foo/bar/',
+        )
+        assert_raises(PropertyException, r.JSONrepr)
+
+    def test_user_invalid_bad_path_end(self):
+        r = iam.User(
+            'test',
+            Path='/foo/bar',
+        )
+        assert_raises(PropertyException, r.JSONrepr)
 
     def test_user_to_group_addition_valid(self):
         data = {

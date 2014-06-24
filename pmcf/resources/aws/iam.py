@@ -45,8 +45,8 @@ class Group(iam.Group):
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('Path'):
-            if self.properties['Path'][0] != '/' and\
-                    self.properties['Path'][-1] != '/':
+            if not (self.properties['Path'].startswith('/') and
+                    self.properties['Path'].endswith('/')):
                 error(self, "Path must begin and end with `/`")
 
 
@@ -60,18 +60,13 @@ class InstanceProfile(iam.InstanceProfile):
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('Path'):
-            if self.properties['Path'][0] != '/' and\
-                    self.properties['Path'][-1] != '/':
+            if not (self.properties['Path'].startswith('/') and
+                    self.properties['Path'].endswith('/')):
                 error(self, "Path must begin and end with `/`")
 
 
 class LoginProfile(iam.LoginProfile):
-    def validate(self):
-        super(self.__class__, self).validate()
-        if self.properties.get('Path'):
-            if self.properties['Path'][0] != '/' and\
-                    self.properties['Path'][-1] != '/':
-                error(self, "Path must begin and end with `/`")
+    pass
 
 
 class Policy(iam.Policy):
@@ -89,13 +84,6 @@ class PolicyType(iam.PolicyType):
         except ValueError, e:
             error(self, e.message)
 
-    def validate(self):
-        super(self.__class__, self).validate()
-        if self.properties.get('Path'):
-            if self.properties['Path'][0] != '/' and\
-                    self.properties['Path'][-1] != '/':
-                error(self, "Path must begin and end with `/`")
-
 
 class Role(iam.Role):
     def JSONrepr(self):
@@ -107,8 +95,8 @@ class Role(iam.Role):
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('Path'):
-            if self.properties['Path'][0] != '/' and\
-                    self.properties['Path'][-1] != '/':
+            if not (self.properties['Path'].startswith('/') and
+                    self.properties['Path'].endswith('/')):
                 error(self, "Path must begin and end with `/`")
 
 
@@ -116,8 +104,8 @@ class User(iam.User):
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('Path'):
-            if self.properties['Path'][0] != '/' and\
-                    self.properties['Path'][-1] != '/':
+            if not (self.properties['Path'].startswith('/') and
+                    self.properties['Path'].endswith('/')):
                 error(self, "Path must begin and end with `/`")
 
 
