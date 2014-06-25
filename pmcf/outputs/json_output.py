@@ -175,7 +175,8 @@ class JSONOutput(BaseOutput):
             args = inst['provisioner']['args']
             args.update({
                 'environment': config['environment'],
-                'name': "LC%s" % inst['name'],
+                'name': inst['name'],
+                'resource': "LC%s" % inst['name'],
             })
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',

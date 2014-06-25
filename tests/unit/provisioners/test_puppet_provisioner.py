@@ -23,6 +23,7 @@ class TestPuppetProvisioner(object):
     def test_userdata_contains_expected_data(self):
         args = {
             'name': 'test',
+            'resource': 'LCtest',
             'WaitHandle': 'blah',
             'infrastructure': 'foo.zip',
         }
@@ -78,6 +79,7 @@ class TestPuppetProvisioner(object):
             'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
+            'resource': 'LCtest',
             'environment': 'dev',
         }
 
@@ -113,7 +115,7 @@ class TestPuppetProvisioner(object):
                                             "Ref": "AWS::Region"
                                         },
                                         "\n",
-                                        "ec2_resource: test\n",
+                                        "ec2_resource: LCtest\n",
                                         "app: test\n",
                                         "stage: dev\n"
                                     ]
