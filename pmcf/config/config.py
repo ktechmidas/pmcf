@@ -84,7 +84,7 @@ class PMCFConfig(object):
         self.cfg.read(self.configfile)
 
         if self.profile_name not in self.cfg.sections():
-            raise ValueError('bad profile %s' % self.profile_name)
+            raise ParserFailure('bad profile %s' % self.profile_name)
 
         default_options = {}
         profile_options = {}
