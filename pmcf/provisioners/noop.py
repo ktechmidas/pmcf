@@ -29,42 +29,11 @@ LOG = logging.getLogger(__name__)
 
 class NoopProvisioner(BaseProvisioner):
 
-    def wants_profile(self):
-        """
-        Whether a provisioner implementation wants a profile to be created
-
-        :returns: boolean.
-        """
-
-        return False
-
-    def wants_wait(self):
-        """
-        Whether a provisioner implementation wants a wait condition created
-
-        :returns: boolean.
-        """
-
-        return False
-
     def userdata(self, args):
         """
         Validates resource against local policy.
 
         :param args: provisioner arguments
-        :type args: dict.
-        :returns: None.
-        """
-
-        return None
-
-    def cfn_init(self, args):
-        """
-        Return metadata suitable for consumption by cfn_init
-
-        :param config: Config items for userdata
-        :type config: dict.
-        :param args: instance definition
         :type args: dict.
         :returns: None.
         """
