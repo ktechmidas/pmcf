@@ -34,6 +34,7 @@ class TestPuppetProvisioner(object):
                 [
                     "#!/bin/bash\n",
                     "error_exit() {\n",
+                    "   sleep 3600\n",
                     "   cfn-signal -e 1 -r \"$1\" '",
                     {
                         "Ref": "blah"
@@ -95,7 +96,34 @@ class TestPuppetProvisioner(object):
                             "python-boto": [],
                             "puppet": []
                         }
-                    }
+                    },
+                    "files": {
+                        "/etc/facter/facts.d/localfacts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: test\n",
+                                        "app: test\n",
+                                        "stage: dev\n"
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        }
+                    },
                 },
                 "infraLoad": {
                     "sources": {
@@ -123,13 +151,6 @@ class TestPuppetProvisioner(object):
                             "command": "puppet apply --modulepath "
                                        "/var/tmp/puppet/modules "
                                        "/var/tmp/puppet/manifests/site.pp",
-                            "env": {
-                                "FACTER_ec2_region": {"Ref": "AWS::Region"},
-                                "FACTER_ec2_resource": "test",
-                                "FACTER_ec2_stack": {"Ref": "AWS::StackId"},
-                                "FACTER_stage": "dev",
-                                "FACTER_app": "test"
-                            }
                         },
                         "02-clean_puppet": {
                             "command": "rm -rf /var/tmp/puppet"

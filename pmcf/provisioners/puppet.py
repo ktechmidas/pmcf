@@ -60,6 +60,7 @@ class PuppetProvisioner(BaseProvisioner):
         script = [
             '#!/bin/bash\n',
             'error_exit() {\n',
+            '   sleep 3600\n',
             '   cfn-signal -e 1 -r "$1" \'',
             Ref(args['WaitHandle']),
             '\'\n',
@@ -106,6 +107,24 @@ class PuppetProvisioner(BaseProvisioner):
                         "puppet": [],
                         "python-boto": [],
                     }
+                },
+                "files": {
+                    "/etc/facter/facts.d/localfacts.yaml": {
+                        "content": Join("", [
+                            "ec2_stack: ",
+                            Ref("AWS::StackId"),
+                            "\n",
+                            "ec2_region: ",
+                            Ref("AWS::Region"),
+                            "\n",
+                            "ec2_resource: %s\n" % args['name'],
+                            "app: %s\n" % args['name'],
+                            "stage: %s\n" % args['environment'],
+                        ]),
+                        "mode": "000644",
+                        "owner": "root",
+                        "group": "root"
+                    }
                 }
             }
         }
@@ -150,13 +169,6 @@ class PuppetProvisioner(BaseProvisioner):
                         "command": "puppet apply --modulepath " +
                                    "/var/tmp/puppet/modules " +
                                    "/var/tmp/puppet/manifests/site.pp",
-                        "env": {
-                            "FACTER_app": args['name'],
-                            "FACTER_stage": args['environment'],
-                            "FACTER_ec2_region": Ref("AWS::Region"),
-                            "FACTER_ec2_resource": args['name'],
-                            "FACTER_ec2_stack": Ref("AWS::StackId"),
-                        }
                     },
                     "02-clean_puppet": {
                         "command": "rm -rf /var/tmp/puppet"
