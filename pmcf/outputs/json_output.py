@@ -229,9 +229,11 @@ class JSONOutput(BaseOutput):
                         "hiera.tar.gz"
                     ))
                 if inst['provisioner']['args'].get('application'):
-                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s" % (
+                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
                         inst['provisioner']['args']['bucket'],
                         "application",
+                        inst['name'],
+                        config['environment'],
                         inst['provisioner']['args']['application']
                     ))
                 if len(s3_res) > 0:

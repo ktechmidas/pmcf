@@ -1320,7 +1320,7 @@ class TestJSONOutput(object):
                                 'Resource': [
                                     b + 'infrastructure/app/test/foo.zip',
                                     b + 'infrastructure/hiera.tar.gz',
-                                    b + 'application/bar.zip'
+                                    b + 'application/app/test/bar.zip'
                                 ]
                             }],
                             'Version': '2012-10-17'
