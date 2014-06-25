@@ -21,12 +21,12 @@ class TestNoopProvisioner(object):
     def test_userdata_contains_expected_data(self):
         args = {}
         data = NoopProvisioner().userdata(args)
-        assert_equals(data, '')
+        assert_equals(data, None)
 
     def test_cfn_init_contains_expected_data(self):
         args = {}
         data = NoopProvisioner().cfn_init(args)
-        assert_equals(data, '')
+        assert_equals(data, None)
 
     def test_wants_wait_returns_false(self):
         data = NoopProvisioner().wants_wait()

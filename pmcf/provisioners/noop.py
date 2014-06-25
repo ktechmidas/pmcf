@@ -53,10 +53,10 @@ class NoopProvisioner(BaseProvisioner):
 
         :param args: provisioner arguments
         :type args: dict.
-        :returns: str.
+        :returns: None.
         """
 
-        return ''
+        return None
 
     def cfn_init(self, args):
         """
@@ -66,10 +66,10 @@ class NoopProvisioner(BaseProvisioner):
         :type config: dict.
         :param args: instance definition
         :type args: dict.
-        :returns: str.
+        :returns: None.
         """
 
-        return ''
+        return None
 
 
 __all__ = [
