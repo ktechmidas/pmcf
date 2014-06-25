@@ -23,6 +23,8 @@
 import ConfigParser
 import logging
 
+from pmcf.exceptions import ParserFailure
+
 LOG = logging.getLogger(__name__)
 
 

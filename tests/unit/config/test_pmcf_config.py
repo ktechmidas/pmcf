@@ -15,6 +15,7 @@
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.config.config import PMCFConfig
+from pmcf.exceptions import ParserFailure
 
 
 class TestPMCFConfig(object):
@@ -45,7 +46,7 @@ class TestPMCFConfig(object):
 
     def test_get_config_missing_profile_fails(self):
         cfg = PMCFConfig('tests/data/etc/pmcf.conf', 'missing', {})
-        assert_raises(ValueError, cfg.get_config)
+        assert_raises(ParserFailure, cfg.get_config)
 
     def test_get_config_succeeds(self):
         cfg = PMCFConfig('tests/data/etc/pmcf.conf', 'default', {})
