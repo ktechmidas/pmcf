@@ -36,6 +36,20 @@ metadata endpoint suitable for consumption by
     :undoc-members:
 
 
+:mod:`pmcf.provisioners.noop`
+=========================================
+
+.. automodule:: pmcf.provisioners.noop
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: NoopProvisioner
+    :members:
+    :undoc-members:
+
+
 :mod:`pmcf.provisioners.awsfw`
 ==============================
 
