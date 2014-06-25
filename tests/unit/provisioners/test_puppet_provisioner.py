@@ -150,9 +150,19 @@ class TestPuppetProvisioner(object):
                         "01-run_puppet": {
                             "command": "puppet apply --modulepath "
                                        "/var/tmp/puppet/modules "
+                                       "--logdest syslog " +
+                                       "--detailed-exitcodes " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                            "ignoreErrors": "true",
+                        },
+                        "02-run_puppet_again": {
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--logdest syslog " +
+                                       "--detailed-exitcodes " +
                                        "/var/tmp/puppet/manifests/site.pp",
                         },
-                        "02-clean_puppet": {
+                        "03-clean_puppet": {
                             "command": "rm -rf /var/tmp/puppet"
                         }
                     }
