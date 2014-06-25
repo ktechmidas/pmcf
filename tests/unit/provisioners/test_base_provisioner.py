@@ -48,5 +48,5 @@ MIME-Version: 1.0
 --%s--""" % (self.provisioner.boundary,
              self.provisioner.boundary,
              self.provisioner.boundary)
-        data = self.provisioner.make_skeleton()
-        assert_equals(data.as_string(), expected)
+        data = self.provisioner.make_skeleton().as_string().rstrip("\n")
+        assert_equals(data, expected)
