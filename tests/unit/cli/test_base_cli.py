@@ -42,10 +42,25 @@ def _mock_run_fails(self):
     raise PropertyException('test')
 
 
+def _mock_setupterm():
+    pass
+
+
+def _mock_tparm(op, color=None):
+    return ''
+
+
+def _mock_tigetstr(op):
+    pass
+
+
 class TestBaseCLI(object):
     @mock.patch('pmcf.config.config.PMCFConfig.get_config', _mock_get_config)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.__init__', _mock_cli_init)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.run', _mock_run_succeeds)
+    @mock.patch('curses.setupterm', _mock_setupterm)
+    @mock.patch('curses.tparm', _mock_tparm)
+    @mock.patch('curses.tigetstr', _mock_tigetstr)
     def test_main_succeeds(self):
         old_argv = sys.argv
         sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
@@ -58,6 +73,9 @@ class TestBaseCLI(object):
     @mock.patch('pmcf.config.config.PMCFConfig.get_config', _mock_get_config)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.__init__', _mock_cli_init)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.run', _mock_run_succeeds)
+    @mock.patch('curses.setupterm', _mock_setupterm)
+    @mock.patch('curses.tparm', _mock_tparm)
+    @mock.patch('curses.tigetstr', _mock_tigetstr)
     def test_verbose_main_succeeds(self):
         old_argv = sys.argv
         sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
@@ -70,6 +88,9 @@ class TestBaseCLI(object):
     @mock.patch('pmcf.config.config.PMCFConfig.get_config', _mock_get_config)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.__init__', _mock_cli_init)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.run', _mock_run_succeeds)
+    @mock.patch('curses.setupterm', _mock_setupterm)
+    @mock.patch('curses.tparm', _mock_tparm)
+    @mock.patch('curses.tigetstr', _mock_tigetstr)
     def test_debug_main_succeeds(self):
         old_argv = sys.argv
         sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
@@ -82,6 +103,9 @@ class TestBaseCLI(object):
     @mock.patch('pmcf.config.config.PMCFConfig.get_config', _mock_get_config)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.__init__', _mock_cli_init)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.run', _mock_run_succeeds)
+    @mock.patch('curses.setupterm', _mock_setupterm)
+    @mock.patch('curses.tparm', _mock_tparm)
+    @mock.patch('curses.tigetstr', _mock_tigetstr)
     def test_quiet_main_succeeds(self):
         old_argv = sys.argv
         sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',
@@ -94,6 +118,9 @@ class TestBaseCLI(object):
     @mock.patch('pmcf.config.config.PMCFConfig.get_config', _mock_get_config)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.__init__', _mock_cli_init)
     @mock.patch('pmcf.cli.cmd.PMCFCLI.run', _mock_run_fails)
+    @mock.patch('curses.setupterm', _mock_setupterm)
+    @mock.patch('curses.tparm', _mock_tparm)
+    @mock.patch('curses.tigetstr', _mock_tigetstr)
     def test_fail_of_main_fails(self):
         old_argv = sys.argv
         sys.argv = ['test.py', '-c', 'tests/data/etc/pmcf.conf',

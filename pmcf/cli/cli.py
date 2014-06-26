@@ -21,6 +21,7 @@
 """
 
 import argparse
+import curses
 import logging
 import sys
 
@@ -72,18 +73,25 @@ def main():
     FORMAT = "[%(asctime)-15s] [%(levelname)s] %(name)s: %(message)s"
 
     # Simple coloured output
-    logging.addLevelName(logging.DEBUG,
-                         "\033[1;32m %s \033[1;m"
-                         % logging.getLevelName(logging.DEBUG))
-    logging.addLevelName(logging.INFO,
-                         "\033[1;36m %s  \033[1;m"
-                         % logging.getLevelName(logging.INFO))
-    logging.addLevelName(logging.WARNING,
-                         "\033[1;33m%s\033[1;m"
-                         % logging.getLevelName(logging.WARNING))
-    logging.addLevelName(logging.ERROR,
-                         "\033[1;31m %s \033[1;m"
-                         % logging.getLevelName(logging.ERROR))
+    curses.setupterm()
+    trst = curses.tparm(curses.tigetstr('op'))
+    tred = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_RED)
+    tyel = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_YELLOW)
+    tcyn = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_CYAN)
+    tgrn = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_GREEN)
+
+    logging.addLevelName(logging.DEBUG, "%s %s %s" % (
+        tgrn, logging.getLevelName(logging.DEBUG), trst)
+    )
+    logging.addLevelName(logging.INFO, "%s %s %s" % (
+        tcyn, logging.getLevelName(logging.INFO), trst)
+    )
+    logging.addLevelName(logging.WARNING, "%s %s %s" % (
+        tyel, logging.getLevelName(logging.WARNING), trst)
+    )
+    logging.addLevelName(logging.ERROR, "%s %s %s" % (
+        tred, logging.getLevelName(logging.ERROR), trst)
+    )
 
     if args.debug:
         lvl = logging.DEBUG
