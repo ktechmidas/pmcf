@@ -83,10 +83,10 @@ def main():
     logging.addLevelName(logging.DEBUG, "%s %s %s" % (
         tgrn, logging.getLevelName(logging.DEBUG), trst)
     )
-    logging.addLevelName(logging.INFO, "%s %s %s" % (
+    logging.addLevelName(logging.INFO, "%s %s  %s" % (
         tcyn, logging.getLevelName(logging.INFO), trst)
     )
-    logging.addLevelName(logging.WARNING, "%s %s %s" % (
+    logging.addLevelName(logging.WARNING, "%s%s%s" % (
         tyel, logging.getLevelName(logging.WARNING), trst)
     )
     logging.addLevelName(logging.ERROR, "%s %s %s" % (
