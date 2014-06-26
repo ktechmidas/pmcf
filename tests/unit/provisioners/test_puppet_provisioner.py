@@ -153,18 +153,21 @@ class TestPuppetProvisioner(object):
                             "command": "puppet apply --modulepath "
                                        "/var/tmp/puppet/modules "
                                        "--logdest syslog " +
-                                       "--detailed-exitcodes " +
                                        "/var/tmp/puppet/manifests/site.pp",
                             "ignoreErrors": "true",
                         },
-                        "02-run_puppet_again": {
+                    }
+                },
+                "infraPuppetFinal": {
+                    "commands": {
+                        "01-run_puppet": {
                             "command": "puppet apply --modulepath "
                                        "/var/tmp/puppet/modules "
                                        "--logdest syslog " +
                                        "--detailed-exitcodes " +
                                        "/var/tmp/puppet/manifests/site.pp",
                         },
-                        "03-clean_puppet": {
+                        "02-clean_puppet": {
                             "command": "rm -rf /var/tmp/puppet"
                         }
                     }
@@ -175,13 +178,16 @@ class TestPuppetProvisioner(object):
                             "command": "/srv/apps/bin/deploy %s %s %s %s" % (
                                 "deploy",
                                 args['name'],
+                                args['application'],
                                 args['environment'],
-                                args['application']
                             )
                         }
                     }
                 },
                 "configSets": {
+                    "app": [
+                        "deployRun"
+                    ],
                     "startup": [
                         "bootstrap",
                         {
@@ -189,19 +195,28 @@ class TestPuppetProvisioner(object):
                         },
                         {
                             "ConfigSet": "app"
+                        },
+                        {
+                            "ConfigSet": "puppetFinal"
                         }
+                    ],
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ],
+                    "infraUpdate": [
+                        "infraLoad",
+                        "infraPuppetRun",
+                        "infraPuppetFinal"
                     ],
                     "infra": [
                         "infraLoad",
                         "infraPuppetRun"
-                    ],
-                    "app": [
-                        "deployRun"
-                    ],
+                    ]
                 }
             }
         }
 
         data = PuppetProvisioner().cfn_init(args)
         data = json.loads(json.dumps(data, cls=awsencode))
+        print json.dumps(data, indent=4)
         assert_equals(data, ci_data)

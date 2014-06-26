@@ -143,6 +143,11 @@ class PuppetProvisioner(BaseProvisioner):
                 'infraLoad',
                 'infraPuppetRun',
             ]
+            init['configSets']['infraUpdate'] = [
+                'infraLoad',
+                'infraPuppetRun',
+                'infraPuppetFinal',
+            ]
             init['configSets']['startup'].append({"ConfigSet": "infra"})
             init['infraLoad'] = {
                 "sources": {
@@ -168,22 +173,28 @@ class PuppetProvisioner(BaseProvisioner):
                     "01-run_puppet": {
                         "command": "puppet apply --modulepath " +
                                    "/var/tmp/puppet/modules " +
-                                   "--logdest syslog --detailed-exitcodes " +
+                                   "--logdest syslog " +
                                    "/var/tmp/puppet/manifests/site.pp",
                         "ignoreErrors": "true",
-                    },
-                    "02-run_puppet_again": {
+                    }
+                }
+            }
+            init['configSets']['puppetFinal'] = [
+                'infraPuppetFinal',
+            ]
+            init['infraPuppetFinal'] = {
+                "commands": {
+                    "01-run_puppet": {
                         "command": "puppet apply --modulepath " +
                                    "/var/tmp/puppet/modules " +
                                    "--logdest syslog --detailed-exitcodes " +
                                    "/var/tmp/puppet/manifests/site.pp",
                     },
-                    "03-clean_puppet": {
+                    "02-clean_puppet": {
                         "command": "rm -rf /var/tmp/puppet"
                     }
                 }
             }
-
         if args.get('application'):
             init['configSets']['app'] = [
                 'deployRun',
@@ -194,12 +205,14 @@ class PuppetProvisioner(BaseProvisioner):
                     "01-run_deploy": {
                         "command": "/srv/apps/bin/deploy deploy %s %s %s" % (
                             args['name'],
+                            args['application'],
                             args['environment'],
-                            args['application']
                         )
                     }
                 }
             }
+        if args.get('infrastructure'):
+            init['configSets']['startup'].append({"ConfigSet": "puppetFinal"})
 
         ret["AWS::CloudFormation::Init"] = init
         return ret
