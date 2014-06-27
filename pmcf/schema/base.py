@@ -78,6 +78,8 @@ definitions:
             count:
                 type: integer
                 minimum: 1
+            depends:
+                type: string
             image:
                 type: string
             monitoring:

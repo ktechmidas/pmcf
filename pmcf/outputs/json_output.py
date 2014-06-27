@@ -320,6 +320,8 @@ class JSONOutput(BaseOutput):
                 asgargs['LoadBalancerNames'] = [
                     Ref(lbs["ELB" + inst['lb']])
                 ]
+            if inst.get('depends'):
+                asgargs['DependsOn'] = inst['depends']
             asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
                 **asgargs
