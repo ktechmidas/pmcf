@@ -1363,14 +1363,14 @@ class TestJSONOutput(object):
                     },
                     "Type": "AWS::IAM::Role"
                 },
-                "appHandle": {
+                "Handleapp": {
                     "Type": "AWS::CloudFormation::WaitConditionHandle"
                 },
-                "appWait": {
+                "Waitapp": {
                     "DependsOn": "ASGapp",
                     "Properties": {
                         "Handle": {
-                            "Ref": "appHandle"
+                            "Ref": "Handleapp"
                         },
                         "Timeout": 3600,
                         "Count": 1,

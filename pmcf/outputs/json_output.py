@@ -183,12 +183,12 @@ class JSONOutput(BaseOutput):
                                              provider)()
             if provisioner.wants_wait():
                 waithandle = cfn.WaitConditionHandle(
-                    "%sHandle" % inst['name'],
+                    "Handle%s" % inst['name'],
                 )
                 args['WaitHandle'] = waithandle
                 data.add_resource(waithandle)
                 data.add_resource(cfn.WaitCondition(
-                    "%sWait" % inst['name'],
+                    "Wait%s" % inst['name'],
                     DependsOn="ASG%s" % inst['name'],
                     Handle=Ref(waithandle),
                     Count=1,
