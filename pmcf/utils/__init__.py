@@ -20,6 +20,7 @@
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
+import curses
 import difflib
 import json
 import logging
@@ -103,6 +104,29 @@ def sort_json(string_data):
     return ret
 
 
+def colourise_output(start, line, end='reset'):
+    # Simple coloured output
+
+    if colourise_output.init == 0:
+        curses.setupterm()
+        colourise_output.init = 1
+
+    COLOURS = {
+        'reset': curses.tparm(curses.tigetstr('op')),
+        'red': curses.tparm(curses.tigetstr('setaf'),
+                            curses.COLOR_RED),
+        'green': curses.tparm(curses.tigetstr('setaf'),
+                              curses.COLOR_GREEN),
+        'yellow': curses.tparm(curses.tigetstr('setaf'),
+                               curses.COLOR_YELLOW),
+        'cyan': curses.tparm(curses.tigetstr('setaf'),
+                             curses.COLOR_CYAN),
+    }
+
+    return COLOURS[start] + line + COLOURS[end]
+colourise_output.init = 0
+
+
 def make_diff(old, new):
     """
     Creates coloured diff output from 2 strings.
@@ -120,15 +144,6 @@ def make_diff(old, new):
     if old_data == new_data:
         return ret
 
-    COLORS = {
-        'reset': '\x1b[0m',
-        'red': '\x1b[31m',
-        'green': '\x1b[32m',
-    }
-
-    def _colourise(start, line, end='reset'):
-        return COLORS[start] + line + COLORS[end]
-
     old = sort_json(old)
     new = sort_json(new)
     old = json.dumps(json.loads(old), indent=4)
@@ -138,15 +153,16 @@ def make_diff(old, new):
                                      new.splitlines(1), n=10000))
     for line in diff:
         if line.startswith('-'):
-            ret += _colourise('red', line)
+            ret += colourise_output('red', line)
         elif line.startswith('+'):
-            ret += _colourise('green', line)
+            ret += colourise_output('green', line)
         else:
             ret += line
     return ret
 
 
 __all__ = [
+    colourise_output,
     error,
     import_from_string,
     make_diff,

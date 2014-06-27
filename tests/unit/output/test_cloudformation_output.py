@@ -389,7 +389,8 @@ class TestAWSCFNOutput(object):
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
                 _mock_get_template)
-    @mock.patch('pmcf.utils.make_diff', _mock_make_diff_differs)
+    @mock.patch('pmcf.outputs.cloudformation.make_diff',
+                _mock_make_diff_differs)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_input',
                 _mock_return_no)
     def test__show_prompt_difference_no(self):
@@ -403,7 +404,8 @@ class TestAWSCFNOutput(object):
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
                 _mock_get_template)
-    @mock.patch('pmcf.utils.make_diff', _mock_make_diff_differs)
+    @mock.patch('pmcf.outputs.cloudformation.make_diff',
+                _mock_make_diff_differs)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_input',
                 _mock_return_yes)
     def test__show_prompt_difference_yes(self):

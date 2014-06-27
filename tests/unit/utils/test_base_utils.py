@@ -12,10 +12,15 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import mock
 from nose.tools import assert_equals, assert_raises
 
 from pmcf import exceptions
 from pmcf import utils
+
+
+def mock_colourise(start, string, end=None):
+    return string
 
 
 class TestUtils(object):
@@ -41,10 +46,12 @@ class TestUtils(object):
         out = '{"a": [2, 4, 6], "b": [1, 2, 3]}'
         assert_equals(out, utils.sort_json(data))
 
+    @mock.patch('pmcf.utils.colourise_output', mock_colourise)
     def test_make_diff_same_data(self):
         a = b = '[1, 2, 3]'
         assert_equals(utils.make_diff(a, b), '')
 
+    @mock.patch('pmcf.utils.colourise_output', mock_colourise)
     def test_make_diff_different_data(self):
         a = '{"a": [1, 2, 3]}'
         b = '{"a": [1, 2, 4]}'

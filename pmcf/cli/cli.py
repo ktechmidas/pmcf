@@ -21,13 +21,13 @@
 """
 
 import argparse
-import curses
 import logging
 import sys
 
 from pmcf.cli import PMCFCLI
 from pmcf.config import PMCFConfig
 from pmcf.exceptions import PMCFException
+from pmcf.utils import colourise_output
 
 
 def main():
@@ -73,25 +73,14 @@ def main():
     FORMAT = "[%(asctime)-15s] [%(levelname)s] %(name)s: %(message)s"
 
     # Simple coloured output
-    curses.setupterm()
-    trst = curses.tparm(curses.tigetstr('op'))
-    tred = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_RED)
-    tyel = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_YELLOW)
-    tcyn = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_CYAN)
-    tgrn = curses.tparm(curses.tigetstr('setaf'), curses.COLOR_GREEN)
-
-    logging.addLevelName(logging.DEBUG, "%s %s %s" % (
-        tgrn, logging.getLevelName(logging.DEBUG), trst)
-    )
-    logging.addLevelName(logging.INFO, "%s %s  %s" % (
-        tcyn, logging.getLevelName(logging.INFO), trst)
-    )
-    logging.addLevelName(logging.WARNING, "%s%s%s" % (
-        tyel, logging.getLevelName(logging.WARNING), trst)
-    )
-    logging.addLevelName(logging.ERROR, "%s %s %s" % (
-        tred, logging.getLevelName(logging.ERROR), trst)
-    )
+    logging.addLevelName(logging.DEBUG, colourise_output(
+        'green', " %s " % logging.getLevelName(logging.DEBUG)))
+    logging.addLevelName(logging.INFO, colourise_output(
+        'cyan', " %s  " % logging.getLevelName(logging.INFO)))
+    logging.addLevelName(logging.WARNING, colourise_output(
+        'yellow', "%s" % logging.getLevelName(logging.WARNING)))
+    logging.addLevelName(logging.ERROR, colourise_output(
+        'red', " %s " % logging.getLevelName(logging.ERROR)))
 
     if args.debug:
         lvl = logging.DEBUG
