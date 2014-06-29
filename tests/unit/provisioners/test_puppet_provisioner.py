@@ -218,5 +218,45 @@ class TestPuppetProvisioner(object):
 
         data = PuppetProvisioner().cfn_init(args)
         data = json.loads(json.dumps(data, cls=awsencode))
-        print json.dumps(data, indent=4)
         assert_equals(data, ci_data)
+
+    def test_provisioner_policy_contains_expected_data(self):
+        args = {
+            'infrastructure': 'zip.tgz',
+            'application': 'bar.zip',
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+        }
+        base = "arn:aws:s3:::%s/artifacts" % args['bucket']
+        pp_data = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "s3:GetObject"
+                    ],
+                    "Resource": [
+                        "%s/infrastructure/test/dev/zip.tgz" % base,
+                        "%s/infrastructure/hiera.tar.gz" % base,
+                        "%s/application/test/dev/bar.zip" % base
+                    ]
+                }
+            ]
+        }
+        data = PuppetProvisioner().provisioner_policy(args)
+        assert_equals(data, pp_data)
+
+    def test_provisioner_policy_contains_expected_data_no_artifacts(self):
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+        }
+        data = PuppetProvisioner().provisioner_policy(args)
+        assert_equals(data, None)
