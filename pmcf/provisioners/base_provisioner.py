@@ -63,6 +63,18 @@ class BaseProvisioner(object):
 
         raise NotImplementedError
 
+    def provisioner_policy(self, args):
+        """
+        Policy that a provisioner needs for an instance.  Not called unless
+        wants_profile() returns True.
+
+        :param args: provisioner arguments
+        :type args: dict.
+        :returns: boolean.
+        """
+
+        return None
+
     def wants_profile(self):
         """
         Whether a provisioner implementation wants a profile to be created

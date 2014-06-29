@@ -214,39 +214,8 @@ class JSONOutput(BaseOutput):
                 )
                 data.add_resource(iam_role)
                 args.update({'role': Ref(iam_role)})
-
-                s3_res = []
-                if inst['provisioner']['args'].get('infrastructure'):
-                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
-                        inst['provisioner']['args']['bucket'],
-                        "infrastructure",
-                        inst['name'],
-                        config['environment'],
-                        inst['provisioner']['args']['infrastructure']
-                    ))
-                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s" % (
-                        inst['provisioner']['args']['bucket'],
-                        "infrastructure",
-                        "hiera.tar.gz"
-                    ))
-                if inst['provisioner']['args'].get('application'):
-                    s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
-                        inst['provisioner']['args']['bucket'],
-                        "application",
-                        inst['name'],
-                        config['environment'],
-                        inst['provisioner']['args']['application']
-                    ))
-                if len(s3_res) > 0:
-                    policy_doc = {
-                        "Version": "2012-10-17",
-                        "Statement": [{
-                            "Effect": "Allow",
-                            "Action": ["s3:GetObject"],
-                            "Resource": s3_res,
-                        }]
-                    }
-
+                policy_doc = provisioner.provisioner_policy(args)
+                if policy_doc:
                     data.add_resource(iam.PolicyType(
                         "Policy%s" % inst['name'],
                         PolicyName='iam-%s-%s' % (

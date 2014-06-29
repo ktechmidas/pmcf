@@ -48,6 +48,48 @@ class PuppetProvisioner(BaseProvisioner):
 
         return True
 
+    def provisioner_policy(self, args):
+        """
+        Policy that a provisioner needs for an instance.  Not called unless
+        wants_profile() returns True.
+
+        :param args: provisioner arguments
+        :type args: dict.
+        :returns: None or dict.
+        """
+        s3_res = []
+        if args.get('infrastructure'):
+            s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
+                args['bucket'],
+                "infrastructure",
+                args['name'],
+                args['environment'],
+                args['infrastructure']
+            ))
+            s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s" % (
+                args['bucket'],
+                "infrastructure",
+                "hiera.tar.gz"
+            ))
+        if args.get('application'):
+            s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
+                args['bucket'],
+                "application",
+                args['name'],
+                args['environment'],
+                args['application']
+            ))
+        if len(s3_res) > 0:
+            return {
+                "Version": "2012-10-17",
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Action": ["s3:GetObject"],
+                    "Resource": s3_res,
+                }]
+            }
+        return None
+
     def userdata(self, args):
         """
         Validates resource against local policy.
