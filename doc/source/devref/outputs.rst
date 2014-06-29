@@ -98,3 +98,18 @@ The output module is selected by adding this to your config file::
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+:mod:`pmcf.outputs.vagrant`
+=========================================
+
+.. automodule:: pmcf.outputs.vagrant
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: VagrantOutput
+    :members:
+    :undoc-members:
+    :show-inheritance:
