@@ -30,6 +30,15 @@ class TestBaseProvisioner(object):
     def test_cfn_init_returns_none(self):
         assert_equals(None, self.provisioner.cfn_init({}))
 
+    def test_provisioner_policy_returns_none(self):
+        assert_equals(None, self.provisioner.provisioner_policy({}))
+
+    def test_provisioner_wants_profile_returns_false(self):
+        assert_equals(False, self.provisioner.wants_profile())
+
+    def test_provisioner_wants_wait_returns_false(self):
+        assert_equals(False, self.provisioner.wants_wait())
+
     def test_parse_raises(self):
         assert_raises(NotImplementedError, self.provisioner.userdata, {})
 
