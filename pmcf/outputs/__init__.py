@@ -25,6 +25,7 @@ from pmcf.outputs.c4cloudformation import C4AWSCFNOutput
 from pmcf.outputs.cloudformation import AWSCFNOutput
 from pmcf.outputs.json_output import JSONOutput
 from pmcf.outputs.sequoiacloudformation import SequoiaAWSCFNOutput
+from pmcf.outputs.vagrant import VagrantOutput
 
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     BaseOutput,
     JSONOutput,
     SequoiaAWSCFNOutput,
+    VagrantOutput,
 ]
