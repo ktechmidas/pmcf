@@ -21,6 +21,7 @@
 """
 import logging
 
+from pmcf.exceptions import ProvisionerException
 from pmcf.outputs.base_output import BaseOutput
 
 LOG = logging.getLogger(__name__)
@@ -75,12 +76,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 """
         for inst in resources['instance']:
-            vagrantfile += instance_template % (
-                inst['name'],
-                config['name'],
-                inst['name'],
-                inst['name']
-            )
+            try:
+                vagrantfile += instance_template % (
+                    inst['name'],
+                    config['name'],
+                    inst['name'],
+                    inst['name']
+                )
+            except KeyError, e:
+                raise ProvisionerException("Missing field %s" % str(e))
+
         vagrantfile += "end"
         LOG.info('Finished building Vagrantfile')
         return vagrantfile
