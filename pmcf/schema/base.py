@@ -24,6 +24,18 @@
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
 definitions:
+    noopprovisioner:
+        type: object
+        properties:
+            provider:
+                enum:
+                    - NoopProvisioner
+            args:
+                type:
+                    object
+        required:
+            - provider
+        additionalProperties: false
     puppetprovisioner:
         type: object
         properties:
@@ -101,6 +113,7 @@ definitions:
                 oneOf:
                     - $ref: "#/definitions/puppetprovisioner"
                     - $ref: "#/definitions/awsfwprovisioner"
+                    - $ref: "#/definitions/noopprovisioner"
             sg:
                 type: array
             sshKey:
