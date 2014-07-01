@@ -23,6 +23,7 @@ class TestPuppetProvisioner(object):
     def test_userdata_contains_expected_data(self):
         args = {
             'name': 'test',
+            'stackname': 'test',
             'resource': 'LCtest',
             'WaitHandle': 'blah',
             'infrastructure': 'foo.zip',
@@ -79,6 +80,7 @@ class TestPuppetProvisioner(object):
             'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
+            'stackname': 'test',
             'resource': 'LCtest',
             'environment': 'dev',
         }
@@ -227,6 +229,7 @@ class TestPuppetProvisioner(object):
             'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
+            'stackname': 'test',
             'resource': 'LCtest',
             'environment': 'dev',
         }
@@ -255,6 +258,7 @@ class TestPuppetProvisioner(object):
             'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
+            'stackname': 'test',
             'resource': 'LCtest',
             'environment': 'dev',
         }

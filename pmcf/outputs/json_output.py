@@ -176,6 +176,7 @@ class JSONOutput(BaseOutput):
             args.update({
                 'environment': config['environment'],
                 'name': inst['name'],
+                'stackname': config['name'],
                 'resource': "LC%s" % inst['name'],
             })
             provider = inst['provisioner']['provider']

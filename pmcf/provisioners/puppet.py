@@ -62,7 +62,7 @@ class PuppetProvisioner(BaseProvisioner):
             s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
                 args['bucket'],
                 "infrastructure",
-                args['name'],
+                args['stackname'],
                 args['environment'],
                 args['infrastructure']
             ))
@@ -75,7 +75,7 @@ class PuppetProvisioner(BaseProvisioner):
             s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
                 args['bucket'],
                 "application",
-                args['name'],
+                args['stackname'],
                 args['environment'],
                 args['application']
             ))
@@ -204,7 +204,7 @@ class PuppetProvisioner(BaseProvisioner):
                         "s3.amazonaws.com",
                         "artifacts",
                         "infrastructure",
-                        args['name'],
+                        args['stackname'],
                         args['environment'],
                         args['infrastructure']
                     )
@@ -246,7 +246,7 @@ class PuppetProvisioner(BaseProvisioner):
                 "commands": {
                     "01-run_deploy": {
                         "command": "/srv/apps/bin/deploy deploy %s %s %s" % (
-                            args['name'],
+                            args['stackname'],
                             args['application'],
                             args['environment'],
                         )

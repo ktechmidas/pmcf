@@ -1318,9 +1318,9 @@ class TestJSONOutput(object):
                                 'Action': ['s3:GetObject'],
                                 'Effect': 'Allow',
                                 'Resource': [
-                                    b + 'infrastructure/app/test/foo.zip',
+                                    b + 'infrastructure/test/test/foo.zip',
                                     b + 'infrastructure/hiera.tar.gz',
-                                    b + 'application/app/test/bar.zip'
+                                    b + 'application/test/test/bar.zip'
                                 ]
                             }],
                             'Version': '2012-10-17'
