@@ -99,6 +99,104 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_lb_valid_dns(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Outputs": {
+                "ELBtestDNS": {
+                    "Description": "Public DNSName of the ELBtest ELB",
+                    "Value": {
+                        "Fn::GetAtt": [
+                            "ELBtest",
+                            "DNSName"
+                        ]
+                    }
+                }
+            },
+            "Resources": {
+                "DNSELBtest": {
+                    "Type": "AWS::Route53::RecordSet",
+                    "Properties": {
+                        "Comment": "ELB for test in test",
+                        "HostedZoneName": "test.example.com",
+                        "AliasTarget": {
+                            "HostedZoneId": {
+                                "Fn::GetAtt": [
+                                    "ELBtest",
+                                    "CanonicalHostedZoneNameID"
+                                ]
+                            },
+                            "DNSName": {
+                                "Fn::GetAtt": [
+                                    "ELBtest",
+                                    "CanonicalHostedZoneName"
+                                ]
+                            }
+                        },
+                        "Name": "test.test.example.com",
+                        "Type": "A"
+                    }
+                },
+                "ELBtest": {
+                    "Properties": {
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        },
+                        "CrossZone": "true",
+                        "HealthCheck": {
+                            "HealthyThreshold": 3,
+                            "Interval": 5,
+                            "Target": "HTTP:80/healthcheck",
+                            "Timeout": 2,
+                            "UnhealthyThreshold": 3
+                        },
+                        "Listeners": [
+                            {
+                                "InstancePort": 80,
+                                "InstanceProtocol": "HTTP",
+                                "LoadBalancerPort": 80,
+                                "Protocol": "HTTP"
+                            }
+                        ]
+                    },
+                    "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'instance': [],
+            'secgroup': [],
+            'role': [],
+            'load_balancer': [{
+                'listener': [
+                    {
+                        'instance_port': 80,
+                        'protocol': 'HTTP',
+                        'lb_port': 80,
+                        'instance_protocol': 'HTTP',
+                    }
+                ],
+                'healthcheck': {
+                    'path': '/healthcheck',
+                    'protocol': 'HTTP',
+                    'port': 80
+                },
+                'dns': 'example.com',
+                'name': 'test',
+                'policy': [],
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        print json.dumps(json.loads(tmpl), indent=4)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_lb_valid_internal(self):
         out = JSONOutput()
         ret = {

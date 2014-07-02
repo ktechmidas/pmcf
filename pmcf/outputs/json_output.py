@@ -168,17 +168,23 @@ class JSONOutput(BaseOutput):
                 )
             )
             if lb.get('dns', None):
-                dns_array = lb['dns'].split('.')
                 data.add_resource(route53.RecordSetType(
                     "DNS%s" % name,
                     AliasTarget=route53.AliasTarget(
                         GetAtt(name, "CanonicalHostedZoneNameID"),
                         GetAtt(name, "CanonicalHostedZoneName")
                     ),
-                    HostedZoneName=('.').join(dns_array[1:]),
+                    HostedZoneName="%s.%s" % (
+                        config['environment'],
+                        lb['dns']
+                    ),
                     Comment="ELB for %s in %s" % (
                         config['name'], config['environment']),
-                    Name=lb['dns'],
+                    Name="%s.%s.%s" % (
+                        lb['name'],
+                        config['environment'],
+                        lb['dns']
+                    ),
                     Type="A"
                 ))
 
