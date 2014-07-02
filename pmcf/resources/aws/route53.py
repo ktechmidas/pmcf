@@ -36,6 +36,32 @@ class RecordSetType(route53.RecordSetType):
         except ValueError, e:
             error(self, e.message)
 
+    def validate(self):
+        super(self.__class__, self).validate()
+        rr_props = ['TTL', 'SetIdentifier']
+        if self.properties.get('AliasTarget'):
+            if self.properties.get('ResourceRecords'):
+                error(self, "Can't set both ResourceRecords and AliasTarget")
+
+        for prop in rr_props:
+            if self.properties.get(prop):
+                if not self.properties.get('ResourceRecords'):
+                    error(self, "Must set ResourceRecords with %s" % prop)
+
+        if self.properties.get('ResourceRecords'):
+            found = False
+            for prop in rr_props:
+                if self.properties.get(prop):
+                    found = True
+                    break
+            if not found:
+                error(
+                    self,
+                    "Must set TTL or SetIdentifier with ResourceRecords"
+                )
+
+        return True
+
 
 class RecordSet(route53.RecordSet):
     def JSONrepr(self):
@@ -43,6 +69,32 @@ class RecordSet(route53.RecordSet):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+        rr_props = ['TTL', 'SetIdentifier']
+        if self.properties.get('AliasTarget'):
+            if self.properties.get('ResourceRecords'):
+                error(self, "Can't set both ResourceRecords and AliasTarget")
+
+        for prop in rr_props:
+            if self.properties.get(prop):
+                if not self.properties.get('ResourceRecords'):
+                    error(self, "Must set ResourceRecords with %s" % prop)
+
+        if self.properties.get('ResourceRecords'):
+            found = False
+            for prop in rr_props:
+                if self.properties.get(prop):
+                    found = True
+                    break
+            if not found:
+                error(
+                    self,
+                    "Must set TTL or SetIdentifier with ResourceRecords"
+                )
+
+        return True
 
 
 class RecordSetGroup(route53.RecordSetGroup):
