@@ -170,6 +170,8 @@ definitions:
         properties:
             name:
                 type: string
+            dns:
+                type: string
             internal:
                 type: boolean
             subnets:

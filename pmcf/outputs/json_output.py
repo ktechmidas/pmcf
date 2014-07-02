@@ -27,6 +27,7 @@ from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import autoscaling, ec2, iam, elasticloadbalancing
 from pmcf.resources.aws import cloudformation as cfn
+from pmcf.resources.aws import route53
 from pmcf.utils import import_from_string
 
 LOG = logging.getLogger(__name__)
@@ -166,6 +167,21 @@ class JSONOutput(BaseOutput):
                     Value=GetAtt(lbs[name], "DNSName"),
                 )
             )
+            if lb.get('dns', None):
+                dns_array = lb['dns'].split('.')
+                data.add_resource(route53.RecordSetType(
+                    "DNS%s" % name,
+                    AliasTarget=route53.AliasTarget(
+                        GetAtt(name, "CanonicalHostedZoneNameID"),
+                        GetAtt(name, "CanonicalHostedZoneName")
+                    ),
+                    HostedZoneName=('.').join(dns_array[1:]),
+                    Comment="ELB for %s in %s" % (
+                        config['name'], config['environment']),
+                    Name=lb['dns'],
+                    Type="A"
+                ))
+
             LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])
 
