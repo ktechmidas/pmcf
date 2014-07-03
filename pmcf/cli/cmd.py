@@ -57,10 +57,10 @@ class PMCFCLI(object):
                     data = stack['resources'][k][idx]
                     self.policy.validate_resource(k, data)
             self.parser.validate()
-            data = self.output.add_resources(stack['resources'],
-                                             stack['config'])
-
             try:
+                data = self.output.add_resources(stack['resources'],
+                                                 stack['config'])
+
                 metadata = {
                     'access': self.args['accesskey'],
                     'secret': self.args['secretkey'],
