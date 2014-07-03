@@ -98,4 +98,10 @@ class RecordSet(route53.RecordSet):
 
 
 class RecordSetGroup(route53.RecordSetGroup):
-    pass
+    def validate(self):
+        super(self.__class__, self).validate()
+        if len(set(['HostedZoneId', 'HostedZoneName']).intersection(
+                set(self.properties.keys()))) != 1:
+            error(self, 'Must set one of HostedZoneId or HostedZoneName')
+
+        return True

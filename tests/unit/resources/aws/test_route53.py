@@ -246,3 +246,55 @@ class TestRoute53Resource(TestResource):
             Type='A'
         )
         assert_raises(PropertyException, rs.JSONrepr)
+
+    def test_record_set_group_valid_zone_id(self):
+        data = {
+            'Properties': {
+                'Comment': 'test',
+                'HostedZoneId': 'test-123',
+                'RecordSets': []
+            },
+            'Type': 'AWS::Route53::RecordSetGroup'
+        }
+        rsg = route53.RecordSetGroup(
+            'test',
+            HostedZoneId='test-123',
+            RecordSets=[],
+            Comment='test',
+        )
+        assert_equals(self._data_for_resource(rsg), data)
+
+    def test_record_set_group_valid_zone_name(self):
+        data = {
+            'Properties': {
+                'Comment': 'test',
+                'HostedZoneName': 'test.example.com',
+                'RecordSets': []
+            },
+            'Type': 'AWS::Route53::RecordSetGroup'
+        }
+        rsg = route53.RecordSetGroup(
+            'test',
+            HostedZoneName='test.example.com',
+            RecordSets=[],
+            Comment='test',
+        )
+        assert_equals(self._data_for_resource(rsg), data)
+
+    def test_record_set_group_invalid_zone_name_and_id(self):
+        rsg = route53.RecordSetGroup(
+            'test',
+            HostedZoneId='test-123',
+            HostedZoneName='test.example.com',
+            RecordSets=[],
+            Comment='test',
+        )
+        assert_raises(PropertyException, rsg.JSONrepr)
+
+    def test_record_set_group_invalid_no_zone_name_or_id(self):
+        rsg = route53.RecordSetGroup(
+            'test',
+            RecordSets=[],
+            Comment='test',
+        )
+        assert_raises(PropertyException, rsg.JSONrepr)
