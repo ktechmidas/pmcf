@@ -88,6 +88,9 @@ class YamlParser(BaseParser):
                 if data['config'].get('subnets'):
                     lb['subnets'] = data['config']['subnets']
         for instance in self._stack['resources']['instance']:
+            if not instance.get('notify', None):
+                if self._stack['config'].get('notify', None):
+                    instance['notify'] = self._stack['config']['notify']
             if not instance.get('provisioner', None):
                 if self._stack['config'].get('provisioner', '') ==\
                         'PuppetProvisioner':
