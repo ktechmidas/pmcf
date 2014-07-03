@@ -314,6 +314,17 @@ class JSONOutput(BaseOutput):
                 ]
             if inst.get('depends'):
                 asgargs['DependsOn'] = inst['depends']
+            if inst.get('notify'):
+                nc = autoscaling.NotificationConfiguration(
+                    TopicARN=inst['notify'],
+                    NotificationTypes=[
+                        "autoscaling:EC2_INSTANCE_LAUNCH",
+                        "autoscaling:EC2_INSTANCE_LAUNCH_ERROR",
+                        "autoscaling:EC2_INSTANCE_TERMINATE",
+                        "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
+                    ]
+                )
+                asgargs['NotificationConfiguration'] = nc
             asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
                 **asgargs

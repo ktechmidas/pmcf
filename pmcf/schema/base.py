@@ -106,6 +106,8 @@ definitions:
                 minimum: 1
             name:
                 type: string
+            notify:
+                type: string
             profile:
                 type: string
             provisioner:
