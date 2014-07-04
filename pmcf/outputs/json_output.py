@@ -148,7 +148,10 @@ class JSONOutput(BaseOutput):
                         EmitInterval=policy['policy']['emit_interval'],
                         Enabled=policy['policy']['enabled'],
                         S3BucketName=policy['policy']['s3bucket'],
-                        S3BucketPrefix=policy['policy']['s3prefix'],
+                        S3BucketPrefix="%s/%s" % (
+                            config['environment'],
+                            policy['policy']['s3prefix'],
+                        )
                     )
                     elb['AccessLoggingPolicy'] = eap
             if lb.get('internal', False) and lb.get('subnets'):
