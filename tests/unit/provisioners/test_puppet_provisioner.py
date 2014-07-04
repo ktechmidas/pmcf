@@ -119,6 +119,7 @@ class TestPuppetProvisioner(object):
                                         "\n",
                                         "ec2_resource: LCtest\n",
                                         "app: test\n",
+                                        "stack: test\n",
                                         "stage: dev\n"
                                     ]
                                 ]

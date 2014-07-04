@@ -161,6 +161,7 @@ class PuppetProvisioner(BaseProvisioner):
                             "\n",
                             "ec2_resource: %s\n" % args['resource'],
                             "app: %s\n" % args['name'],
+                            "stack: %s\n" % args['stackname'],
                             "stage: %s\n" % args['environment'],
                         ]),
                         "mode": "000644",
