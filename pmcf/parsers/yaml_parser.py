@@ -104,18 +104,16 @@ class YamlParser(BaseParser):
                             'infrastructure': "%s.tar.gz" % instance['name'],
                         }
                     }
-            found = False
-            for sg in self._stack['resources']['secgroup']:
-                if sg['name'] == instance['name']:
-                    found = True
-                    break
-            if not found:
-                self._stack['resources']['secgroup'].insert(0, {
-                    'name': instance['name'],
-                    'rules': []
-                })
-                instance['sg'] = instance.get('sg', [])
-                instance['sg'].append(instance['name'])
+            if instance.get('sg', []) == []:
+                sgs = self._stack['resources']['secgroup']
+                found = instance['name'] in [x['name'] for x in sgs]
+                if not found:
+                    self._stack['resources']['secgroup'].insert(0, {
+                        'name': instance['name'],
+                        'rules': []
+                    })
+                    instance['sg'] = instance.get('sg', [])
+                    instance['sg'].append(instance['name'])
             if not self._stack['config'].get('nodefaultsg'):
                 instance['sg'] = instance.get('sg', [])
                 if data['config'].get('vpcid') and \
