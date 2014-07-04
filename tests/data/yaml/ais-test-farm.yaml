@@ -10,6 +10,7 @@ config:
   provisioner: PuppetProvisioner
   profile: instance-profile/deploy-client
   audit_output: piksel-provisioning
+  notify: test
 resources:
   load_balancer:
     - name: app

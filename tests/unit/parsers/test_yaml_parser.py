@@ -114,6 +114,7 @@ class TestParserData(object):
             'environment',
             'instance_access',
             'instance_secret',
+            'notify',
             'subnets',
             'provisioner',
             'profile',
@@ -130,6 +131,16 @@ class TestParserData(object):
             'role',
         ]
         assert_equals(set(keys), set(self.data['resources'].keys()))
+
+    def test_parser_resource_first_instance_has_notify(self):
+        assert_equals(
+            True,
+            'notify' in self.data['resources']['instance'][0].keys())
+
+    def test_parser_resource_second_instance_has_notify(self):
+        assert_equals(
+            True,
+            'notify' in self.data['resources']['instance'][1].keys())
 
     def test_parser_resource_has_valid_instance_count(self):
         assert_equals(2, len(self.data['resources']['instance']))
