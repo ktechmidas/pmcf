@@ -73,9 +73,18 @@ definitions:
                         type: array
                     roles:
                         type: array
+                    appBucket:
+                        type: string
+                    roleBucket:
+                        type: string
+                    platform_environment:
+                        type: string
                 required:
                     - apps
                     - roles
+                    - appBucket
+                    - roleBucket
+                    - platform_environment
                 additionalProperties: false
         required:
             - provider
