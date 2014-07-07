@@ -80,7 +80,6 @@ definitions:
                     platform_environment:
                         type: string
                 required:
-                required:
                     - apps
                     - roles
                     - appBucket
