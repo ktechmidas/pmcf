@@ -160,6 +160,10 @@ class AWSFWParser(BaseParser):
                                             'sslCert')
                     else:
                         lstnr['sslCert'] = urllib.unquote(listener['sslCert'])
+                lstnr['instance_protocol'] = listener.get(
+                    'instance_protocol',
+                    listener['protocol'].upper()
+                )
                 if listener.get('instance_protocol'):
                     lstnr['instance_protocol'] = listener['instance_protocol']
                 else:

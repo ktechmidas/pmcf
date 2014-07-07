@@ -155,6 +155,7 @@ class TestParser(object):
                 'listener': [
                     {
                         'instance_port': 80,
+                        'instance_protocol': 'TCP',
                         'protocol': 'TCP',
                         'lb_port': 80
                     }
@@ -200,6 +201,7 @@ class TestParser(object):
                     {
                         'instance_port': 80,
                         'protocol': 'TCP',
+                        'instance_protocol': 'TCP',
                         'lb_port': 80
                     }
                 ],
