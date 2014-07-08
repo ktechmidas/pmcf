@@ -289,7 +289,11 @@ class JSONOutput(BaseOutput):
             asgtags = [
                 autoscaling.Tag(
                     key='Name',
-                    value=config['name'] + '::' + inst['name'],
+                    value='%s::%s::%s' % (
+                        config['name'],
+                        inst['name'],
+                        config['environment']
+                    ),
                     propogate=True,
                 ),
                 autoscaling.Tag(

@@ -896,7 +896,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1015,7 +1015,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1111,7 +1111,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1202,7 +1202,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1297,7 +1297,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1389,7 +1389,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1472,7 +1472,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
@@ -1625,7 +1625,7 @@ class TestJSONOutput(object):
                         "DesiredCapacity": 6,
                         "Tags": [
                             {
-                                "Value": "test::app2",
+                                "Value": "test::app2::test",
                                 "PropagateAtLaunch": True,
                                 "Key": "Name"
                             },
@@ -1652,7 +1652,7 @@ class TestJSONOutput(object):
                         "DesiredCapacity": 6,
                         "Tags": [
                             {
-                                "Value": "test::app",
+                                "Value": "test::app::test",
                                 "PropagateAtLaunch": True,
                                 "Key": "Name"
                             },
@@ -1762,7 +1762,7 @@ class TestJSONOutput(object):
                             {
                                 "Key": "Name",
                                 "PropagateAtLaunch": True,
-                                "Value": "test::app"
+                                "Value": "test::app::test"
                             },
                             {
                                 "Key": "App",
