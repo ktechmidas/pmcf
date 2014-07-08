@@ -91,7 +91,7 @@ class YamlParser(BaseParser):
                 for idx, policy in enumerate(lb['policy']):
                     if policy['type'] == 'log_policy':
                         lb['policy'][idx]['policy']['s3prefix'] = "%s/%s" % (
-                            config['environment'],
+                            args['environment'],
                             policy['policy']['s3prefix'],
                         )
 
