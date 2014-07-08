@@ -27,6 +27,13 @@ resources:
       healthcheck:
         protocol: TCP
         port: 80
+      policy:
+        - type: log_policy
+          policy:
+            emit_interval: 5
+            enabled: true
+            s3bucket: test
+            s3prefix: test
     - name: app2
       internal: true
       listener:

@@ -155,6 +155,15 @@ class TestParserData(object):
         assert_equals(2, len(
             self.data['resources']['load_balancer'][0]['listener']))
 
+    def test_parser_lb_has_valid_policy_count(self):
+        assert_equals(1, len(
+            self.data['resources']['load_balancer'][0]['policy']))
+
+    def test_parser_lb_has_valid_policy_prefix(self):
+        elb = self.data['resources']['load_balancer'][0]
+        p = elb['policy'][0]['policy']['s3prefix']
+        assert_equals('stage/test', p)
+
     def test_parser_sg_has_valid_rule_count_app(self):
         assert_equals(12, len(self.data['resources']['secgroup'][1]['rules']))
 
