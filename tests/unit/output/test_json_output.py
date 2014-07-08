@@ -469,7 +469,7 @@ class TestJSONOutput(object):
                             "EmitInterval": 60,
                             "Enabled": "true",
                             "S3BucketName": "c4-elb-logs",
-                            "S3BucketPrefix": "test/stage/ais"
+                            "S3BucketPrefix": "stage/ais"
                         },
                         "AvailabilityZones": {
                             "Fn::GetAZs": ""

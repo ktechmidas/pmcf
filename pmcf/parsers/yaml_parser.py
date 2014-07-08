@@ -87,6 +87,14 @@ class YamlParser(BaseParser):
             if lb.get('internal', False):
                 if data['config'].get('subnets'):
                     lb['subnets'] = data['config']['subnets']
+            if lb.get('policy'):
+                for idx, policy in enumerate(lb['policy']):
+                    if policy['type'] == 'log_policy':
+                        lb['policy'][idx]['policy']['s3prefix'] = "%s/%s" % (
+                            config['environment'],
+                            policy['policy']['s3prefix'],
+                        )
+
         for instance in self._stack['resources']['instance']:
             if not instance.get('notify', None):
                 if self._stack['config'].get('notify', None):
