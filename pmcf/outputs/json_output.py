@@ -358,7 +358,7 @@ class JSONOutput(BaseOutput):
         indent = None
         if LOG.isEnabledFor(logging.DEBUG):
             indent = 4
-        print json.dumps(json.loads(data), indent=indent)
+        print json.dumps(json.loads(data), indent=indent, sort_keys=True)
         LOG.info('Finished running data')
         self.do_audit(data, metadata)
         return True
