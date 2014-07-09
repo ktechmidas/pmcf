@@ -21,6 +21,7 @@
 """
 
 import logging
+import time
 from troposphere import Join, Ref
 
 from pmcf.provisioners.base_provisioner import BaseProvisioner
@@ -209,6 +210,14 @@ class PuppetProvisioner(BaseProvisioner):
                         args['environment'],
                         args['infrastructure']
                     )
+                }
+            }
+            init['trigger'] = {
+                "commands": {
+                    "01-echo": {
+                        "command": "echo %d" % time.time(),
+                        "ignoreErrors": "true",
+                    }
                 }
             }
             init['infraPuppetRun'] = {

@@ -13,10 +13,15 @@
 #    under the License.
 
 import json
+import mock
 from nose.tools import assert_equals
 from troposphere import awsencode
 
 from pmcf.provisioners.puppet import PuppetProvisioner
+
+
+def _mock_time():
+    return 1000
 
 
 class TestPuppetProvisioner(object):
@@ -73,6 +78,7 @@ class TestPuppetProvisioner(object):
         data = json.loads(json.dumps(data, cls=awsencode))
         assert_equals(data, script)
 
+    @mock.patch('time.time', _mock_time)
     def test_ci_contains_expected_data(self):
         args = {
             'infrastructure': 'zip.tgz',
@@ -184,6 +190,14 @@ class TestPuppetProvisioner(object):
                                 args['application'],
                                 args['environment'],
                             )
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
                         }
                     }
                 },
