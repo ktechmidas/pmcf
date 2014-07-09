@@ -70,40 +70,6 @@ def error(resource, msg):
     raise PropertyException(msg)
 
 
-def sort_json(string_data):
-    """
-    Sorts a json string, recursively
-
-    :param string_data: JSON-formatted string
-    :type string_data: str.
-    :returns: str.
-    """
-
-    ret = ''
-    data = json.loads(string_data)
-    if isinstance(data, dict):
-        ret += "{"
-        for k in sorted(data.keys()):
-            ret += json.dumps(k) + ": "
-            ret += sort_json(json.dumps(data[k]))
-            ret += ", "
-        ret = ret[:-2]
-        ret += "}"
-    elif isinstance(data, list):
-        ret += "["
-        seen = False
-        for k in data:
-            seen = True
-            ret += sort_json(json.dumps(k))
-            ret += ", "
-        if seen:
-            ret = ret[:-2]
-        ret += "]"
-    else:
-        ret += json.dumps(data)
-    return ret
-
-
 def colourise_output(start, line, end='reset'):
     # Simple coloured output
 
@@ -144,10 +110,8 @@ def make_diff(old, new):
     if old_data == new_data:
         return ret
 
-    old = sort_json(old)
-    new = sort_json(new)
-    old = json.dumps(json.loads(old), indent=4)
-    new = json.dumps(json.loads(new), indent=4)
+    old = json.dumps(json.loads(old), indent=4, sort_keys=True)
+    new = json.dumps(json.loads(new), indent=4, sort_keys=True)
 
     diff = list(difflib.unified_diff(old.splitlines(1),
                                      new.splitlines(1), n=10000))
@@ -166,5 +130,4 @@ __all__ = [
     error,
     import_from_string,
     make_diff,
-    sort_json,
 ]

@@ -41,11 +41,6 @@ class TestUtils(object):
         from pmcf.parsers import BaseParser
         assert_equals(BaseParser, kls)
 
-    def test_sort_json(self):
-        data = '{"b": [1, 2, 3], "a": [2, 4, 6]}'
-        out = '{"a": [2, 4, 6], "b": [1, 2, 3]}'
-        assert_equals(out, utils.sort_json(data))
-
     @mock.patch('pmcf.utils.colourise_output', mock_colourise)
     def test_make_diff_same_data(self):
         a = b = '[1, 2, 3]'

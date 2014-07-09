@@ -24,5 +24,5 @@ The utils classes in pmcf
 
 .. automodule:: pmcf.utils
     :noindex:
-    :members: import_from_string, error, sort_json, make_diff
+    :members: import_from_string, error, make_diff
     :undoc-members:
