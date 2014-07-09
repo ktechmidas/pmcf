@@ -314,7 +314,7 @@ class JSONOutput(BaseOutput):
             }
             if inst.get('lb'):
                 asgargs['LoadBalancerNames'] = [
-                    Ref(lbs["ELB" + inst['lb']])
+                    Ref(lbs["ELB" + x]) for x in inst['lb']
                 ]
             if inst.get('depends'):
                 asgargs['DependsOn'] = inst['depends']

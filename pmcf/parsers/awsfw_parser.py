@@ -252,10 +252,10 @@ class AWSFWParser(BaseParser):
             if instance.get('elb', 'missing') != 'missing':
                 if len(self._stack['resources']['load_balancer']) == 1:
                     inst['lb'] =\
-                        self._stack['resources']['load_balancer'][0]['name']
+                        [self._stack['resources']['load_balancer'][0]['name']]
                 elif len(self._stack['resources']['load_balancer']) > 1:
                     if instance['elb'] is not None:
-                        inst['lb'] = instance['elb']
+                        inst['lb'] = [instance['elb']]
                     else:
                         raise ParserFailure('Bad stack: unclear loadbalancer '
                                             'to instance declaration')

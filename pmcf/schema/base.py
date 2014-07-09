@@ -106,7 +106,7 @@ definitions:
             monitoring:
                 type: boolean
             lb:
-                type: string
+                type: array
             min:
                 type: integer
                 minimum: 1

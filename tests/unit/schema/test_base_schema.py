@@ -35,7 +35,7 @@ class TestBaseSchema(object):
                     {
                         'count': 3,
                         'image': 'ami-0bceb93b',
-                        'lb': 'app',
+                        'lb': ['app'],
                         'monitoring': False,
                         'name': 'app',
                         'provisioner': {

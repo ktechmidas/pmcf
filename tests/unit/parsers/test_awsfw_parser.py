@@ -313,7 +313,7 @@ class TestParser(object):
                 'block_device': [],
                 'count': 6,
                 'image': 'ami-e97f849e',
-                'lb': 'app',
+                'lb': ['app'],
                 'name': 'app',
                 'provisioner': {
                     'args': {
@@ -472,7 +472,7 @@ class TestParser(object):
                 'block_device': [],
                 'count': 6,
                 'image': 'ami-e97f849e',
-                'lb': 'app',
+                'lb': ['app'],
                 'name': 'app',
                 'provisioner': {
                     'args': {

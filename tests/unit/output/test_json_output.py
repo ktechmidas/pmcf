@@ -1072,7 +1072,7 @@ class TestJSONOutput(object):
                 'image': 'ami-e97f849e',
                 'monitoring': False,
                 'name': 'app',
-                'lb': 'test',
+                'lb': ['test'],
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
