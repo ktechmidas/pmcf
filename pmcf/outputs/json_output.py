@@ -168,12 +168,19 @@ class JSONOutput(BaseOutput):
                 )
             )
             if lb.get('dns', None):
-                data.add_resource(route53.RecordSetType(
-                    "DNS%s" % name,
-                    AliasTarget=route53.AliasTarget(
+                if lb.get('internal', False) and lb.get('subnets'):
+                    alias_tgt = route53.AliasTarget(
+                        GetAtt(name, "CanonicalHostedZoneNameID"),
+                        GetAtt(name, "DNSName")
+                    )
+                else:
+                    alias_tgt = route53.AliasTarget(
                         GetAtt(name, "CanonicalHostedZoneNameID"),
                         GetAtt(name, "CanonicalHostedZoneName")
-                    ),
+                    )
+                data.add_resource(route53.RecordSetType(
+                    "DNS%s" % name,
+                    AliasTarget=alias_tgt,
                     HostedZoneName="%s.%s" % (
                         config['environment'],
                         lb['dns']
