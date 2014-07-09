@@ -110,11 +110,14 @@ def make_diff(old, new):
     if old_data == new_data:
         return ret
 
-    old = json.dumps(json.loads(old), indent=4, sort_keys=True)
-    new = json.dumps(json.loads(new), indent=4, sort_keys=True)
+    old = json.dumps(old_data, indent=4, sort_keys=True)
+    new = json.dumps(new_data, indent=4, sort_keys=True)
 
     diff = list(difflib.unified_diff(old.splitlines(1),
-                                     new.splitlines(1), n=10000))
+                                     new.splitlines(1),
+                                     fromfile='LiveTemplate',
+                                     tofile='NewTemplate',
+                                     n=100000))
     for line in diff:
         if line.startswith('-'):
             ret += colourise_output('red', line)
