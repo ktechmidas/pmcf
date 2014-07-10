@@ -17,11 +17,35 @@
 Schema for stacks
 =================
 
-`My hands are typing <http://xkcd.com/1296/>`_
+The internal schema validation in PMCF relies on the `Draft 4 JSON Schema
+<http://json-schema.org/>`_.
+
+The top level schema is composed of two keys:
+
+:config:
+        This is a dictionary of key-value information that applies to the
+        stack as a whole
+
+:resources:
+        These are the instances, security groups, load balancers, and so on
+        that comprise the stack.
+
+**Example minimum valid config**
+
+::
+
+  ---
+  config: {}
+  resources:
+    cdn: []
+    db: []
+    instance: []
+    loadbalancer: []
+    secgroup: []
 
 
-Describing Security Groups
------------------------------
+Schemas for individual resources
+--------------------------------
 .. toctree::
    :maxdepth: 1
 
