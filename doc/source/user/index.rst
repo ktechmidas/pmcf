@@ -32,6 +32,6 @@ Configuring runtime behaviour
 Configuring stacks
 ------------------
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
 
-   schema
+   schema/index
