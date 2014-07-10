@@ -58,8 +58,9 @@ or
 :to_port:
         End of port range to allow for ingress traffic
 
-A stack describes a list of security groups.  It is permissable for a stack
-to omit the security group block.
+A stack describes a list of security groups.  It is not permissable for a
+stack to omit the security group block, but it is permissable to declare an
+empty list.
 
 **Example**
 
