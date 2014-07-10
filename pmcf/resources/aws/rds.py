@@ -14,11 +14,17 @@
 
 from troposphere import rds
 
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 from pmcf.resources.aws.helpers import rds as prds
 
 
 class DBInstance(rds.DBInstance):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -46,6 +52,12 @@ class DBInstance(rds.DBInstance):
 
 
 class DBParameterGroup(prds.DBParameterGroup):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -54,6 +66,12 @@ class DBParameterGroup(prds.DBParameterGroup):
 
 
 class DBSubnetGroup(rds.DBSubnetGroup):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -62,6 +80,12 @@ class DBSubnetGroup(rds.DBSubnetGroup):
 
 
 class RDSSecurityGroup(rds.RDSSecurityGroup):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('CIDRIP'):
@@ -77,6 +101,12 @@ class RDSSecurityGroup(rds.RDSSecurityGroup):
 
 
 class DBSecurityGroup(rds.DBSecurityGroup):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -85,6 +115,12 @@ class DBSecurityGroup(rds.DBSecurityGroup):
 
 
 class DBSecurityGroupIngress(prds.DBSecurityGroupIngress):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()

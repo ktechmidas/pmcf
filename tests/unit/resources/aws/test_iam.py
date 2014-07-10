@@ -287,3 +287,27 @@ class TestIAMResource(TestResource):
             GroupName='test',
         )
         assert_raises(PropertyException, utga.JSONrepr)
+
+    def test_access_key_bad_name(self):
+        assert_raises(PropertyException, iam.AccessKey, 'bad-name')
+
+    def test_group_bad_name(self):
+        assert_raises(PropertyException, iam.Group, 'bad-name')
+
+    def test_instance_profile_bad_name(self):
+        assert_raises(PropertyException, iam.InstanceProfile, 'bad-name')
+
+    def test_policy_bad_name(self):
+        assert_raises(PropertyException, iam.Policy, 'bad-name')
+
+    def test_policy_type_bad_name(self):
+        assert_raises(PropertyException, iam.PolicyType, 'bad-name')
+
+    def test_role_bad_name(self):
+        assert_raises(PropertyException, iam.Role, 'bad-name')
+
+    def test_user_bad_name(self):
+        assert_raises(PropertyException, iam.User, 'bad-name')
+
+    def test_user_to_group_addition_bad_name(self):
+        assert_raises(PropertyException, iam.UserToGroupAddition, 'bad-name')

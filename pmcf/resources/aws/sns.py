@@ -22,10 +22,16 @@
 
 from troposphere import sns
 
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 
 class Subscription(sns.Subscription):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -45,6 +51,12 @@ class Subscription(sns.Subscription):
 
 
 class TopicPolicy(sns.TopicPolicy):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -53,6 +65,12 @@ class TopicPolicy(sns.TopicPolicy):
 
 
 class Topic(sns.Topic):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()

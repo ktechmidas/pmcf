@@ -22,10 +22,16 @@
 
 from troposphere import iam
 
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 
 class AccessKey(iam.AccessKey):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -42,6 +48,12 @@ class AccessKey(iam.AccessKey):
 
 
 class Group(iam.Group):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('Path'):
@@ -51,6 +63,12 @@ class Group(iam.Group):
 
 
 class InstanceProfile(iam.InstanceProfile):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -70,6 +88,12 @@ class LoginProfile(iam.LoginProfile):
 
 
 class Policy(iam.Policy):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -78,6 +102,12 @@ class Policy(iam.Policy):
 
 
 class PolicyType(iam.PolicyType):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -86,6 +116,12 @@ class PolicyType(iam.PolicyType):
 
 
 class Role(iam.Role):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -101,6 +137,12 @@ class Role(iam.Role):
 
 
 class User(iam.User):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
         if self.properties.get('Path'):
@@ -110,6 +152,12 @@ class User(iam.User):
 
 
 class UserToGroupAddition(iam.UserToGroupAddition):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()

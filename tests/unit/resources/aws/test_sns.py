@@ -106,3 +106,12 @@ class TestSNSResource(TestResource):
             TopicName='test'
         )
         assert_raises(PropertyException, t.JSONrepr)
+
+    def test_subscription_bad_name(self):
+        assert_raises(PropertyException, sns.Subscription, 'bad-name')
+
+    def test_topic_policy_bad_name(self):
+        assert_raises(PropertyException, sns.TopicPolicy, 'bad-name')
+
+    def test_topic_bad_name(self):
+        assert_raises(PropertyException, sns.Topic, 'bad-name')

@@ -22,18 +22,32 @@
 
 from troposphere import sqs
 
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 
 class RedrivePolicy(sqs.RedrivePolicy):
-    pass
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
 
 
 class Queue(sqs.Queue):
-    pass
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
 
 
 class QueuePolicy(sqs.QueuePolicy):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()

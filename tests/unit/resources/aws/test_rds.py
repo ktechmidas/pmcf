@@ -315,3 +315,23 @@ class TestRDSResource(TestResource):
             CIDRIP='0.0.0.0/0'
         )
         assert_equals(self._data_for_resource(dbsgi), data)
+
+    def test_db_instance_bad_name(self):
+        assert_raises(PropertyException, rds.DBInstance, 'bad-name')
+
+    def test_db_parameter_group_bad_name(self):
+        assert_raises(PropertyException, rds.DBParameterGroup, 'bad-name')
+
+    def test_db_subnet_group_bad_name(self):
+        assert_raises(PropertyException, rds.DBSubnetGroup, 'bad-name')
+
+    def test_rds_security_group_bad_name(self):
+        assert_raises(PropertyException, rds.RDSSecurityGroup, 'bad-name')
+
+    def test_db_security_group_bad_name(self):
+        assert_raises(PropertyException, rds.DBSecurityGroup, 'bad-name')
+
+    def test_db_security_group_ingress_bad_name(self):
+        assert_raises(
+            PropertyException,
+            rds.DBSecurityGroupIngress, 'bad-name')

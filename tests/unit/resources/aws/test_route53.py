@@ -298,3 +298,12 @@ class TestRoute53Resource(TestResource):
             Comment='test',
         )
         assert_raises(PropertyException, rsg.JSONrepr)
+
+    def test_record_set_type_bad_name(self):
+        assert_raises(PropertyException, route53.RecordSetType, 'bad-name')
+
+    def test_record_set_bad_name(self):
+        assert_raises(PropertyException, route53.RecordSet, 'bad-name')
+
+    def test_record_set_group_bad_name(self):
+        assert_raises(PropertyException, route53.RecordSetGroup, 'bad-name')

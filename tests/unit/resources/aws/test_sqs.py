@@ -86,3 +86,12 @@ class TestSQSResource(TestResource):
             PolicyDocument={},
         )
         assert_raises(PropertyException, qp.JSONrepr)
+
+    def test_redrive_policy_bad_name(self):
+        assert_raises(PropertyException, sqs.RedrivePolicy, 'bad-name')
+
+    def test_queue_bad_name(self):
+        assert_raises(PropertyException, sqs.Queue, 'bad-name')
+
+    def test_queue_policy_bad_name(self):
+        assert_raises(PropertyException, sqs.QueuePolicy, 'bad-name')

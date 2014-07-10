@@ -22,7 +22,7 @@
 
 from troposphere import route53
 
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 
 class AliasTarget(route53.AliasTarget):
@@ -30,6 +30,12 @@ class AliasTarget(route53.AliasTarget):
 
 
 class RecordSetType(route53.RecordSetType):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -64,6 +70,12 @@ class RecordSetType(route53.RecordSetType):
 
 
 class RecordSet(route53.RecordSet):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -98,6 +110,12 @@ class RecordSet(route53.RecordSet):
 
 
 class RecordSetGroup(route53.RecordSetGroup):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
         if len(set(['HostedZoneId', 'HostedZoneName']).intersection(
