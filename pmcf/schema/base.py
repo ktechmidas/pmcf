@@ -121,8 +121,6 @@ definitions:
                 type: string
             notify:
                 type: string
-            profile:
-                type: string
             provisioner:
                 type: object
                 oneOf:
