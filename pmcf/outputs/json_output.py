@@ -22,6 +22,7 @@
 
 import json
 import logging
+import re
 from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
 from pmcf.outputs.base_output import BaseOutput
@@ -57,7 +58,7 @@ class JSONOutput(BaseOutput):
         sgs = {}
         for sg in resources['secgroup']:
             rules = []
-            sgname = 'sg%s' % sg['name']
+            sgname = 'sg%s' % re.sub(r'\W+', '', sg['name'])
             name = sg['name']
             for idx, rule in enumerate(sg['rules']):
                 if rule.get('port'):
@@ -124,11 +125,11 @@ class JSONOutput(BaseOutput):
                     kwargs['SSLCertificateId'] = listener['sslCert']
                 listeners.append(elasticloadbalancing.Listener(**kwargs))
 
-            name = "ELB" + lb['name']
+            name = "ELB%s" % re.sub(r'\W+', '', lb['name'])
             elb = {
                 'CrossZone': True,
                 'HealthCheck': elasticloadbalancing.HealthCheck(
-                    'test',
+                    name,
                     HealthyThreshold=3,
                     Interval=5,
                     Target=lb_hc_tgt,
