@@ -86,3 +86,12 @@ class TestCFNResource(TestResource):
         }
         wch = cfn.WaitConditionHandle('test')
         assert_equals(self._data_for_resource(wch), data)
+
+    def test_stack_bad_name(self):
+        assert_raises(PropertyException, cfn.Stack, 'bad-name')
+
+    def test_wait_condition_bad_name(self):
+        assert_raises(PropertyException, cfn.WaitCondition, 'bad-name')
+
+    def test_wait_condition_handle_bad_name(self):
+        assert_raises(PropertyException, cfn.WaitConditionHandle, 'bad-name')

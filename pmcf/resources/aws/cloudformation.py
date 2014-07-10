@@ -19,6 +19,12 @@ from pmcf.utils import error
 
 
 class Stack(cf.Stack):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            error(self, e.message)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -27,6 +33,12 @@ class Stack(cf.Stack):
 
 
 class WaitCondition(cfn.WaitCondition):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            error(self, e.message)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -35,7 +47,11 @@ class WaitCondition(cfn.WaitCondition):
 
 
 class WaitConditionHandle(cfn.WaitConditionHandle):
-    pass
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            error(self, e.message)
 
 
 __all__ = [

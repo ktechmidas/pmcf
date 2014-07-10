@@ -661,3 +661,36 @@ class TestASGResource(TestResource):
             )
         )
         assert_equals(self._data_for_resource(bdm), data)
+
+    def test_notification_configuration_invalid_args(self):
+        assert_raises(
+            PropertyException,
+            asg.NotificationConfiguration,
+            'bad-name')
+
+    def test_update_policy_invalid_name(self):
+        assert_raises(PropertyException, asg.UpdatePolicy, 'bad-name')
+
+    def test_metrics_collection_invalid_name(self):
+        assert_raises(PropertyException, asg.MetricsCollection, 'bad-name')
+
+    def test_auto_scaling_group_invalid_name(self):
+        assert_raises(PropertyException, asg.AutoScalingGroup, 'bad-name')
+
+    def test_launch_configuration_invalid_name(self):
+        assert_raises(PropertyException, asg.LaunchConfiguration, 'bad-name')
+
+    def test_scaling_policy_invalid_name(self):
+        assert_raises(PropertyException, asg.ScalingPolicy, 'bad-name')
+
+    def test_scheduled_action_invalid_name(self):
+        assert_raises(PropertyException, asg.ScheduledAction, 'bad-name')
+
+    def test_trigger_invalid_name(self):
+        assert_raises(PropertyException, asg.Trigger, 'bad-name')
+
+    def test_ebs_block_device_invalid_name(self):
+        assert_raises(PropertyException, asg.EBSBlockDevice, 'bad-name')
+
+    def test_block_device_mapping_invalid_name(self):
+        assert_raises(PropertyException, asg.BlockDeviceMapping, 'bad-name')

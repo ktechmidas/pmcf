@@ -17,7 +17,7 @@
 
 from troposphere import ec2
 
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 
 class Tag(ec2.Tag):
@@ -25,6 +25,12 @@ class Tag(ec2.Tag):
 
 
 class CustomerGateway(ec2.CustomerGateway):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -33,6 +39,12 @@ class CustomerGateway(ec2.CustomerGateway):
 
 
 class DHCPOptions(ec2.DHCPOptions):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -42,10 +54,20 @@ class DHCPOptions(ec2.DHCPOptions):
 
 
 class EIP(ec2.EIP):
-    pass
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
 
 
 class EIPAssociation(ec2.EIPAssociation):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -64,6 +86,12 @@ class EIPAssociation(ec2.EIPAssociation):
 
 
 class EBSBlockDevice(ec2.EBSBlockDevice):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -81,6 +109,12 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
 
 
 class BlockDeviceMapping(ec2.BlockDeviceMapping):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -98,6 +132,12 @@ class BlockDeviceMapping(ec2.BlockDeviceMapping):
 
 
 class MountPoint(ec2.MountPoint):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -106,6 +146,12 @@ class MountPoint(ec2.MountPoint):
 
 
 class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -114,6 +160,12 @@ class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
 
 
 class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -131,6 +183,12 @@ class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
 
 
 class Instance(ec2.Instance):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -155,10 +213,20 @@ class Instance(ec2.Instance):
 
 
 class InternetGateway(ec2.InternetGateway):
-    pass
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
 
 
 class NetworkAcl(ec2.NetworkAcl):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -167,6 +235,12 @@ class NetworkAcl(ec2.NetworkAcl):
 
 
 class ICMP(ec2.ICMP):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -178,6 +252,12 @@ class ICMP(ec2.ICMP):
 
 
 class PortRange(ec2.PortRange):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -189,6 +269,12 @@ class PortRange(ec2.PortRange):
 
 
 class NetworkAclEntry(ec2.NetworkAclEntry):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -208,6 +294,12 @@ class NetworkAclEntry(ec2.NetworkAclEntry):
 
 
 class NetworkInterface(ec2.NetworkInterface):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -216,6 +308,12 @@ class NetworkInterface(ec2.NetworkInterface):
 
 
 class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -224,6 +322,12 @@ class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
 
 
 class Route(ec2.Route):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -241,6 +345,12 @@ class Route(ec2.Route):
 
 
 class RouteTable(ec2.RouteTable):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -249,6 +359,12 @@ class RouteTable(ec2.RouteTable):
 
 
 class SecurityGroupEgress(ec2.SecurityGroupEgress):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -266,6 +382,12 @@ class SecurityGroupEgress(ec2.SecurityGroupEgress):
 
 
 class SecurityGroupIngress(ec2.SecurityGroupIngress):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -297,6 +419,12 @@ class SecurityGroupIngress(ec2.SecurityGroupIngress):
 
 
 class SecurityGroupRule(ec2.SecurityGroupRule):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -324,6 +452,12 @@ class SecurityGroupRule(ec2.SecurityGroupRule):
 
 
 class SecurityGroup(ec2.SecurityGroup):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -332,6 +466,12 @@ class SecurityGroup(ec2.SecurityGroup):
 
 
 class Subnet(ec2.Subnet):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -340,6 +480,12 @@ class Subnet(ec2.Subnet):
 
 
 class SubnetNetworkAclAssociation(ec2.SubnetNetworkAclAssociation):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -348,6 +494,12 @@ class SubnetNetworkAclAssociation(ec2.SubnetNetworkAclAssociation):
 
 
 class SubnetRouteTableAssociation(ec2.SubnetRouteTableAssociation):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -356,6 +508,12 @@ class SubnetRouteTableAssociation(ec2.SubnetRouteTableAssociation):
 
 
 class Volume(ec2.Volume):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -387,6 +545,12 @@ class Volume(ec2.Volume):
 
 
 class VolumeAttachment(ec2.VolumeAttachment):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -395,6 +559,12 @@ class VolumeAttachment(ec2.VolumeAttachment):
 
 
 class VPC(ec2.VPC):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -417,6 +587,12 @@ class VPC(ec2.VPC):
 
 
 class VPCDHCPOptionsAssociation(ec2.VPCDHCPOptionsAssociation):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -425,6 +601,12 @@ class VPCDHCPOptionsAssociation(ec2.VPCDHCPOptionsAssociation):
 
 
 class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -440,6 +622,12 @@ class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
 
 
 class VPNConnection(ec2.VPNConnection):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -448,6 +636,12 @@ class VPNConnection(ec2.VPNConnection):
 
 
 class VPNConnectionRoute(ec2.VPNConnectionRoute):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -456,6 +650,12 @@ class VPNConnectionRoute(ec2.VPNConnectionRoute):
 
 
 class VPNGateway(ec2.VPNGateway):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -469,6 +669,12 @@ class VPNGateway(ec2.VPNGateway):
 
 
 class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()

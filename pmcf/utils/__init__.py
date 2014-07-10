@@ -50,6 +50,23 @@ def import_from_string(module, klass):
         raise PropertyException(e.message)
 
 
+def init_error(msg, res_type, res_title):
+    """
+    Wrapper for common resource error messages
+
+    :param resource: Resource raising exception
+    :type resource: object.
+    :param msg: Error message
+    :type msg: str.
+    :raises: :class:`pmcf.exceptions.PropertyException`
+    """
+
+    msg += ' in type %s' % res_type
+    if res_title:
+        msg += ' (%s)' % res_title
+    raise PropertyException(msg)
+
+
 def error(resource, msg):
     """
     Wrapper for common resource error messages
@@ -62,12 +79,8 @@ def error(resource, msg):
     """
 
     res_type = getattr(resource, 'type', '<unknown type>')
-    msg += ' in type %s' % res_type
     res_title = getattr(resource, 'title', None)
-    if res_title:
-        msg += ' (%s)' % res_title
-
-    raise PropertyException(msg)
+    init_error(msg, res_type, res_title)
 
 
 def colourise_output(start, line, end='reset'):
@@ -131,6 +144,7 @@ def make_diff(old, new):
 __all__ = [
     colourise_output,
     error,
+    init_error,
     import_from_string,
     make_diff,
 ]

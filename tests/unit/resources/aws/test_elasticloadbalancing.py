@@ -346,3 +346,33 @@ class TestELBResource(TestResource):
             Listeners=[l],
         )
         assert_equals(self._data_for_resource(lb), data)
+
+    def test_access_logging_policy_bad_name(self):
+        assert_raises(PropertyException, elb.AccessLoggingPolicy, 'bad-name')
+
+    def test_app_cookie_stickiness_policy_bad_name(self):
+        assert_raises(
+            PropertyException,
+            elb.AppCookieStickinessPolicy, 'bad-name')
+
+    def test_health_check_bad_name(self):
+        assert_raises(PropertyException, elb.HealthCheck, 'bad-name')
+
+    def test_lb_cookie_stickiness_policy_bad_name(self):
+        assert_raises(
+            PropertyException,
+            elb.LBCookieStickinessPolicy, 'bad-name')
+
+    def test_listener_bad_name(self):
+        assert_raises(PropertyException, elb.Listener, 'bad-name')
+
+    def test_policy_bad_name(self):
+        assert_raises(PropertyException, elb.Policy, 'bad-name')
+
+    def test_connection_draining_policy_bad_name(self):
+        assert_raises(
+            PropertyException,
+            elb.ConnectionDrainingPolicy, 'bad-name')
+
+    def test_load_balancer_bad_name(self):
+        assert_raises(PropertyException, elb.LoadBalancer, 'bad-name')

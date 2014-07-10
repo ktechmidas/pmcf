@@ -1517,3 +1517,122 @@ class TestEc2Resource(TestResource):
             VpnGatewayId='testvpng-123'
         )
         assert_equals(self._data_for_resource(vpngrp), data)
+
+    def test_customer_gateway_bad_name(self):
+        assert_raises(PropertyException, ec2.CustomerGateway, 'bad-name')
+
+    def test_dhcp_options_bad_name(self):
+        assert_raises(PropertyException, ec2.DHCPOptions, 'bad-name')
+
+    def test_eip_bad_name(self):
+        assert_raises(PropertyException, ec2.EIP, 'bad-name')
+
+    def test_eip_association_bad_name(self):
+        assert_raises(PropertyException, ec2.EIPAssociation, 'bad-name')
+
+    def test_ebs_block_device_bad_name(self):
+        assert_raises(PropertyException, ec2.EBSBlockDevice, 'bad-name')
+
+    def test_block_device_mapping_bad_name(self):
+        assert_raises(PropertyException, ec2.BlockDeviceMapping, 'bad-name')
+
+    def test_mount_point_bad_name(self):
+        assert_raises(PropertyException, ec2.MountPoint, 'bad-name')
+
+    def test_private_ip_address_specification_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.PrivateIpAddressSpecification, 'bad-name')
+
+    def test_network_interface_property_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.NetworkInterfaceProperty, 'bad-name')
+
+    def test_instance_bad_name(self):
+        assert_raises(PropertyException, ec2.Instance, 'bad-name')
+
+    def test_internetGateway_bad_name(self):
+        assert_raises(PropertyException, ec2.InternetGateway, 'bad-name')
+
+    def test_network_acl_bad_name(self):
+        assert_raises(PropertyException, ec2.NetworkAcl, 'bad-name')
+
+    def test_icmp_bad_name(self):
+        assert_raises(PropertyException, ec2.ICMP, 'bad-name')
+
+    def test_port_range_bad_name(self):
+        assert_raises(PropertyException, ec2.PortRange, 'bad-name')
+
+    def test_network_acl_entry_bad_name(self):
+        assert_raises(PropertyException, ec2.NetworkAclEntry, 'bad-name')
+
+    def test_network_interface_bad_name(self):
+        assert_raises(PropertyException, ec2.NetworkInterface, 'bad-name')
+
+    def test_network_interface_attachment_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.NetworkInterfaceAttachment, 'bad-name')
+
+    def test_route_bad_name(self):
+        assert_raises(PropertyException, ec2.Route, 'bad-name')
+
+    def test_route_table_bad_name(self):
+        assert_raises(PropertyException, ec2.RouteTable, 'bad-name')
+
+    def test_security_group_egress_bad_name(self):
+        assert_raises(PropertyException, ec2.SecurityGroupEgress, 'bad-name')
+
+    def test_security_group_ingress_bad_name(self):
+        assert_raises(PropertyException, ec2.SecurityGroupIngress, 'bad-name')
+
+    def test_security_group_rule_bad_name(self):
+        assert_raises(PropertyException, ec2.SecurityGroupRule, 'bad-name')
+
+    def test_security_group_bad_name(self):
+        assert_raises(PropertyException, ec2.SecurityGroup, 'bad-name')
+
+    def test_subnet_bad_name(self):
+        assert_raises(PropertyException, ec2.Subnet, 'bad-name')
+
+    def test_subnet_network_acl_association_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.SubnetNetworkAclAssociation, 'bad-name')
+
+    def test_subnet_route_table_association_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.SubnetRouteTableAssociation, 'bad-name')
+
+    def test_volume_bad_name(self):
+        assert_raises(PropertyException, ec2.Volume, 'bad-name')
+
+    def test_volume_attachment_bad_name(self):
+        assert_raises(PropertyException, ec2.VolumeAttachment, 'bad-name')
+
+    def test_vpc_bad_name(self):
+        assert_raises(PropertyException, ec2.VPC, 'bad-name')
+
+    def test_vpc_dhcp_optionsAssociation_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.VPCDHCPOptionsAssociation, 'bad-name')
+
+    def test_vpc_gateway_attachment_bad_name(self):
+        assert_raises(PropertyException, ec2.VPCGatewayAttachment, 'bad-name')
+
+    def test_vpn_connection_bad_name(self):
+        assert_raises(PropertyException, ec2.VPNConnection, 'bad-name')
+
+    def test_vpn_connection_route_bad_name(self):
+        assert_raises(PropertyException, ec2.VPNConnectionRoute, 'bad-name')
+
+    def test_vpn_gateway_bad_name(self):
+        assert_raises(PropertyException, ec2.VPNGateway, 'bad-name')
+
+    def test_vpn_gateway_route_propagation_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.VPNGatewayRoutePropagation, 'bad-name')

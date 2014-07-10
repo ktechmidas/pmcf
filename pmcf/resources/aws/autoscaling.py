@@ -17,7 +17,7 @@ from troposphere import autoscaling as asg
 from troposphere import UpdatePolicy
 
 from pmcf.resources.aws.helpers import autoscaling
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 EC2_INSTANCE_LAUNCH = asg.EC2_INSTANCE_LAUNCH
 EC2_INSTANCE_LAUNCH_ERROR = asg.EC2_INSTANCE_LAUNCH_ERROR
@@ -31,10 +31,20 @@ class Tag(asg.Tag):
 
 
 class UpdatePolicy(UpdatePolicy):
-    pass
+    def __init__(self, title, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
 
 
 class NotificationConfiguration(asg.NotificationConfiguration):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -43,6 +53,12 @@ class NotificationConfiguration(asg.NotificationConfiguration):
 
 
 class MetricsCollection(autoscaling.MetricsCollection):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -70,6 +86,12 @@ class MetricsCollection(autoscaling.MetricsCollection):
 
 
 class AutoScalingGroup(autoscaling.AutoScalingGroup):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -91,6 +113,12 @@ class AutoScalingGroup(autoscaling.AutoScalingGroup):
 
 
 class LaunchConfiguration(asg.LaunchConfiguration):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -99,6 +127,12 @@ class LaunchConfiguration(asg.LaunchConfiguration):
 
 
 class ScalingPolicy(asg.ScalingPolicy):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -118,6 +152,12 @@ class ScalingPolicy(asg.ScalingPolicy):
 
 
 class ScheduledAction(asg.ScheduledAction):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -150,6 +190,12 @@ class ScheduledAction(asg.ScheduledAction):
 
 
 class Trigger(asg.Trigger):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -158,6 +204,12 @@ class Trigger(asg.Trigger):
 
 
 class EBSBlockDevice(asg.EBSBlockDevice):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
@@ -166,6 +218,12 @@ class EBSBlockDevice(asg.EBSBlockDevice):
 
 
 class BlockDeviceMapping(asg.BlockDeviceMapping):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()

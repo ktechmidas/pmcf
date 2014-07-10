@@ -18,10 +18,16 @@
 from troposphere import elasticloadbalancing as elb
 
 from pmcf.resources.aws.helpers import elasticloadbalancing
-from pmcf.utils import error
+from pmcf.utils import error, init_error
 
 
 class AccessLoggingPolicy(elasticloadbalancing.AccessLoggingPolicy):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -45,6 +51,12 @@ class AccessLoggingPolicy(elasticloadbalancing.AccessLoggingPolicy):
 
 
 class AppCookieStickinessPolicy(elb.AppCookieStickinessPolicy):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -53,6 +65,12 @@ class AppCookieStickinessPolicy(elb.AppCookieStickinessPolicy):
 
 
 class HealthCheck(elb.HealthCheck):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -61,6 +79,12 @@ class HealthCheck(elb.HealthCheck):
 
 
 class LBCookieStickinessPolicy(elb.LBCookieStickinessPolicy):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def validate(self):
         super(self.__class__, self).validate()
 
@@ -69,6 +93,12 @@ class LBCookieStickinessPolicy(elb.LBCookieStickinessPolicy):
 
 
 class Listener(elb.Listener):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -77,6 +107,12 @@ class Listener(elb.Listener):
 
 
 class Policy(elb.Policy):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -100,6 +136,12 @@ class Policy(elb.Policy):
 
 
 class ConnectionDrainingPolicy(elb.ConnectionDrainingPolicy):
+    def __init__(self, title=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
@@ -108,6 +150,12 @@ class ConnectionDrainingPolicy(elb.ConnectionDrainingPolicy):
 
 
 class LoadBalancer(elasticloadbalancing.LoadBalancer):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
     def JSONrepr(self):
         try:
             return super(self.__class__, self).JSONrepr()
