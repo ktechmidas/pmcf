@@ -348,9 +348,9 @@ class AWSFWParser(BaseParser):
             if ds.get('cloudwatch'):
                 instance['monitoring'] = self._str_to_bool(ds['cloudwatch'])
             if ds.get('appBucket'):
-                instance['provisioner']['args']['appBucket'] = ds['appBucket']
+                instance['provisioner']['args']['appbucket'] = ds['appBucket']
             if ds.get('roleBucket'):
-                instance['provisioner']['args']['roleBucket'] = ds['appBucket']
+                instance['provisioner']['args']['rolebucket'] = ds['appBucket']
             # The XML declaration <noDefaultSG/> becomes:
             # { 'noDefaultSG': None } so a normal
             # if ds.get('noDefaultSG') returns 'None' which evaluates to false

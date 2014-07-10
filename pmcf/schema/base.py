@@ -73,17 +73,21 @@ definitions:
                         type: array
                     roles:
                         type: array
-                    appBucket:
+                    appbucket:
                         type: string
-                    roleBucket:
+                    rolebucket:
                         type: string
                     platform_environment:
+                        type: string
+                    AWS_ACCESS_KEY_ID:
+                        type: string
+                    AWS_SECRET_ACCESS_KEY:
                         type: string
                 required:
                     - apps
                     - roles
-                    - appBucket
-                    - roleBucket
+                    - appbucket
+                    - rolebucket
                     - platform_environment
                 additionalProperties: false
         required:
