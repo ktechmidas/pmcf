@@ -49,5 +49,6 @@ Schemas for individual resources
 .. toctree::
    :maxdepth: 1
 
+   instance
    loadbalancer
    secgroup
