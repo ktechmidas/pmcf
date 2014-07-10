@@ -296,22 +296,6 @@ definitions:
             - name
             - rules
         additionalProperties: false
-    role:
-        properties:
-            name:
-                type: string
-            access:
-                type: object
-                properties:
-                    application:
-                        type: string
-                    infrastructure:
-                        type: string
-                additionalProperties: false
-        required:
-            - name
-            - access
-        additionalProperties: false
 type: object
 properties:
     config:
@@ -335,17 +319,12 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/secgroup"
-            role:
-                type: array
-                items:
-                    $ref: "#/definitions/role"
         required:
             - cdn
             - db
             - instance
             - load_balancer
             - secgroup
-            - role
         additionalProperties: false
     tags:
         type: object

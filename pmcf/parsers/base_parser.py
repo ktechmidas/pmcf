@@ -52,7 +52,6 @@ class BaseParser(object):
                 'load_balancer': [],
                 'db': [],
                 'cdn': [],
-                'role': [],
             },
             'config': {}
         }
