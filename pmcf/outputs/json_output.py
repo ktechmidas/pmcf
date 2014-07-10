@@ -209,7 +209,7 @@ class JSONOutput(BaseOutput):
                 'stackname': config['name'],
                 'resource': "LC%s" % inst['name'],
             })
-            if config.has_key("version"): 
+            if config.get("version", None):
                 args["version"] = config["version"]
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',

@@ -13,9 +13,7 @@
 #    under the License.
 
 import email
-import gzip
 from nose.tools import assert_equals
-import StringIO
 
 from pmcf.provisioners.awsfw import AWSFWProvisioner
 
@@ -38,11 +36,6 @@ class TestAWSFWProvisioner(object):
         data = awsfwp.userdata(self.config)
         self.message = email.message_from_string(data)
 
-    def _decode(self, data):
-        stringio = StringIO.StringIO(data)
-        decompressedFile = gzip.GzipFile(fileobj=stringio)
-        return decompressedFile.read()
-
     def test_userdata_contains_expected_files(self):
         expected_files = ['part-handler', 's3curl.pl', 'vars', 'bootstrap.sh']
 
@@ -64,7 +57,7 @@ class TestAWSFWProvisioner(object):
                 # export foo=bar
                 # into
                 # { 'foo': 'bar' }
-                data = self._decode(part.get_payload(decode=True))
+                data = part.get_payload(decode=True)
                 for line in data.split('\n'):
                     if line == '':
                         continue

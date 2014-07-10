@@ -47,7 +47,8 @@ class AWSFWProvisioner(BaseProvisioner):
 
         ud = self.make_skeleton()
 
-        ud = self.add_file(ud, 'scripts/awsfw/part-handler', 'part-handler', compress=False)
+        ud = self.add_file(ud, 'scripts/awsfw/part-handler',
+                           'part-handler', compress=False)
         ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl', 'x-s3curl', False)
 
         args['roles'] = ','.join(args['roles'])
@@ -58,8 +59,10 @@ class AWSFWProvisioner(BaseProvisioner):
         for k, v in args.iteritems():
             awsfw_data += 'export %s=%s\n' % (k, v)
 
-        ud = self.add_data(ud, awsfw_data, 'vars', 'awsfw-data', compress=False)
-        ud = self.add_file(ud, 'scripts/awsfw/bootstrap.sh', 'x-shellscript' , compress=False)
+        ud = self.add_data(ud, awsfw_data, 'vars',
+                           'awsfw-data', compress=False)
+        ud = self.add_file(ud, 'scripts/awsfw/bootstrap.sh',
+                           'x-shellscript', compress=False)
 
         return self.resize(ud)
 

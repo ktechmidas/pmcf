@@ -635,8 +635,8 @@ class TestParser(object):
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
                         'roles': ['jetty'],
-                        'appBucket': 'testbucket',
-                        'roleBucket': 'testbucket',
+                        'appbucket': 'testbucket',
+                        'rolebucket': 'testbucket',
                         'platform_environment': 'stage',
                     },
                     'provider': 'AWSFWProvisioner'
@@ -682,8 +682,8 @@ class TestParser(object):
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
                         'roles': ['jetty'],
-                        'appBucket': 'testbucket',
-                        'roleBucket': 'testbucket',
+                        'appbucket': 'testbucket',
+                        'rolebucket': 'testbucket',
                         'platform_environment': 'stage',
                     },
                     'provider': 'AWSFWProvisioner'
