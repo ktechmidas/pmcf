@@ -185,7 +185,6 @@ class AWSCFNOutput(JSONOutput):
                     dest
                 )
 
-                LOG.info(url)
             else:
                 creds = {}
                 dest = ''
