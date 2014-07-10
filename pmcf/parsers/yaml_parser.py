@@ -83,17 +83,16 @@ class YamlParser(BaseParser):
         self._stack['resources'].update(data['resources'])
 
         for lb in self._stack['resources']['load_balancer']:
-            lb['policy'] = lb.get('policy', [])
             if lb.get('internal', False):
                 if data['config'].get('subnets'):
                     lb['subnets'] = data['config']['subnets']
-            if lb.get('policy'):
-                for idx, policy in enumerate(lb['policy']):
-                    if policy['type'] == 'log_policy':
-                        lb['policy'][idx]['policy']['s3prefix'] = "%s/%s" % (
-                            args['environment'],
-                            policy['policy']['s3prefix'],
-                        )
+            lb['policy'] = lb.get('policy', [])
+            for idx, policy in enumerate(lb['policy']):
+                if policy['type'] == 'log_policy':
+                    lb['policy'][idx]['policy']['s3prefix'] = "%s/%s" % (
+                        args['environment'],
+                        policy['policy']['s3prefix'],
+                    )
 
         for instance in self._stack['resources']['instance']:
             if not instance.get('notify', None):
