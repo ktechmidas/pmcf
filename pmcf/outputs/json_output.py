@@ -349,7 +349,8 @@ class JSONOutput(BaseOutput):
         LOG.info('Finished building template')
         return data.to_json(indent=None)
 
-    def run(self, data, metadata={}, poll=False, action='create'):
+    def run(self, data, metadata={}, poll=False,
+            action='create', upload=False):
         """
         Pretty-prints stack definition as json-formatted string
 
@@ -361,6 +362,8 @@ class JSONOutput(BaseOutput):
         :type poll: boolean.
         :param action: Action to take on the stack
         :type action: str.
+        :param upload: Whether to upload stack definition to s3 before launch
+        :type upload: bool.
         :returns: boolean
         """
 

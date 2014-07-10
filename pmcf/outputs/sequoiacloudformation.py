@@ -36,7 +36,8 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
     tagging policy.
     """
 
-    def run(self, data, metadata={}, poll=False, action='create'):
+    def run(self, data, metadata={}, poll=False,
+            action='create', upload=True):
         """
         Interfaces with public and private cloud providers.
 
@@ -51,6 +52,8 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         :type poll: boolean.
         :param action: Action to take on the stack
         :type action: str.
+        :param upload: Whether to upload stack definition to s3 before launch
+        :type upload: bool.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: boolean
         """
@@ -66,7 +69,8 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         metadata['name'] = "%s-%s" % (metadata['name'],
                                       metadata['environment'])
 
-        return super(self.__class__, self).run(data, metadata, poll)
+        return super(self.__class__, self).run(data, metadata, poll,
+                                               action, upload)
 
 
 __all__ = [

@@ -96,7 +96,37 @@ class AWSCFNOutput(JSONOutput):
                 return True
         return False
 
-    def run(self, data, metadata={}, poll=False, action='create'):
+    def _upload_stack(self, stack, destination, credentials):
+        """
+        Uploads stack to S3.  Allows for much larger stack definitions.
+
+        :param stack: stack definition
+        :type stack: str.
+        :param destination: destination to copy stack to
+        :type destination: str.
+        :param credentials: credentials for copy command
+        :type credentials: dict.
+        :returns:  boolean
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
+        LOG.info('uploading stack definition to s3://%s/%s' % (
+            credentials['audit_output'], destination))
+        try:
+            s3 = boto.connect_s3(
+                aws_access_key_id=credentials['access'],
+                aws_secret_access_key=credentials['secret']
+            )
+            bucket = s3.get_bucket(credentials['audit_output'])
+            k = boto.s3.key.Key(bucket)
+            k.key = destination
+            k.set_contents_from_string(stack)
+        except (boto.exception.S3ResponseError,
+                boto.exception.BotoServerError), e:
+            raise ProvisionerException(e)
+
+    def run(self, data, metadata={}, poll=False,
+            action='create', upload=False):
         """
         Interfaces with public and private cloud providers - responsible for
         actual stack creation and update in AWS.
@@ -109,6 +139,8 @@ class AWSCFNOutput(JSONOutput):
         :type poll: boolean.
         :param action: Action to take on the stack
         :type action: str.
+        :param upload: Whether to upload stack definition to s3 before launch
+        :type upload: bool.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: boolean
         """
@@ -136,6 +168,29 @@ class AWSCFNOutput(JSONOutput):
             capabilities = ['CAPABILITY_IAM']
 
         try:
+            if upload:
+                creds = {
+                    'access': metadata['access'],
+                    'secret': metadata['secret'],
+                    'audit_output': metadata.get('audit_output', None)
+                }
+                dest = 'launch/%s/%s/%s-%s' % (
+                    metadata['name'],
+                    metadata['environment'],
+                    metadata['name'],
+                    time.strftime('%Y%m%dT%H%M%S'))
+                url = 'https://%s.%s/%s' % (
+                    metadata['audit_output'],
+                    's3.amazonaws.com',
+                    dest
+                )
+
+                LOG.info(url)
+            else:
+                creds = {}
+                dest = ''
+                url = ''
+
             if metadata.get('strategy', 'BLUEGREEN') != 'BLUEGREEN' and \
                     self._stack_exists(cfn, metadata['name']):
                 LOG.info('stack %s exists, updating', metadata['name'])
@@ -143,15 +198,27 @@ class AWSCFNOutput(JSONOutput):
                     if not self._show_prompt(cfn, metadata['name'], data):
                         return True
 
-                cfn.validate_template(data)
-                cfn.update_stack(metadata['name'], data,
-                                 capabilities=capabilities, tags=tags)
+                if upload:
+                    self._upload_stack(data, dest, creds)
+                    cfn.validate_template(template_url=url)
+                    cfn.update_stack(metadata['name'], template_url=url,
+                                     capabilities=capabilities, tags=tags)
+                else:
+                    cfn.validate_template(data)
+                    cfn.update_stack(metadata['name'], data,
+                                     capabilities=capabilities, tags=tags)
             else:
                 LOG.info("stack %s doesn't exist, creating", metadata['name'])
                 data = json.dumps(json.loads(data))
-                cfn.validate_template(data)
-                cfn.create_stack(metadata['name'], data,
-                                 capabilities=capabilities, tags=tags)
+                if upload:
+                    self._upload_stack(data, dest, creds)
+                    cfn.validate_template(template_url=url)
+                    cfn.create_stack(metadata['name'], template_url=url,
+                                     capabilities=capabilities, tags=tags)
+                else:
+                    cfn.validate_template(data)
+                    cfn.create_stack(metadata['name'], data,
+                                     capabilities=capabilities, tags=tags)
 
             self.do_audit(data, metadata)
             return self.do_poll(cfn, metadata['name'], poll)

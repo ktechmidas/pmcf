@@ -64,7 +64,8 @@ class BaseOutput(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def run(self, data, metadata={}, poll=False, action='create'):
+    def run(self, data, metadata={}, poll=False,
+            action='create', upload=False):
         """
         Interfaces with public and private cloud providers
 
@@ -76,6 +77,8 @@ class BaseOutput(object):
         :type poll: boolean.
         :param action: Action to take on the stack
         :type action: str.
+        :param upload: Whether to upload stack definition to s3 before launch
+        :type upload: bool.
         :raises: :class:`NotImplementedError`
         """
 

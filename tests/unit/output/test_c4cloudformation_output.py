@@ -19,7 +19,7 @@ from pmcf.exceptions import ProvisionerException
 from pmcf.outputs import C4AWSCFNOutput
 
 
-def _mock_run(self, data, run, poll=False):
+def _mock_run(self, data, run, poll=False, action='create', upload=False):
     return True
 
 

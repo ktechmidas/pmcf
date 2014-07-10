@@ -90,7 +90,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         LOG.info('Finished building Vagrantfile')
         return vagrantfile
 
-    def run(self, data, metadata={}, poll=False, action='create'):
+    def run(self, data, metadata={}, poll=False,
+            action='create', upload=False):
         """
         Outputs a vagrantfile of the stack definition
 
@@ -102,6 +103,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         :type poll: boolean.
         :param action: Action to take on the stack
         :type action: str.
+        :param upload: Whether to upload stack definition to s3 before launch
+        :type upload: bool.
         :returns: boolean
         """
 

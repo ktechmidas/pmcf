@@ -37,7 +37,8 @@ class C4AWSCFNOutput(AWSCFNOutput):
     tagging policy.
     """
 
-    def run(self, data, metadata={}, poll=False, action='create'):
+    def run(self, data, metadata={}, poll=False,
+            action='create', upload=False):
         """
         Interfaces with public and private cloud providers.
 
@@ -52,6 +53,8 @@ class C4AWSCFNOutput(AWSCFNOutput):
         :type poll: boolean.
         :param action: Action to take on the stack
         :type action: str.
+        :param upload: Whether to upload stack definition to s3 before launch
+        :type upload: bool.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         :returns: boolean
         """
@@ -80,7 +83,8 @@ class C4AWSCFNOutput(AWSCFNOutput):
         except KeyError, e:
             raise ProvisionerException(str(e))
 
-        return super(self.__class__, self).run(data, metadata, poll)
+        return super(self.__class__, self).run(data, metadata, poll,
+                                               action, upload)
 
 
 __all__ = [
