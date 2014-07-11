@@ -319,6 +319,8 @@ class AWSFWParser(BaseParser):
             'version': name_parts[2],
             'owner': ds.get('farmOwner', 'gis-channel4@piksel.com')
         }
+        if len(name_parts) >= 4:
+            self._stack['config']['generation'] = name_parts[3]
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']
             self._stack['config']['secret'] = args['secretkey']
