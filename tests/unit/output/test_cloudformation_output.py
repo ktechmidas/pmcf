@@ -68,6 +68,14 @@ def _mock_search_regions(svc):
     return [FakeRegion()]
 
 
+def _mock_validate_template_url(obj, template_url):
+    pass
+
+
+def _mock_create_stack_url(obj, name, template_url, capabilities, tags):
+    pass
+
+
 def _mock_validate_template(obj, data):
     pass
 
@@ -122,6 +130,10 @@ def _mock_return_false(self, cfn, name, data):
     return False
 
 
+def _mock_upload(self, stack, dest, credentials):
+    pass
+
+
 def _mock_audit_fails(self, stack, dest, credentials):
     raise AuditException('I fail')
 
@@ -159,6 +171,18 @@ def _mock_sleep(sleep_time):
     pass
 
 
+def _mock_key_set_contents(self, bucket):
+    return True
+
+
+def _mock_s3_get_bucket(self, bucket):
+    return bucket
+
+
+def _mock_s3_connect_raises(aws_access_key_id, aws_secret_access_key):
+    raise boto.exception.BotoServerError('nope', 'nope')
+
+
 class TestAWSCFNOutput(object):
 
     def test_run_no_region_raises(self):
@@ -187,6 +211,53 @@ class TestAWSCFNOutput(object):
             'audit': 'NoopAudit',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template_url)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack_url)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._upload_stack',
+                _mock_upload)
+    def test_run_connects_upload(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata, upload=True), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template_url)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack_url)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack_url)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._upload_stack',
+                _mock_upload)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
+    def test_run_connects_upload_in_place(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'inplace',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata, upload=True), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
@@ -481,3 +552,27 @@ class TestAWSCFNOutput(object):
             aws_secret_access_key='secret'
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True))
+
+    @mock.patch('boto.s3.connection.S3Connection.get_bucket',
+                _mock_s3_get_bucket)
+    @mock.patch('boto.s3.key.Key.set_contents_from_string',
+                _mock_key_set_contents)
+    def test__upload_stack_succeeds(self):
+        cfno = AWSCFNOutput()
+        creds = {
+            'access': '1234',
+            'secret': '1234',
+            'audit_output': 'test',
+        }
+        assert_equals(None, cfno._upload_stack('{}', 'test', creds))
+
+    @mock.patch('boto.connect_s3', _mock_s3_connect_raises)
+    def test_record_stack_fails_raises(self):
+        cfno = AWSCFNOutput()
+        creds = {
+            'access': '1234',
+            'secret': '1234',
+            'audit_output': 'test',
+        }
+        assert_raises(ProvisionerException, cfno._upload_stack,
+                      '{}', 'test', creds)
