@@ -136,9 +136,8 @@ class YamlParser(BaseParser):
         self._stack['resources'].update(data['resources'])
 
         for lb in self._stack['resources']['load_balancer']:
-            if lb.get('internal', False):
-                if data['config'].get('subnets'):
-                    lb['subnets'] = data['config']['subnets']
+            if data['config'].get('subnets'):
+                lb['subnets'] = data['config']['subnets']
             lb['policy'] = lb.get('policy', [])
             for idx, policy in enumerate(lb['policy']):
                 if policy['type'] == 'log_policy':

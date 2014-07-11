@@ -152,9 +152,10 @@ class JSONOutput(BaseOutput):
                         S3BucketPrefix=policy['policy']['s3prefix']
                     )
                     elb['AccessLoggingPolicy'] = eap
-            if lb.get('internal', False) and lb.get('subnets'):
-                elb['Scheme'] = 'internal'
+            if lb.get('subnets'):
                 elb['Subnets'] = lb['subnets']
+                if lb.get('internal', False):
+                    elb['Scheme'] = 'internal'
             else:
                 elb['AvailabilityZones'] = GetAZs('')
             lbs[name] = elasticloadbalancing.LoadBalancer(
