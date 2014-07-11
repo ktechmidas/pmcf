@@ -91,7 +91,7 @@ PuppetProvisioner takes:
 :args:
         A dictionary of arguments to be passed to the provisioner.  The
 
-PuppetProvisioner has the following mandatory fields:
+The args dict for PuppetProvisioner has the following mandatory fields:
 
 :bucket:
         S3 bucket to download artifacts from.
@@ -112,7 +112,7 @@ AWSFWProvisioner takes:
 :args:
         A dictionary of arguments to be passed to the provisioner.  The
 
-AWSFWProvisioner has the following mandatory fields:
+The args dict for AWSFWProvisioner has the following mandatory fields:
 
 :apps:
         A list of applications to install
