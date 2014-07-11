@@ -123,6 +123,16 @@ class YamlParser(BaseParser):
                                                 args['environment'],
                                                 field)
 
+        for sg in data['resources'].get('secgroup', []):
+            for rule in sg['rules']:
+                for field in ['source_group', 'source_cidr']:
+                    item = rule.get(field, None)
+                    if isinstance(item, dict):
+                        rule[field] =\
+                            self._get_value_for_env(item,
+                                                    args['environment'],
+                                                    field)
+
         self._stack['resources'].update(data['resources'])
 
         for lb in self._stack['resources']['load_balancer']:
