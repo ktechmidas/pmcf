@@ -5,19 +5,29 @@ set -u
 
 . /tmp/awsfw_vars
 
-apt-get install -y python-pip xmlstarlet
-pip install awscli
-
-wget -P /usr/local/bin http://stedolan.github.io/jq/download/linux64/jq
-chmod a+x /usr/local/bin/jq
-
-apt-get install -y --no-install-recommends libdigest-hmac-perl gdebi
-/usr/local/lib/s3curl.pl --id ${AWS_ACCESS_KEY_ID} --key ${AWS_SECRET_ACCESS_KEY} -- -o /tmp/awsfw_dns.sh https://aws-c4-003358414754.s3.amazonaws.com/bootstrap/awsfw_dns.sh
+/usr/local/lib/s3curl.pl --id ${AWS_ACCESS_KEY_ID} --key ${AWS_SECRET_ACCESS_KEY} -- -o /usr/local/bin/awsfw_dns.py https://aws-c4-003358414754.s3.amazonaws.com/bootstrap/awsfw_dns.py
+/usr/local/lib/s3curl.pl --id ${AWS_ACCESS_KEY_ID} --key ${AWS_SECRET_ACCESS_KEY} -- -o /etc/init.d/awsfw_dns https://aws-c4-003358414754.s3.amazonaws.com/bootstrap/awsfw_dns.initd
 /usr/local/lib/s3curl.pl --id ${AWS_ACCESS_KEY_ID} --key ${AWS_SECRET_ACCESS_KEY} -- -o /tmp/awsfw_standalone https://aws-c4-003358414754.s3.amazonaws.com/bootstrap/awsfw_standalone
 
-[[ -f /tmp/awsfw_vars ]] && chmod 0400 /tmp/awsfw_vars
-chmod 0755 /tmp/awsfw_dns.sh
-chmod 0755 /tmp/awsfw_standalone
+chmod 0400 /tmp/awsfw_vars
+chmod 0750 /tmp/awsfw_standalone
+chmod 0750 /usr/local/bin/awsfw_dns.py
+chmod 0750 /etc/init.d/awsfw_dns
 
-/tmp/awsfw_dns.sh
-exec /tmp/awsfw_standalone -d
+update-rc.d awsfw_dns defaults
+
+nsname=$(/etc/init.d/awsfw_dns start 2>/dev/null)
+echo $nsname | egrep -q "${name}-${farmversion}"
+shortname=$(echo $nsname|cut -d. -f1)
+domainname=$(echo $nsname|cut -d. -f2-)
+
+echo $shortname > /etc/hostname
+hostname $shortname
+
+cat << EOF >> /etc/dhcp/dhclient.conf
+interface "eth0" {
+    supersede domain-name ${domainname}
+}
+EOF
+
+#/tmp/awsfw_standalone
