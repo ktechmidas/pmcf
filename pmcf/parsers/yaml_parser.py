@@ -37,6 +37,26 @@ class YamlParser(BaseParser):
     the supported internal schema.
     """
 
+    def _get_value_for_env(self, data, environment, field):
+        """
+        Searches a dictionary for data for the current environment, and
+        returns either a match or the default
+
+        :param data: Dictionary to search
+        :type data: dict.
+        :param environment: Name of the environment to look for
+        :type data: str.
+        :raises: :class:`pmcf.exceptions.ParserFailure`
+        :returns: variable
+        """
+
+        if data.get(environment, None) is not None:
+            return data[environment]
+        if data.get('default', None) is not None:
+            return data['default']
+        raise ParserFailure("Can't find environment-specific data for %s",
+                            field)
+
     def parse(self, config, args={}):
         """
         Builds internal representation of data from the
@@ -64,6 +84,11 @@ class YamlParser(BaseParser):
         except KeyError, e:
             raise ParserFailure(e)
 
+        for field in ['vpcid', 'defaultsg', 'subnets', 'notify']:
+            item = data['config'].get(field, None)
+            if isinstance(item, dict):
+                data['config'][field] = self._get_value_for_env(
+                    item, args['environment'], field)
         self._stack['config'].update(data['config'])
         if data['config'].get('environments', None):
             self._stack['config'].pop('environments', None)
@@ -80,6 +105,24 @@ class YamlParser(BaseParser):
                 args['instance_accesskey']
             self._stack['config']['instance_secret'] =\
                 args['instance_secretkey']
+
+        for instance in data['resources'].get('instance', []):
+            for field in ['size', 'count', 'image']:
+                item = instance.get(field, None)
+                if isinstance(item, dict):
+                    instance[field] =\
+                        self._get_value_for_env(item,
+                                                args['environment'],
+                                                field)
+        for lb in data['resources'].get('load_balancer', []):
+            for field in ['policy']:
+                item = lb.get(field, None)
+                if isinstance(item, dict):
+                    lb[field] =\
+                        self._get_value_for_env(item,
+                                                args['environment'],
+                                                field)
+
         self._stack['resources'].update(data['resources'])
 
         for lb in self._stack['resources']['load_balancer']:
