@@ -33,6 +33,7 @@ Module Reference
    policy
    provisioners
    schema
+   strategy
    utils
 
 

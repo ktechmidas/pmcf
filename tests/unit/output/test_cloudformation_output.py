@@ -106,6 +106,14 @@ def _mock_get_template(obj, name):
     }
 
 
+def _mock_stack_exists_true(self, cfn, name):
+    return True
+
+
+def _mock_stack_exists_false(self, cfn, name):
+    return False
+
+
 def _mock_make_diff(old, new):
     return ''
 
@@ -200,6 +208,8 @@ class TestAWSCFNOutput(object):
         _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
     def test_run_connects(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -220,6 +230,8 @@ class TestAWSCFNOutput(object):
                 _mock_create_stack_url)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._upload_stack',
                 _mock_upload)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
     def test_run_connects_upload(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -255,7 +267,7 @@ class TestAWSCFNOutput(object):
             'environment': 'test',
             'audit': 'NoopAudit',
             'audit_output': 'thingy',
-            'strategy': 'inplace',
+            'strategy': 'InPlace',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata, upload=True), True)
 
@@ -266,6 +278,8 @@ class TestAWSCFNOutput(object):
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
     @mock.patch('pmcf.audit.S3Audit.record_stack', _mock_audit_fails)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
     def test_run_audit_failure_connects(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -284,6 +298,8 @@ class TestAWSCFNOutput(object):
         _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
     def test_run_with_tags_connects(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -319,7 +335,7 @@ class TestAWSCFNOutput(object):
             'secret': '2345',
             'name': 'test',
             'environment': 'test',
-            'strategy': 'prompt_inplace',
+            'strategy': 'PromptInPlace',
             'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
@@ -345,7 +361,7 @@ class TestAWSCFNOutput(object):
             'secret': '2345',
             'name': 'test',
             'environment': 'test',
-            'strategy': 'inplace',
+            'strategy': 'InPlace',
             'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
@@ -372,7 +388,7 @@ class TestAWSCFNOutput(object):
             'secret': '2345',
             'name': 'test',
             'environment': 'test',
-            'strategy': 'inplace',
+            'strategy': 'InPlace',
             'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
@@ -401,7 +417,7 @@ class TestAWSCFNOutput(object):
             'secret': '2345',
             'name': 'test',
             'environment': 'test',
-            'strategy': 'prompt_inplace',
+            'strategy': 'PromptInPlace',
             'audit': 'NoopAudit',
             'tags': {
                 'Name': 'test'
@@ -415,6 +431,8 @@ class TestAWSCFNOutput(object):
         _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
                 _mock_create_stack_fails)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
     def test_run_stack_fails(self):
         cfno = AWSCFNOutput()
         metadata = {

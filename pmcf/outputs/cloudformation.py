@@ -161,6 +161,11 @@ class AWSCFNOutput(JSONOutput):
         if cfn is None:
             raise ProvisionerException("Can't find a valid region")
 
+        strategy = import_from_string(
+            'pmcf.strategy',
+            metadata.get('strategy', 'BlueGreen')
+        )()
+
         tags = metadata.get('tags', {})
 
         capabilities = None
@@ -190,10 +195,13 @@ class AWSCFNOutput(JSONOutput):
                 dest = ''
                 url = ''
 
-            if metadata.get('strategy', 'BLUEGREEN') != 'BLUEGREEN' and \
-                    self._stack_exists(cfn, metadata['name']):
+            if self._stack_exists(cfn, metadata['name']):
+                if not strategy.should_update(action):
+                    raise ProvisionerException(
+                        'Stack exists but strategy does not allow update')
+
                 LOG.info('stack %s exists, updating', metadata['name'])
-                if metadata['strategy'] == 'prompt_inplace':
+                if strategy.should_prompt('update'):
                     if not self._show_prompt(cfn, metadata['name'], data):
                         return True
 
