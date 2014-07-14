@@ -173,6 +173,19 @@ class AWSCFNOutput(JSONOutput):
             capabilities = ['CAPABILITY_IAM']
 
         try:
+            if action == 'delete':
+                if self._stack_exists(cfn, metadata['name']):
+                    LOG.info('stack %s exists, deleting', metadata['name'])
+                    if strategy.should_prompt('delete'):
+                        answer = self._get_input(
+                            "Proceed with deletion of %s? [Yn]: " %
+                            metadata['name']
+                        )
+                        if answer.lower().startswith('n'):
+                            return False
+                    cfn.delete_stack(metadata['name'])
+                    return True
+
             if upload:
                 creds = {
                     'access': metadata['access'],
