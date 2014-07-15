@@ -184,7 +184,7 @@ class AWSCFNOutput(JSONOutput):
                         if answer.lower().startswith('n'):
                             return False
                     cfn.delete_stack(metadata['name'])
-                    return True
+                    return self.do_poll(cfn, metadata['name'], poll)
 
             if upload:
                 creds = {
