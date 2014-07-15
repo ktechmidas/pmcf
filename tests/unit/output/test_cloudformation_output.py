@@ -508,7 +508,7 @@ class TestAWSCFNOutput(object):
 
     def test_do_poll_false_returns_true(self):
         cfno = AWSCFNOutput()
-        assert_equals(True, cfno.do_poll(None, 'test', False))
+        assert_equals(True, cfno.do_poll(None, 'test', False, 'create'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack)
@@ -518,7 +518,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+        assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_failed_mock_stack)
@@ -528,7 +528,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(False, cfno.do_poll(cfn, 'test', True))
+        assert_equals(False, cfno.do_poll(cfn, 'test', True, 'create'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_rollback_mock_stack)
@@ -538,7 +538,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(False, cfno.do_poll(cfn, 'test', True))
+        assert_equals(False, cfno.do_poll(cfn, 'test', True, 'create'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_same_event)
@@ -548,7 +548,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+        assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_old_events)
@@ -558,7 +558,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+        assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_different_status)
@@ -569,7 +569,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(True, cfno.do_poll(cfn, 'test', True))
+        assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
     @mock.patch('boto.s3.connection.S3Connection.get_bucket',
                 _mock_s3_get_bucket)

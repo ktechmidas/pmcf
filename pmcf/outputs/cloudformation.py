@@ -184,7 +184,10 @@ class AWSCFNOutput(JSONOutput):
                         if answer.lower().startswith('n'):
                             return False
                     cfn.delete_stack(metadata['name'])
-                    return self.do_poll(cfn, metadata['name'], poll)
+                    return self.do_poll(cfn, metadata['name'], poll, action)
+                else:
+                    LOG.info("stack %s doesn't exist", metadata['name'])
+                    return True
 
             if upload:
                 creds = {
@@ -241,12 +244,12 @@ class AWSCFNOutput(JSONOutput):
                                      capabilities=capabilities, tags=tags)
 
             self.do_audit(data, metadata)
-            return self.do_poll(cfn, metadata['name'], poll)
+            return self.do_poll(cfn, metadata['name'], poll, action)
 
         except boto.exception.BotoServerError, e:
             raise ProvisionerException(str(e))
 
-    def do_poll(self, cfn, name, poll):
+    def do_poll(self, cfn, name, poll, action):
         """
         Polls remote API until stack is complete
 
@@ -268,7 +271,14 @@ class AWSCFNOutput(JSONOutput):
             seen_events = set()
             stack = None
             while True:
-                stack = cfn.describe_stacks(name)[0]
+                try:
+                    stack = cfn.describe_stacks(name)[0]
+                except boto.exception.BotoServerError, e:
+                    LOG.info(e.message)
+                    if action == 'delete' and \
+                            e.message.endswith('does not exist'):
+                        return True
+                    return False
                 all_events = stack.describe_events()
                 for event in sorted(all_events, key=lambda x: x.timestamp):
                     if event.event_id in seen_events:
