@@ -23,6 +23,17 @@ setup(
         "troposphere",
         "xmltodict",
     ],
+    tests_require=[
+        "cov-core",
+        "coverage",
+        "flake8",
+        "mock",
+        "nose",
+        "nose-cov",
+        "pep8",
+        "Sphinx",
+        "tox",
+    ],
     entry_points={
         'console_scripts': [
             'pmcf = pmcf.cli.cli:main',
