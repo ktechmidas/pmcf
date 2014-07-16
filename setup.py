@@ -13,6 +13,16 @@ setup(
     url="http://www.piksel.com",
     packages=find_packages('.', exclude=['tests*']),
     test_suite="nose.collector",
+    install_requires=[
+        "awacs",
+        "argparse",
+        "boto",
+        "jsonschema",
+        "PyYAML",
+        "netaddr",
+        "troposphere",
+        "xmltodict",
+    ],
     entry_points={
         'console_scripts': [
             'pmcf = pmcf.cli.cli:main',
