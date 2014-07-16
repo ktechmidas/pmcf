@@ -50,6 +50,14 @@ class YamlParser(BaseParser):
         :returns: variable
         """
 
+        # Don't deal with these
+        if isinstance(data, int):
+            return data
+        if isinstance(data, str):
+            return data
+        if isinstance(data, list):
+            return data
+
         if data.get(environment, None) is not None:
             return data[environment]
         if data.get('default', None) is not None:
@@ -86,7 +94,7 @@ class YamlParser(BaseParser):
 
         for field in ['vpcid', 'defaultsg', 'subnets', 'notify']:
             item = data['config'].get(field, None)
-            if isinstance(item, dict):
+            if item:
                 data['config'][field] = self._get_value_for_env(
                     item, args['environment'], field)
         self._stack['config'].update(data['config'])
@@ -109,7 +117,7 @@ class YamlParser(BaseParser):
         for instance in data['resources'].get('instance', []):
             for field in ['size', 'count', 'image']:
                 item = instance.get(field, None)
-                if isinstance(item, dict):
+                if item:
                     instance[field] =\
                         self._get_value_for_env(item,
                                                 args['environment'],
