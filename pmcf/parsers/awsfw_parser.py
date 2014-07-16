@@ -315,7 +315,7 @@ class AWSFWParser(BaseParser):
         self._stack['config'] = {
             'name': name_parts[0],
             'environment': name_parts[1],
-            'strategy': 'BLUEGREEN',
+            'strategy': 'BlueGreen',
             'version': name_parts[2],
             'owner': ds.get('farmOwner', 'gis-channel4@piksel.com')
         }
