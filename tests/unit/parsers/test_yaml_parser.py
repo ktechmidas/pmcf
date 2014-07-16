@@ -30,6 +30,42 @@ def _mock_validate_raises(data, schema):
 
 class TestParser(object):
 
+    def test__get_value_for_env_int_returns_int(self):
+        parser = yaml_parser.YamlParser()
+        data = 10
+        ret = parser._get_value_for_env(data, 'test', 'thingy')
+        assert_equals(data, ret)
+
+    def test__get_value_for_env_str_returns_str(self):
+        parser = yaml_parser.YamlParser()
+        data = 'hello'
+        ret = parser._get_value_for_env(data, 'test', 'thingy')
+        assert_equals(data, ret)
+
+    def test__get_value_for_env_list_returns_list(self):
+        parser = yaml_parser.YamlParser()
+        data = [1, 'a', '2']
+        ret = parser._get_value_for_env(data, 'test', 'thingy')
+        assert_equals(data, ret)
+
+    def test__get_value_for_env_returns_env_value(self):
+        parser = yaml_parser.YamlParser()
+        data = {'test': 'foo', 'default': 'bar'}
+        ret = parser._get_value_for_env(data, 'test', 'thingy')
+        assert_equals('foo', ret)
+
+    def test__get_value_for_env_returns_default_value(self):
+        parser = yaml_parser.YamlParser()
+        data = {'test2': 'foo', 'default': 'bar'}
+        ret = parser._get_value_for_env(data, 'test', 'thingy')
+        assert_equals('bar', ret)
+
+    def test__get_value_for_env_raises_no_match(self):
+        parser = yaml_parser.YamlParser()
+        data = {'test2': 'foo', 'test3': 'bar'}
+        assert_raises(ParserFailure,
+                      parser._get_value_for_env, data, 'test', 'thingy')
+
     @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_args_raises(self):
         parser = yaml_parser.YamlParser()

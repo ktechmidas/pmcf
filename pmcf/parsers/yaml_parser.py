@@ -62,7 +62,7 @@ class YamlParser(BaseParser):
             return data[environment]
         if data.get('default', None) is not None:
             return data['default']
-        raise ParserFailure("Can't find environment-specific data for %s",
+        raise ParserFailure("Can't find environment-specific data for %s" %
                             field)
 
     def parse(self, config, args={}):
@@ -125,7 +125,7 @@ class YamlParser(BaseParser):
         for lb in data['resources'].get('load_balancer', []):
             for field in ['policy']:
                 item = lb.get(field, None)
-                if isinstance(item, dict):
+                if item:
                     lb[field] =\
                         self._get_value_for_env(item,
                                                 args['environment'],
@@ -135,7 +135,7 @@ class YamlParser(BaseParser):
             for rule in sg['rules']:
                 for field in ['source_group', 'source_cidr']:
                     item = rule.get(field, None)
-                    if isinstance(item, dict):
+                    if item:
                         rule[field] =\
                             self._get_value_for_env(item,
                                                     args['environment'],
