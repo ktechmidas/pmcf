@@ -23,6 +23,8 @@
 import boto
 import json
 import logging
+import os
+import sys
 import time
 
 from pmcf.exceptions import AuditException, ProvisionerException
@@ -41,7 +43,9 @@ class AWSCFNOutput(JSONOutput):
     """
 
     def _get_input(self, prompt):
-        return raw_input(prompt)
+        if os.isatty(sys.stdout.fileno()):
+            return raw_input(prompt)
+        return 'y'
 
     def _show_prompt(self, cfn, stack, data):
         resp = cfn.get_template(stack)['GetTemplateResponse']
