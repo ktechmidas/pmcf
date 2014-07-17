@@ -112,6 +112,55 @@ def colourise_output(start, line, end='reset'):
 colourise_output.init = 0
 
 
+def get_changed_keys_from_templates(old, new):
+    """
+    Returns a list of changed keys in two templates
+
+    :param old: String to diff from
+    :type old: str.
+    :param new: String to diff to
+    :type new: str.
+    :returns: list.
+    """
+
+    ret = []
+    old_data = json.loads(old)
+    new_data = json.loads(new)
+    if old_data == new_data:
+        return ret
+    return valchange(old_data, new_data)
+
+
+def valchange(d1, d2, parent=''):
+    """
+    Returns a list of changed keys in two dictionaries
+
+    :param old: dict to diff from
+    :type old: dict.
+    :param new: dict to diff to
+    :type new: dict.
+    :returns: list.
+    """
+
+    changes = []
+    for k in d1.keys():
+        if parent == '':
+            display_key = k
+        else:
+            display_key = '%s.%s' % (parent, k)
+
+        if k not in d2.keys():
+            changes.append(display_key)
+            continue
+        if isinstance(d1[k], dict):
+            changes.extend(valchange(d1[k], d2[k], display_key))
+        else:
+            if d1[k] != d2[k]:
+                changes.append(display_key)
+
+    return changes
+
+
 def make_diff(old, new):
     """
     Creates coloured diff output from 2 strings.
@@ -150,7 +199,9 @@ def make_diff(old, new):
 __all__ = [
     colourise_output,
     error,
+    get_changed_keys_from_templates,
     init_error,
     import_from_string,
     make_diff,
+    valchange,
 ]
