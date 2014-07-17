@@ -24,6 +24,8 @@ import curses
 import difflib
 import json
 import logging
+import os
+import sys
 
 from pmcf.exceptions import PropertyException
 
@@ -85,6 +87,10 @@ def error(resource, msg):
 
 def colourise_output(start, line, end='reset'):
     # Simple coloured output
+
+    if isinstance(sys.stdout, file):
+        if not os.isatty(sys.stdout.fileno()):
+            return line
 
     if colourise_output.init == 0:
         curses.setupterm()
