@@ -96,6 +96,10 @@ def _mock_describe_stack_fails(obj, name):
     raise boto.exception.BotoServerError('nope', 'nope')
 
 
+def _mock_get_changed_keys_from_templates(new, old):
+    return []
+
+
 def _mock_get_template(obj, name):
     return {
         'GetTemplateResponse': {
@@ -464,6 +468,18 @@ class TestAWSCFNOutput(object):
             aws_secret_access_key='secret'
         )
         assert_equals(False, cfno._stack_exists(cfn, 'test'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
+                _mock_get_template)
+    @mock.patch('pmcf.utils.get_changed_keys_from_templates',
+                _mock_get_changed_keys_from_templates)
+    def test__get_difference_no_difference(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals([], cfno._get_difference(cfn, 'test', '{"a": "b"}'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
                 _mock_get_template)
