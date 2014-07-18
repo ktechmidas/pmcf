@@ -72,8 +72,9 @@ class C4AWSCFNOutput(AWSCFNOutput):
                     metadata['environment'],
                     metadata['version']])
 
-            if metadata.has_key('generation'):
-                farmname=farmname+"-"+metadata['generation']
+            generation = metadata.get('generation', None)
+            if generation:
+                farmname = "%s-%s" % (farmname, generation)
 
             metadata['tags'] = {
                 'Project': metadata['name'],
@@ -84,7 +85,7 @@ class C4AWSCFNOutput(AWSCFNOutput):
                 'Owner': metadata['owner']
             }
 
-            if metadata.has_key('generation'):
+            if generation:
                 metadata['tags']['FarmGeneration'] = metadata['generation']
 
         except KeyError, e:
