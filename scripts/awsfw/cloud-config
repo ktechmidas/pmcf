@@ -1,0 +1,14 @@
+#cloud-config
+preserve_hostname: true
+manage_etc_hosts: false
+
+apt_update: true
+apt_upgrade: true
+apt_reboot_if_required: false #Should set to true?
+
+packages:
+  - python-pip
+  - xmlstarlet
+  - libdigest-hmac-perl
+  - gdebi
+

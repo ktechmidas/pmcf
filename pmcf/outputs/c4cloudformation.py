@@ -72,6 +72,9 @@ class C4AWSCFNOutput(AWSCFNOutput):
                     metadata['environment'],
                     metadata['version']])
 
+            if metadata.has_key('generation'):
+                farmname=farmname+"-"+metadata['generation']
+
             metadata['tags'] = {
                 'Project': metadata['name'],
                 'Environment': metadata['environment'],
@@ -80,6 +83,10 @@ class C4AWSCFNOutput(AWSCFNOutput):
                 'ReviewDate': review_date,
                 'Owner': metadata['owner']
             }
+
+            if metadata.has_key('generation'):
+                metadata['tags']['FarmGeneration'] = metadata['generation']
+
         except KeyError, e:
             raise ProvisionerException(str(e))
 

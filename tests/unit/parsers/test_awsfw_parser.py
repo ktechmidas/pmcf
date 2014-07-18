@@ -741,6 +741,7 @@ class TestParserData(object):
             'instance_secretkey',
             'owner',
             'version',
+            'generation',
             'strategy',
         ]
         assert_equals(set(keys), set(self.data['config'].keys()))

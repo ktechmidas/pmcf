@@ -49,7 +49,10 @@ class AWSFWProvisioner(BaseProvisioner):
 
         ud = self.add_file(ud, 'scripts/awsfw/part-handler',
                            'part-handler', compress=False)
-        ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl', 'x-s3curl', False)
+        ud = self.add_file(ud, 'scripts/awsfw/cloud-config',
+                           'cloud-config', compress=False)
+        ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl',
+                           'x-s3curl', compress=False)
 
         args['roles'] = ','.join(args['roles'])
         args['apps'] = ','.join(args['apps'])

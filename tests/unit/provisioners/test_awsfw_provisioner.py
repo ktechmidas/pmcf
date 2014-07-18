@@ -37,7 +37,8 @@ class TestAWSFWProvisioner(object):
         self.message = email.message_from_string(data)
 
     def test_userdata_contains_expected_files(self):
-        expected_files = ['part-handler', 's3curl.pl', 'vars', 'bootstrap.sh']
+        expected_files = ['part-handler', 'cloud-config',
+                          's3curl.pl', 'vars', 'bootstrap.sh']
 
         fnames = []
         for part in self.message.walk():
