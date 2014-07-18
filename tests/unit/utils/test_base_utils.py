@@ -23,6 +23,10 @@ def mock_colourise(start, string, end=None):
     return string
 
 
+def mock_valchange(old, new):
+    return ['a']
+
+
 class TestUtils(object):
 
     def test_error(self):
@@ -52,3 +56,41 @@ class TestUtils(object):
         b = '{"a": [1, 2, 4]}'
         output = utils.make_diff(a, b)
         assert_equals(True, len(output) > 0)
+
+    @mock.patch('pmcf.utils.valchange', mock_valchange)
+    def test_get_changed_keys_from_templates_same_data(self):
+        a = '{"a": [1, 2, 3]}'
+        b = '{"a": [1, 2, 3]}'
+        output = utils.get_changed_keys_from_templates(a, b)
+        assert_equals(True, len(output) == 0)
+
+    @mock.patch('pmcf.utils.valchange', mock_valchange)
+    def test_get_changed_keys_from_templates_different_data(self):
+        a = '{"a": [1, 2, 3]}'
+        b = '{"a": [1, 2, 4]}'
+        output = utils.get_changed_keys_from_templates(a, b)
+        assert_equals(True, len(output) == 1)
+
+    def test_valchange_same_data(self):
+        a = {"a": [1, 2, 3]}
+        b = {"a": [1, 2, 3]}
+        output = utils.valchange(a, b)
+        assert_equals(True, len(output) == 0)
+
+    def test_valchange_same_data_nested_dict(self):
+        a = {"a": {"b": [1, 2, 3]}}
+        b = {"a": {"b": [1, 2, 3]}}
+        output = utils.valchange(a, b)
+        assert_equals(True, len(output) == 0)
+
+    def test_valchange_missing_key(self):
+        a = {"a": {"b": [1, 2, 3]}}
+        b = {"a": {"c": [1, 2, 3]}}
+        output = utils.valchange(a, b)
+        assert_equals(True, len(output) == 1)
+
+    def test_valchange_different_data(self):
+        a = {"a": {"b": [1, 2, 3]}}
+        b = {"a": {"b": [1, 2, 4]}}
+        output = utils.valchange(a, b)
+        assert_equals(True, len(output) == 1)
