@@ -86,3 +86,15 @@ class TestC4CFNOutput(object):
             'version': '1.2',
         }
         assert_equals(cfno.run({}, metadata), True)
+
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput.run', _mock_run)
+    def test_run_succeeds_with_generation(self):
+        cfno = C4AWSCFNOutput()
+        metadata = {
+            'name': 'test',
+            'owner': 'nobody',
+            'environment': 'dev',
+            'version': '1.2',
+            'generation': 'a',
+        }
+        assert_equals(cfno.run({}, metadata), True)
