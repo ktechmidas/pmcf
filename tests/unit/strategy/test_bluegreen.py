@@ -30,3 +30,9 @@ class TestBlueGreenStrategy(object):
     def test_should_prompt_delete_false(self):
         strategy = BlueGreen()
         assert_equals(strategy.should_prompt('delete'), False)
+
+    def test_allowed_update_should_not_match_invalid(self):
+        strategy = BlueGreen()
+        match = strategy.allowed_update()
+        matcher = 'anything, really, nothing will match'
+        assert_equals(match.match(matcher), None)

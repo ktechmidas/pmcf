@@ -12,7 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_not_equal
 
 from pmcf.strategy import PromptInPlace
 
@@ -30,3 +30,29 @@ class TestPromptInPlaceStrategy(object):
     def test_should_prompt_delete_false(self):
         strategy = PromptInPlace()
         assert_equals(strategy.should_prompt('delete'), True)
+
+    def test_allowed_update_should_match_valid(self):
+        strategy = PromptInPlace()
+        match = strategy.allowed_update()
+        print match
+        matcher = '%s.LCfoo.%s.%s.%s.%s.%s' % (
+            'Resources',
+            'Metadata',
+            'AWS::CloudFormation::Init',
+            'trigger',
+            'commands',
+            '01-echo.command'
+        )
+        assert_not_equal(match.match(matcher), None)
+
+    def test_allowed_update_should_not_match_invalid(self):
+        strategy = PromptInPlace()
+        match = strategy.allowed_update()
+        matcher = 'LCfoo.%s.%s.%s.%s.%s' % (
+            'Metadata',
+            'AWS::CloudFormation::Init',
+            'trigger',
+            'commands',
+            '01-echo.command'
+        )
+        assert_equals(match.match(matcher), None)

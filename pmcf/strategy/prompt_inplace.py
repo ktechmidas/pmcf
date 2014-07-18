@@ -21,6 +21,7 @@
 """
 
 import logging
+import re
 
 from pmcf.strategy.base_strategy import BaseStrategy
 
@@ -60,6 +61,16 @@ class PromptInPlace(BaseStrategy):
         """
 
         return True
+
+    def allowed_update(self):
+        return re.compile('^%s\.LC.*\.%s\.%s\.%s\.%s\.%s$' % (
+            'Resources',
+            'Metadata',
+            'AWS::CloudFormation::Init',
+            'trigger',
+            'commands',
+            '01-echo.command'
+        ))
 
 
 __all__ = [

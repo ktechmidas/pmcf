@@ -21,6 +21,7 @@
 """
 
 import logging
+import re
 
 from pmcf.strategy.base_strategy import BaseStrategy
 
@@ -59,6 +60,15 @@ class BlueGreen(BaseStrategy):
         """
 
         return False
+
+    def allowed_update(self):
+        """
+        Match value for items in the stack that are allowed to update.
+
+        :returns: _sre.SRE_Pattern.
+        """
+
+        return re.compile('^$')
 
 
 __all__ = [

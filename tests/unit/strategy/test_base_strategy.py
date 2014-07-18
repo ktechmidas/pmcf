@@ -34,3 +34,7 @@ class TestBaseStrategy(object):
     def test_should_prompt_raises(self):
         assert_raises(NotImplementedError,
                       self.strategy.should_prompt, 'update')
+
+    def test_allowed_update_raises(self):
+        assert_raises(NotImplementedError,
+                      self.strategy.allowed_update)

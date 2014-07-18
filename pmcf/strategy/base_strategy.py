@@ -63,6 +63,16 @@ class BaseStrategy(object):
 
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def allowed_update(self):
+        """
+        Match value for items in the stack that are allowed to update.
+
+        :returns: _sre.SRE_Pattern.
+        """
+
+        raise NotImplementedError
+
 
 __all__ = [
     BaseStrategy,
