@@ -30,6 +30,7 @@ import time
 from pmcf.exceptions import AuditException, ProvisionerException
 from pmcf.outputs.json_output import JSONOutput
 from pmcf.utils import import_from_string, make_diff
+from pmcf.utils import get_changed_keys_from_templates
 
 LOG = logging.getLogger(__name__)
 
@@ -46,6 +47,11 @@ class AWSCFNOutput(JSONOutput):
         if os.isatty(sys.stdout.fileno()):
             return raw_input(prompt)
         return 'y'
+
+    def _get_difference(self, cfn, stack, data):
+        resp = cfn.get_template(stack)['GetTemplateResponse']
+        old_body = resp['GetTemplateResult']['TemplateBody']
+        return get_changed_keys_from_templates(old_body, data)
 
     def _show_prompt(self, cfn, stack, data):
         resp = cfn.get_template(stack)['GetTemplateResponse']
@@ -214,6 +220,33 @@ class AWSCFNOutput(JSONOutput):
                 creds = {}
                 dest = ''
                 url = ''
+
+            if action == 'update':
+                if self._stack_exists(cfn, metadata['name']):
+                    LOG.info('stack %s exists, updating', metadata['name'])
+                    allowed_update = strategy.allowed_update()
+
+                    for change in self._get_difference(cfn,
+                                                       metadata['name'],
+                                                       data):
+                        if not allowed_update.match(change):
+                            raise ProvisionerException(
+                                'Not updating: %s not allowed field' % change)
+                    if upload:
+                        self._upload_stack(data, dest, creds)
+                        cfn.validate_template(template_url=url)
+                        cfn.update_stack(metadata['name'], template_url=url,
+                                         capabilities=capabilities, tags=tags)
+                    else:
+                        cfn.validate_template(data)
+                        cfn.update_stack(metadata['name'], data,
+                                         capabilities=capabilities, tags=tags)
+
+                    return self.do_poll(cfn, metadata['name'], poll, action)
+
+                else:
+                    LOG.info("stack %s doesn't exist", metadata['name'])
+                    return True
 
             if self._stack_exists(cfn, metadata['name']):
                 if not strategy.should_update(action):
