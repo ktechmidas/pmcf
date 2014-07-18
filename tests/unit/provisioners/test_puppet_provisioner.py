@@ -161,6 +161,7 @@ class TestPuppetProvisioner(object):
                         "01-run_puppet": {
                             "command": "puppet apply --modulepath "
                                        "/var/tmp/puppet/modules "
+                                       "--environment first_run " +
                                        "--logdest syslog " +
                                        "/var/tmp/puppet/manifests/site.pp",
                             "ignoreErrors": "true",
