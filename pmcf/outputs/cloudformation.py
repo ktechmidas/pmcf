@@ -226,9 +226,12 @@ class AWSCFNOutput(JSONOutput):
                     LOG.info('stack %s exists, updating', metadata['name'])
                     allowed_update = strategy.allowed_update()
 
-                    for change in self._get_difference(cfn,
-                                                       metadata['name'],
-                                                       data):
+                    diff = self._get_difference(cfn, metadata['name'], data)
+                    if len(diff) == 0:
+                        LOG.warning('No difference, not updating')
+                        return True
+
+                    for change in diff:
                         if not allowed_update.match(change):
                             raise ProvisionerException(
                                 'Not updating: %s not allowed field' % change)

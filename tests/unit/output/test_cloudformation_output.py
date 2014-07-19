@@ -16,6 +16,7 @@ import boto
 import mock
 from nose.tools import assert_equals, assert_raises
 import random
+import re
 import sys
 import datetime
 
@@ -113,6 +114,18 @@ def _mock_describe_stack_fails(obj, name):
 
 def _mock_get_changed_keys_from_templates(new, old):
     return []
+
+
+def _mock_get_difference_no_diff(self, cfn, new, old):
+    return []
+
+
+def _mock_get_difference_diff(self, cfn, new, old):
+    return ['test.test']
+
+
+def _mock_allowed_update(self):
+    return re.compile('test')
 
 
 def _mock_get_template(obj, name):
@@ -345,6 +358,118 @@ class TestAWSCFNOutput(object):
                       metadata, action='delete', upload=True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
+    def test_run_update_stack_does_not_exist_returns_true(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_equals(True, cfno.run('{"a": "b"}', metadata, action='update'))
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_no_diff)
+    def test_run_update_stack_exists_no_update_returns_true(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_equals(True, cfno.run('{"a": "b"}', metadata, action='update'))
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
+    def test_run_update_stack_exists_no_update_allowed_raises(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_raises(ProvisionerException, cfno.run,
+                      '{"a": "b"}', metadata, action='update')
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
+    @mock.patch('pmcf.strategy.inplace.InPlace.allowed_update',
+                _mock_allowed_update)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._upload_stack',
+                _mock_upload)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template_url)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack_url)
+    def test_run_update_stack_exists_update_allowed_upload_returns_true(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata, poll=False,
+                               action='update', upload=True), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
+    @mock.patch('pmcf.strategy.inplace.InPlace.allowed_update',
+                _mock_allowed_update)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template_url)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
+                _mock_create_stack_url)
+    def test_run_update_stack_exists_update_allowed_returns_true(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata, poll=False,
+                               action='update', upload=False), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
         'boto.cloudformation.CloudFormationConnection.validate_template',
         _mock_validate_template_url)
@@ -390,6 +515,24 @@ class TestAWSCFNOutput(object):
             'audit': 'S3Audit',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    def test_run_create_stack_existing_stack_no_update_allowed_raises(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'tags': {
+                'Name': 'test'
+            }
+        }
+        assert_raises(ProvisionerException, cfno.run, '{"a": "b"}', metadata)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
