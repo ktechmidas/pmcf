@@ -96,6 +96,13 @@ def _mock_create_stack_fails(obj, name, data, capabilities, tags):
     raise boto.exception.BotoServerError('I fail', 'nope')
 
 
+def _mock_describe_stack_raises_does_not_exist(obj, name):
+    status = 404
+    reason = 'nope'
+    body = {'message': 'that does not exist'}
+    raise boto.exception.BotoServerError(status, reason, body=body)
+
+
 def _mock_describe_stack(obj, name):
     return {}
 
@@ -698,3 +705,23 @@ class TestAWSCFNOutput(object):
         }
         assert_raises(ProvisionerException, cfno._upload_stack,
                       '{}', 'test', creds)
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_raises_does_not_exist)
+    def test_do_poll_true_delete_returns_true_on_non_existing_stack(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno.do_poll(cfn, 'test', True, 'delete'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_raises_does_not_exist)
+    def test_do_poll_true_create_returns_false_on_non_existing_stack(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno.do_poll(cfn, 'test', True, 'create'))
