@@ -84,6 +84,14 @@ def _mock_create_stack(obj, name, data, capabilities, tags):
     pass
 
 
+def _mock_delete_stack(obj, name):
+    pass
+
+
+def _mock_delete_stack_fails(obj, name):
+    raise boto.exception.BotoServerError('I fail', 'nope')
+
+
 def _mock_create_stack_fails(obj, name, data, capabilities, tags):
     raise boto.exception.BotoServerError('I fail', 'nope')
 
@@ -248,6 +256,86 @@ class TestAWSCFNOutput(object):
             'audit_output': 'thingy',
         }
         assert_equals(cfno.run('{"a": "b"}', metadata, upload=True), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
+    def test_run_delete_nonexistant_stack_succeeds(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata,
+                      action='delete', upload=True), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.delete_stack',
+                _mock_delete_stack)
+    def test_run_delete_existing_stack_succeeds(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata,
+                      action='delete', upload=True), True)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.delete_stack',
+                _mock_delete_stack)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_input',
+                _mock_return_no)
+    def test_run_delete_existing_stack_prompt_no_returns_false(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'PromptInPlace',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata,
+                      action='delete', upload=True), False)
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.delete_stack',
+                _mock_delete_stack_fails)
+    def test_run_delete_existing_stack_exception_raises(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'access': '1234',
+            'secret': '2345',
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+            'audit_output': 'thingy',
+            'strategy': 'InPlace',
+        }
+        assert_raises(ProvisionerException, cfno.run, '{"a": "b"}',
+                      metadata, action='delete', upload=True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
