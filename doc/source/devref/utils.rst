@@ -24,5 +24,5 @@ The utils classes in pmcf
 
 .. automodule:: pmcf.utils
     :noindex:
-    :members: get_changed_keys_from_templates, import_from_string, error, init_error, colourise_output, make_diff, valchange
+    :members: colourise_output, error, get_changed_keys_from_templates, import_from_string, init_error, is_term, make_diff, valchange
     :undoc-members:

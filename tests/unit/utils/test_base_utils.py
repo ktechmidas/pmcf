@@ -13,17 +13,23 @@
 #    under the License.
 
 import mock
-from nose.tools import assert_equals, assert_raises
+from nose.tools import assert_equals, assert_not_equal, assert_raises
+import sys
+import tempfile
 
 from pmcf import exceptions
 from pmcf import utils
 
 
-def mock_colourise(start, string, end=None):
+def _mock_is_term():
+    return True
+
+
+def _mock_colourise(start, string, end=None):
     return string
 
 
-def mock_valchange(old, new):
+def _mock_valchange(old, new):
     return ['a']
 
 
@@ -45,26 +51,69 @@ class TestUtils(object):
         from pmcf.parsers import BaseParser
         assert_equals(BaseParser, kls)
 
-    @mock.patch('pmcf.utils.colourise_output', mock_colourise)
+    def test_is_term_not_term(self):
+        # Default under nostests is no
+        assert_equals(False, utils.is_term())
+
+    def test_is_term_has_fileno(self):
+        with tempfile.TemporaryFile() as fd:
+            save = sys.stdout
+            sys.stdout = fd
+            assert_equals(False, utils.is_term())
+            sys.stdout = save
+
+    @mock.patch('pmcf.utils.is_term', _mock_is_term)
+    def test_colourise_output_red(self):
+        with tempfile.TemporaryFile() as fd:
+            save = sys.stdout
+            sys.stdout = fd
+            assert_not_equal('foo', utils.colourise_output('red', 'foo'))
+            sys.stdout = save
+
+    @mock.patch('pmcf.utils.is_term', _mock_is_term)
+    def test_colourise_output_green(self):
+        with tempfile.TemporaryFile() as fd:
+            save = sys.stdout
+            sys.stdout = fd
+            assert_not_equal('foo', utils.colourise_output('green', 'foo'))
+            sys.stdout = save
+
+    @mock.patch('pmcf.utils.is_term', _mock_is_term)
+    def test_colourise_output_yellow(self):
+        with tempfile.TemporaryFile() as fd:
+            save = sys.stdout
+            sys.stdout = fd
+            assert_not_equal('foo', utils.colourise_output('yellow', 'foo'))
+            sys.stdout = save
+
+    @mock.patch('pmcf.utils.is_term', _mock_is_term)
+    def test_colourise_output_cyan(self):
+        with tempfile.TemporaryFile() as fd:
+            save = sys.stdout
+            sys.stdout = fd
+            assert_not_equal('foo', utils.colourise_output('cyan', 'foo'))
+            sys.stdout = save
+
+    @mock.patch('pmcf.utils.colourise_output', _mock_colourise)
     def test_make_diff_same_data(self):
         a = b = '[1, 2, 3]'
         assert_equals(utils.make_diff(a, b), '')
 
-    @mock.patch('pmcf.utils.colourise_output', mock_colourise)
+    @mock.patch('pmcf.utils.colourise_output', _mock_colourise)
     def test_make_diff_different_data(self):
         a = '{"a": [1, 2, 3]}'
         b = '{"a": [1, 2, 4]}'
         output = utils.make_diff(a, b)
         assert_equals(True, len(output) > 0)
 
-    @mock.patch('pmcf.utils.valchange', mock_valchange)
+    @mock.patch('pmcf.utils.valchange', _mock_valchange)
     def test_get_changed_keys_from_templates_same_data(self):
         a = '{"a": [1, 2, 3]}'
         b = '{"a": [1, 2, 3]}'
         output = utils.get_changed_keys_from_templates(a, b)
         assert_equals(True, len(output) == 0)
 
-    @mock.patch('pmcf.utils.valchange', mock_valchange)
+    @mock.patch('pmcf.utils.valchange', _mock_valchange)
     def test_get_changed_keys_from_templates_different_data(self):
         a = '{"a": [1, 2, 3]}'
         b = '{"a": [1, 2, 4]}'

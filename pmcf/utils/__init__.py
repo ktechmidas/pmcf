@@ -86,7 +86,13 @@ def error(resource, msg):
 
 
 def is_term():
-    if isinstance(sys.stdout, file):
+    """
+    Wrapper method to determine if stdout looks like it is on a terminal
+
+    :returns: bool.
+    """
+
+    if hasattr(sys.stdout, 'fileno'):
         return os.isatty(sys.stdout.fileno())
     return False
 
@@ -205,8 +211,9 @@ __all__ = [
     colourise_output,
     error,
     get_changed_keys_from_templates,
-    init_error,
     import_from_string,
+    init_error,
+    is_term,
     make_diff,
     valchange,
 ]
