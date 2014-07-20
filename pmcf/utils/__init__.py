@@ -85,12 +85,17 @@ def error(resource, msg):
     init_error(msg, res_type, res_title)
 
 
+def is_term():
+    if isinstance(sys.stdout, file):
+        return os.isatty(sys.stdout.fileno())
+    return False
+
+
 def colourise_output(start, line, end='reset'):
     # Simple coloured output
 
-    if isinstance(sys.stdout, file):
-        if not os.isatty(sys.stdout.fileno()):
-            return line
+    if not is_term():
+        return line
 
     if colourise_output.init == 0:
         curses.setupterm()

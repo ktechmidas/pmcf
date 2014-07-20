@@ -23,14 +23,12 @@
 import boto
 import json
 import logging
-import os
-import sys
 import time
 
 from pmcf.exceptions import AuditException, ProvisionerException
 from pmcf.outputs.json_output import JSONOutput
 from pmcf.utils import import_from_string, make_diff
-from pmcf.utils import get_changed_keys_from_templates
+from pmcf.utils import get_changed_keys_from_templates, is_term
 
 LOG = logging.getLogger(__name__)
 
@@ -44,7 +42,7 @@ class AWSCFNOutput(JSONOutput):
     """
 
     def _get_input(self, prompt):
-        if os.isatty(sys.stdout.fileno()):
+        if is_term():
             return raw_input(prompt)
         return 'y'
 

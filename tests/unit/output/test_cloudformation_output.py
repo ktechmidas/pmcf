@@ -223,7 +223,16 @@ def _mock_s3_connect_raises(aws_access_key_id, aws_secret_access_key):
     raise boto.exception.BotoServerError('nope', 'nope')
 
 
+def _mock_is_term_false():
+    return False
+
+
 class TestAWSCFNOutput(object):
+
+    @mock.patch('pmcf.utils.is_term', _mock_is_term_false)
+    def test__get_input_not_term(self):
+        cfno = AWSCFNOutput()
+        assert_equals(cfno._get_input('test'), 'y')
 
     def test_run_no_region_raises(self):
         cfno = AWSCFNOutput()
