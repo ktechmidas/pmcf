@@ -122,6 +122,7 @@ class YamlParser(BaseParser):
                         self._get_value_for_env(item,
                                                 args['environment'],
                                                 field)
+
         for lb in data['resources'].get('load_balancer', []):
             for field in ['policy']:
                 item = lb.get(field, None)
@@ -140,6 +141,18 @@ class YamlParser(BaseParser):
                             self._get_value_for_env(item,
                                                     args['environment'],
                                                     field)
+
+        dropped = []
+        for idx, instance in enumerate(data['resources'].get('instance', [])):
+            stages = instance.pop('stages', [])
+            if stages:
+                if args['environment'] not in stages:
+                    LOG.debug('Found instance not in %s: %s' % (
+                        stages,
+                        instance['name']))
+                    dropped.append(idx)
+        for drop in reversed(dropped):
+            data['resources']['instance'].pop(drop)
 
         self._stack['resources'].update(data['resources'])
 
