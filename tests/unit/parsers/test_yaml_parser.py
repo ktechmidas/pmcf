@@ -118,6 +118,34 @@ class TestParser(object):
         sgs = ['app', 'sg-123']
         assert_equals(data['resources']['instance'][0]['sg'], sgs)
 
+    @mock.patch('jsonschema.validate', _mock_validate)
+    def test_instance_present_dev(self):
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/ais-test-farm-stage.yaml'
+        data = parser.parse_file(fname, args)
+        assert_equals(len(data['resources']['instance']), 2)
+
+    @mock.patch('jsonschema.validate', _mock_validate)
+    def test_instance_missing_prod(self):
+        args = {
+            'environment': 'prod',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/ais-test-farm-stage.yaml'
+        data = parser.parse_file(fname, args)
+        assert_equals(len(data['resources']['instance']), 1)
+
 
 class TestParserData(object):
 

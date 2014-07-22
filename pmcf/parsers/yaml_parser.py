@@ -147,11 +147,11 @@ class YamlParser(BaseParser):
             stages = instance.pop('stages', [])
             if stages:
                 if args['environment'] not in stages:
-                    LOG.debug('Found instance not in %s: %s' % (
-                        stages,
+                    LOG.debug('Found instance not present in %s: %s' % (
+                        args['environment'],
                         instance['name']))
-                    dropped.append(idx)
-        for drop in reversed(dropped):
+                    dropped.insert(0, idx)
+        for drop in dropped:
             data['resources']['instance'].pop(drop)
 
         self._stack['resources'].update(data['resources'])

@@ -1,0 +1,30 @@
+config:
+  name: ais
+  environments:
+      - dev
+      - stage
+      - qa
+      - prod
+resources:
+  instance:
+    - name: app
+      count: 3
+      lb: app
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: puppet
+      monitoring: False
+      size: m1.large
+    - name: app2
+      count: 3
+      lb: app
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: puppet
+      monitoring: False
+      size: m1.large
+      stages:
+        - dev
+        - qa
