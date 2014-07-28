@@ -53,6 +53,13 @@ Optional fields that can also be used:
         A list of block devices that should be created and attached to the
         instances
 
+:dns:
+        A dictionary of data associated with a DNS record for the instance.
+        The dictionary has 2 required keys, type and zone.  Type is one of
+        per-instance-private, per-instance-public, per-group-private or
+        per-group-public.  zone is the route53 hosted zone to create the
+        record in.
+
 :lb:
         A list of names of loadbalancers
 

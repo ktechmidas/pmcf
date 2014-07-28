@@ -107,6 +107,21 @@ definitions:
                 minimum: 1
             depends:
                 type: string
+            dns:
+                type: object
+                properties:
+                    type:
+                        enum:
+                            - per-instance-private
+                            - per-instance-public
+                            - per-group-private
+                            - per-group-public
+                    zone:
+                        type: string
+                required:
+                    - type
+                    - zone
+                additionalProperties: false
             image:
                 type: string
             monitoring:

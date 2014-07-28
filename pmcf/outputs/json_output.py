@@ -313,6 +313,22 @@ class JSONOutput(BaseOutput):
                     propogate=True,
                 )
             ]
+            if inst.get('dns'):
+                dnstag = {
+                    'record': inst['name'],
+                    'zone': "%s.%s" % (
+                        config['environment'],
+                        inst['dns']['zone'],
+                    ),
+                    'type': inst['dns']['type'],
+                }
+                asgtags.append(
+                    autoscaling.Tag(
+                        key='DNS',
+                        value=json.dumps(dnstag),
+                        propogate=True,
+                    ))
+
             inst['min'] = inst.get('min', inst['count'])
             inst['max'] = inst.get('max', inst['count'])
             asgargs = {
