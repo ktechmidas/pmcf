@@ -323,8 +323,8 @@ class JSONOutput(BaseOutput):
                 'MinSize': inst['max'],
                 'Tags': asgtags
             }
-            if config.get('vpcid') and config.get('subnets'):
-                asgargs['VPCZoneIdentifier'] = config['subnets']
+            if config.get('vpcid') and inst.get('subnets'):
+                asgargs['VPCZoneIdentifier'] = inst['subnets']
             if inst.get('lb'):
                 asgargs['LoadBalancerNames'] = [
                     Ref(lbs["ELB" + x]) for x in inst['lb']

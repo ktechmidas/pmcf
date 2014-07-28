@@ -168,6 +168,8 @@ class YamlParser(BaseParser):
                     )
 
         for instance in self._stack['resources']['instance']:
+            if data['config'].get('subnets') and data['config'].get('vpcid'):
+                instance['subnets'] = data['config']['subnets']
             if not instance.get('notify', None):
                 if self._stack['config'].get('notify', None):
                     instance['notify'] = self._stack['config']['notify']

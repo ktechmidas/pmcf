@@ -1915,7 +1915,8 @@ class TestJSONOutput(object):
                     'provider': 'AWSFWProvisioner'},
                 'sg': [],
                 'size': 'm1.large',
-                'sshKey': 'bootstrap'
+                'sshKey': 'bootstrap',
+                'subnets': ['test-123'],
             }]
         }
         tmpl = out.add_resources(res, cfg)

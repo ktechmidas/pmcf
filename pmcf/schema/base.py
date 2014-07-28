@@ -129,6 +129,9 @@ definitions:
                     - $ref: "#/definitions/noopprovisioner"
             sg:
                 type: array
+            subnets:
+                type: array
+                minItems: 1
             sshKey:
                 type: string
             size:
