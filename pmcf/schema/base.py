@@ -52,6 +52,8 @@ definitions:
                         type: string
                     bucket:
                         type: string
+                    find_nodes:
+                        type: boolean
                 required:
                     - bucket
                 additionalProperties: false

@@ -59,6 +59,10 @@ class PuppetProvisioner(BaseProvisioner):
         :returns: None or dict.
         """
         s3_res = []
+        statement = {
+            "Version": "2012-10-17",
+            "Statement": []
+        }
         if args.get('infrastructure'):
             s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
                 args['bucket'],
@@ -81,14 +85,20 @@ class PuppetProvisioner(BaseProvisioner):
                 args['application']
             ))
         if len(s3_res) > 0:
-            return {
-                "Version": "2012-10-17",
-                "Statement": [{
-                    "Effect": "Allow",
-                    "Action": ["s3:GetObject"],
-                    "Resource": s3_res,
-                }]
-            }
+            statement['Statement'].append({
+                "Effect": "Allow",
+                "Action": ["s3:GetObject"],
+                "Resource": s3_res,
+            })
+        if args.get('find_nodes'):
+            statement['Statement'].append({
+                "Effect": "Allow",
+                "Action": ["ec2:DescribeInstances"],
+                "Resource": "*",
+            })
+
+        if len(statement['Statement']) > 0:
+            return statement
         return None
 
     def userdata(self, args):
