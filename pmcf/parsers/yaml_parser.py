@@ -158,7 +158,7 @@ class YamlParser(BaseParser):
 
         for lb in self._stack['resources']['load_balancer']:
             if data['config'].get('subnets'):
-                lb['subnets'] = data['config']['subnets']
+                lb['subnets'] = lb.get('subnets', data['config']['subnets'])
             lb['policy'] = lb.get('policy', [])
             for idx, policy in enumerate(lb['policy']):
                 if policy['type'] == 'log_policy':
@@ -169,7 +169,9 @@ class YamlParser(BaseParser):
 
         for instance in self._stack['resources']['instance']:
             if data['config'].get('subnets') and data['config'].get('vpcid'):
-                instance['subnets'] = data['config']['subnets']
+                instance['subnets'] = instance.get(
+                    'subnets',
+                    data['config']['subnets'])
             if not instance.get('notify', None):
                 if self._stack['config'].get('notify', None):
                     instance['notify'] = self._stack['config']['notify']
