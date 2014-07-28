@@ -172,9 +172,12 @@ class YamlParser(BaseParser):
                 instance['subnets'] = instance.get(
                     'subnets',
                     data['config']['subnets'])
-            if not instance.get('notify', None):
-                if self._stack['config'].get('notify', None):
-                    instance['notify'] = self._stack['config']['notify']
+
+            if self._stack['config'].get('notify', None):
+                instance['notify'] = instance.get(
+                    'notify',
+                    self._stack['config']['notify'])
+
             if not instance.get('provisioner', None):
                 if self._stack['config'].get('provisioner', '') ==\
                         'PuppetProvisioner':
@@ -199,7 +202,6 @@ class YamlParser(BaseParser):
                     instance['sg'] = instance.get('sg', [])
                     instance['sg'].append(instance['name'])
             if not self._stack['config'].get('nodefaultsg'):
-                instance['sg'] = instance.get('sg', [])
                 if data['config'].get('vpcid') and \
                         data['config'].get('defaultsg'):
                     instance['sg'].append(data['config']['defaultsg'])
