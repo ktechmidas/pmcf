@@ -92,6 +92,7 @@ def main():
         lvl = logging.WARNING
 
     logging.basicConfig(format=FORMAT, level=lvl)
+    logging.getLogger('boto').setLevel(logging.CRITICAL)
 
     LOG = logging.getLogger(__name__)
 
