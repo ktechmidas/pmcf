@@ -78,7 +78,6 @@ class AWSCFNOutput(JSONOutput):
         """
 
         LOG.info('Checking for existance of stack %s' % stack)
-        LOG.info('Please ignore boto error messages')
         try:
             cfn.describe_stacks(stack)
         except boto.exception.BotoServerError:
