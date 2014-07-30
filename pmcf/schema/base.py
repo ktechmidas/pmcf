@@ -50,6 +50,8 @@ definitions:
                         type: string
                     application:
                         type: string
+                    appname:
+                        type: string
                     bucket:
                         type: string
                     find_nodes:

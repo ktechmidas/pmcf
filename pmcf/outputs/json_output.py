@@ -210,6 +210,7 @@ class JSONOutput(BaseOutput):
                 'stackname': config['name'],
                 'resource': "LC%s" % inst['name'],
             })
+            args['appname'] = args.get('appname', config['name'])
             if config.get("version", None):
                 args["version"] = config["version"]
             provider = inst['provisioner']['provider']

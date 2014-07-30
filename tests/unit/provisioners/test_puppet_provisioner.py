@@ -87,6 +87,7 @@ class TestPuppetProvisioner(object):
             'role': 'instance-blah',
             'name': 'test',
             'stackname': 'test',
+            'appname': 'test',
             'resource': 'LCtest',
             'environment': 'dev',
         }
@@ -246,6 +247,7 @@ class TestPuppetProvisioner(object):
             'role': 'instance-blah',
             'name': 'test',
             'stackname': 'test',
+            'appname': 'test',
             'resource': 'LCtest',
             'environment': 'dev',
         }

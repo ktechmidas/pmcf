@@ -80,7 +80,7 @@ class PuppetProvisioner(BaseProvisioner):
             s3_res.append("arn:aws:s3:::%s/artifacts/%s/%s/%s/%s" % (
                 args['bucket'],
                 "application",
-                args['stackname'],
+                args['appname'],
                 args['environment'],
                 args['application']
             ))
@@ -267,7 +267,7 @@ class PuppetProvisioner(BaseProvisioner):
                 "commands": {
                     "01-run_deploy": {
                         "command": "/srv/apps/bin/deploy deploy %s %s %s" % (
-                            args['stackname'],
+                            args['appname'],
                             args['application'],
                             args['environment'],
                         )
