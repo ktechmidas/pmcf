@@ -20,6 +20,7 @@
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
+import errno
 import json
 import logging
 import re
@@ -391,7 +392,14 @@ class JSONOutput(BaseOutput):
         indent = None
         if LOG.isEnabledFor(logging.DEBUG):
             indent = 4
-        print json.dumps(json.loads(data), indent=indent, sort_keys=True)
+        try:
+            print json.dumps(json.loads(data), indent=indent, sort_keys=True)
+        except IOError, e:
+            if e.errno == errno.EPIPE:
+                pass
+            else:
+                raise(e)
+
         LOG.info('Finished running data')
         self.do_audit(data, metadata)
         return True
