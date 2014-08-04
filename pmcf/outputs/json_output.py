@@ -316,12 +316,12 @@ class JSONOutput(BaseOutput):
             ]
             if inst.get('dns'):
                 dnstag = {
-                    'record': inst['name'],
-                    'zone': "%s.%s" % (
+                    'r': inst['name'],
+                    'z': "%s.%s" % (
                         config['environment'],
                         inst['dns']['zone'],
                     ),
-                    'type': inst['dns']['type'],
+                    't': inst['dns']['type'],
                 }
                 asgtags.append(
                     autoscaling.Tag(
