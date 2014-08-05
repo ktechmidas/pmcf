@@ -41,10 +41,27 @@ class AutoScalingGroup(AWSObject):
         'MinSize': (positive_integer, True),
         'NotificationConfiguration': (NotificationConfiguration, False),
         'Tags': (list, False),  # Although docs say these are required
+        'TerminationPolicies': (list, False),
         'VPCZoneIdentifier': (list, False),
     }
 
     def validate(self):
+        valid_policies = set([
+            'Default',
+            'OldestInstance',
+            'NewestInstance',
+            'OldestLaunchConfiguration',
+            'ClosestToNextInstanceHour',
+        ])
+
+        if self.properties.get('TerminationPolicies'):
+            invalid_policies = set(self.properties['TerminationPolicies']) -\
+                valid_policies
+            if len(invalid_policies) > 0:
+                raise ValueError(
+                    "Invalid TerminationPolicy declaration: "
+                    "%s not valid" % invalid_policies)
+
         if 'UpdatePolicy' in self.resource:
             update_policy = self.resource['UpdatePolicy']
             if int(update_policy.MinInstancesInService) >= int(self.MaxSize):

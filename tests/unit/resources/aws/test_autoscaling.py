@@ -130,6 +130,21 @@ class TestASGResource(TestResource):
         )
         assert_raises(PropertyException, a.JSONrepr)
 
+    def test_autoscaling_group_invalid_bad_termination_policy(self):
+        a = asg.AutoScalingGroup(
+            "test",
+            AvailabilityZones=['a', 'b', 'c'],
+            Cooldown=30,
+            DesiredCapacity=1,
+            HealthCheckGracePeriod=5,
+            HealthCheckType='ELB',
+            LaunchConfigurationName='MyLC',
+            TerminationPolicies=['Never'],
+            MaxSize=2,
+            MinSize=1
+        )
+        assert_raises(PropertyException, a.JSONrepr)
+
     def test_autoscaling_group_valid(self):
         data = {
             'Properties': {
