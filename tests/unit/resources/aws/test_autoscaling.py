@@ -117,7 +117,7 @@ class TestASGResource(TestResource):
             Cooldown=30,
             DesiredCapacity=1,
             HealthCheckGracePeriod=5,
-            HealthCheckType='BadPanda',
+            HealthCheckType='ELB',
             LaunchConfigurationName='MyLC',
             UpdatePolicy=asg.UpdatePolicy(
                 'AutoScalingRollingUpdate',
