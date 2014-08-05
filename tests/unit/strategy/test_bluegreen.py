@@ -36,3 +36,7 @@ class TestBlueGreenStrategy(object):
         match = strategy.allowed_update()
         matcher = 'anything, really, nothing will match'
         assert_equals(match.match(matcher), None)
+
+    def test_termination_policy_returns_default(self):
+        strategy = BlueGreen()
+        assert_equals(strategy.termination_policy(), ['Default'])

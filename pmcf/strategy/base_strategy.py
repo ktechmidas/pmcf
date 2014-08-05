@@ -73,6 +73,16 @@ class BaseStrategy(object):
 
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def termination_policy(self):
+        """
+        Returns a list of termination policies
+
+        :returns: list.
+        """
+
+        raise NotImplementedError
+
 
 __all__ = [
     BaseStrategy,

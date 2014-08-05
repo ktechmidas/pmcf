@@ -70,6 +70,15 @@ class InPlace(BaseStrategy):
 
         return re.compile('^$')
 
+    def termination_policy(self):
+        """
+        Returns a list of termination policies
+
+        :returns: list.
+        """
+
+        return ['Default']
+
 
 __all__ = [
     InPlace,

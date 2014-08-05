@@ -38,3 +38,7 @@ class TestBaseStrategy(object):
     def test_allowed_update_raises(self):
         assert_raises(NotImplementedError,
                       self.strategy.allowed_update)
+
+    def test_termination_policy_raises(self):
+        assert_raises(NotImplementedError,
+                      self.strategy.termination_policy)

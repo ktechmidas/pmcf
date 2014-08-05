@@ -56,3 +56,10 @@ class TestPromptInPlaceStrategy(object):
             '01-echo.command'
         )
         assert_equals(match.match(matcher), None)
+
+    def test_termination_policy_returns_array(self):
+        strategy = PromptInPlace()
+        assert_equals(
+            strategy.termination_policy(),
+            ['OldestInstance', 'Default']
+        )

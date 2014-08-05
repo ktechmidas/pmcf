@@ -72,6 +72,15 @@ class PromptInPlace(BaseStrategy):
             '01-echo.command'
         ))
 
+    def termination_policy(self):
+        """
+        Returns a list of termination policies
+
+        :returns: list.
+        """
+
+        return ['OldestInstance', 'Default']
+
 
 __all__ = [
     PromptInPlace,
