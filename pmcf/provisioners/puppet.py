@@ -197,6 +197,23 @@ class PuppetProvisioner(BaseProvisioner):
                 'infraLoad',
                 'infraPuppetRun',
             ]
+
+            if args.get('find_nodes'):
+                init['infraBootstrap'] = {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "puppet apply --modulepath " +
+                                       "/var/tmp/puppet/modules " +
+                                       "--environment bootstrap " +
+                                       "--logdest syslog " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                            "ignoreErrors": "true",
+                        }
+                    }
+                }
+
+                init['configSets']['infra'].insert(1, 'infraBootstrap')
+
             init['configSets']['infraUpdate'] = [
                 'infraLoad',
                 'infraPuppetRun',
