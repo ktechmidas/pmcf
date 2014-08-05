@@ -139,7 +139,9 @@ def get_changed_keys_from_templates(old, new):
     new_data = json.loads(new)
     if old_data == new_data:
         return ret
-    return valchange(old_data, new_data)
+    ret = valchange(old_data, new_data)
+    ret.extend(valchange(new_data, old_data))
+    return list(set(ret))
 
 
 def valchange(d1, d2, parent=''):
