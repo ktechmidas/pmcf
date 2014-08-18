@@ -218,9 +218,10 @@ class AWSCFNOutput(JSONOutput):
                 dest = ''
                 url = ''
 
-            if action == 'update':
+            data = json.dumps(json.loads(data))
+            if action == 'trigger':
                 if self._stack_exists(cfn, metadata['name']):
-                    LOG.info('stack %s exists, updating', metadata['name'])
+                    LOG.info('stack %s exists, triggering', metadata['name'])
                     allowed_update = strategy.allowed_update()
 
                     diff = self._get_difference(cfn, metadata['name'], data)
@@ -242,34 +243,16 @@ class AWSCFNOutput(JSONOutput):
                         cfn.update_stack(metadata['name'], data,
                                          capabilities=capabilities, tags=tags)
 
-                    return self.do_poll(cfn, metadata['name'], poll, action)
-
                 else:
                     LOG.info("stack %s doesn't exist", metadata['name'])
                     return True
 
-            if self._stack_exists(cfn, metadata['name']):
-                if not strategy.should_update(action):
-                    raise ProvisionerException(
-                        'Stack exists but strategy does not allow update')
+            elif action == 'create':
+                if self._stack_exists(cfn, metadata['name']):
+                    LOG.info("stack %s already exists", metadata['name'])
+                    return True
 
-                LOG.info('stack %s exists, updating', metadata['name'])
-                if strategy.should_prompt('update'):
-                    if not self._show_prompt(cfn, metadata['name'], data):
-                        return True
-
-                if upload:
-                    self._upload_stack(data, dest, creds)
-                    cfn.validate_template(template_url=url)
-                    cfn.update_stack(metadata['name'], template_url=url,
-                                     capabilities=capabilities, tags=tags)
-                else:
-                    cfn.validate_template(data)
-                    cfn.update_stack(metadata['name'], data,
-                                     capabilities=capabilities, tags=tags)
-            else:
                 LOG.info("stack %s doesn't exist, creating", metadata['name'])
-                data = json.dumps(json.loads(data))
                 if upload:
                     self._upload_stack(data, dest, creds)
                     cfn.validate_template(template_url=url)
@@ -279,6 +262,27 @@ class AWSCFNOutput(JSONOutput):
                     cfn.validate_template(data)
                     cfn.create_stack(metadata['name'], data,
                                      capabilities=capabilities, tags=tags)
+
+            elif action == 'update':
+                if self._stack_exists(cfn, metadata['name']):
+                    if not strategy.should_update(action):
+                        raise ProvisionerException(
+                            'Stack exists but strategy does not allow update')
+
+                    LOG.info("stack %s exists, updating",
+                             metadata['name'])
+                    if upload:
+                        self._upload_stack(data, dest, creds)
+                        cfn.validate_template(template_url=url)
+                        cfn.update_stack(metadata['name'], template_url=url,
+                                         capabilities=capabilities, tags=tags)
+                    else:
+                        cfn.validate_template(data)
+                        cfn.update_stack(metadata['name'], data,
+                                         capabilities=capabilities, tags=tags)
+                else:
+                    LOG.info("stack %s doesn't exist", metadata['name'])
+                    return True
 
             self.do_audit(data, metadata)
             return self.do_poll(cfn, metadata['name'], poll, action)
