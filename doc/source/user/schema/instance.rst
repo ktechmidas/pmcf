@@ -58,7 +58,8 @@ Optional fields that can also be used:
         The dictionary has 2 required keys, type and zone.  Type is one of
         per-instance-private, per-instance-public, per-group-private or
         per-group-public.  zone is the route53 hosted zone to create the
-        record in.
+        record in.  The zone entry must end with the trailing '.', just like
+        the zone itself.
 
 :lb:
         A list of names of loadbalancers
