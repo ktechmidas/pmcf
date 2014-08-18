@@ -20,10 +20,10 @@
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
-import errno
 import json
 import logging
 import re
+from signal import signal, SIGPIPE, SIG_DFL
 from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
 from pmcf.outputs.base_output import BaseOutput
@@ -392,13 +392,8 @@ class JSONOutput(BaseOutput):
         indent = None
         if LOG.isEnabledFor(logging.DEBUG):
             indent = 4
-        try:
-            print json.dumps(json.loads(data), indent=indent, sort_keys=True)
-        except IOError, e:
-            if e.errno == errno.EPIPE:
-                pass
-            else:
-                raise(e)
+        signal(SIGPIPE, SIG_DFL)
+        print json.dumps(json.loads(data), indent=indent, sort_keys=True)
 
         LOG.info('Finished running data')
         self.do_audit(data, metadata)
