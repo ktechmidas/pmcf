@@ -1922,6 +1922,85 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_instance_valid_dns(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "ASGapp": {
+                    "Properties": {
+                        "AvailabilityZones": {"Fn::GetAZs": ""},
+                        "DesiredCapacity": 6,
+                        "LaunchConfigurationName": {"Ref": "LCapp"},
+                        "MaxSize": 6,
+                        "MinSize": 6,
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "PropagateAtLaunch": True,
+                                "Value": "test::app::test"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
+                            },
+                            {
+                                "Key": "DNS",
+                                "PropagateAtLaunch": True,
+                                "Value":
+                                    '{"r": "app", ' +
+                                    '"z": "test.aws.sequoia.piksel.com.", ' +
+                                    '"t": "per-instance-public"}'
+                            }
+                        ]
+                    },
+                    "Type": "AWS::AutoScaling::AutoScalingGroup"
+                },
+                "LCapp": {
+                    "Properties": {
+                        "ImageId": "ami-e97f849e",
+                        "InstanceMonitoring": "false",
+                        "InstanceType": "m1.large",
+                        "KeyName": "bootstrap",
+                        "SecurityGroups": []
+                    },
+                    "Type": "AWS::AutoScaling::LaunchConfiguration"
+                }
+            }
+        }
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'role': [],
+            'instance': [{
+                'block_device': [],
+                'count': 6,
+                'dns': {
+                    'type': 'per-instance-public',
+                    'zone': 'aws.sequoia.piksel.com.',
+                },
+                'image': 'ami-e97f849e',
+                'monitoring': False,
+                'name': 'app',
+                'provisioner': {
+                    'args': {},
+                    'provider': 'NoopProvisioner'},
+                'sg': [],
+                'size': 'm1.large',
+                'sshKey': 'bootstrap'
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        print tmpl
+        print json.dumps(ret, sort_keys=True)
+        assert_equals(json.loads(tmpl), ret)
+
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
     def test_instance_valid(self):
         out = JSONOutput()
