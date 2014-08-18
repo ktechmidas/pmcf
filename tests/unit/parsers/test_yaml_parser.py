@@ -146,6 +146,69 @@ class TestParser(object):
         data = parser.parse_file(fname, args)
         assert_equals(len(data['resources']['instance']), 1)
 
+    def test_parser_instance_dns_invalid_raises(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  instance:
+    - name: app
+      count: 3
+      dns:
+        type: per-instance-public
+        zone: aws.sequoia.piksel.com
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        assert_raises(ParserFailure, parser.parse, data, args)
+
+    def test_parser_instance_dns_valid(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  instance:
+    - name: app
+      count: 3
+      dns:
+        type: per-instance-public
+        zone: aws.sequoia.piksel.com.
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(data, args)
+        assert_equals(len(data['resources']['instance']), 1)
+
 
 class TestParserData(object):
 
