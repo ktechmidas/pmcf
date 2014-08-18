@@ -79,6 +79,164 @@ class TestPuppetProvisioner(object):
         assert_equals(data, script)
 
     @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data_find_nodes(self):
+        args = {
+            'infrastructure': 'zip.tgz',
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'find_nodes': 'true',
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "roleName": "instance-blah",
+                    "buckets": [
+                        "testbucket"
+                    ],
+                    "type": "s3"
+                }
+            },
+            "AWS::CloudFormation::Init": {
+                "bootstrap": {
+                    "files": {
+                        "/etc/facter/facts.d/localfacts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: LCtest\n",
+                                        "app: test\n",
+                                        "stack: test\n",
+                                        "stage: dev\n"
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        }
+                    },
+                    "packages": {
+                        "apt": {
+                            "python-boto": [],
+                            "puppet": []
+                        }
+                    }
+                },
+                "infraLoad": {
+                    "sources": {
+                        "/var/tmp/puppet":
+                            "https://%s.%s/artifacts/%s/%s/%s/%s" % (
+                                args['bucket'],
+                                "s3.amazonaws.com",
+                                "infrastructure",
+                                "test",
+                                "dev",
+                                args['infrastructure'],
+                            ),
+                        "/etc/puppet":
+                            "https://%s.%s/artifacts/%s/%s" % (
+                                args['bucket'],
+                                "s3.amazonaws.com",
+                                "infrastructure",
+                                'hiera.tar.gz',
+                            ),
+                    }
+                },
+                "infraPuppetRun": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--environment first_run " +
+                                       "--logdest syslog " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                            "ignoreErrors": "true",
+                        },
+                    }
+                },
+                "infraPuppetFinal": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--logdest syslog " +
+                                       "--detailed-exitcodes " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                        },
+                        "02-clean_puppet": {
+                            "command": "rm -rf /var/tmp/puppet"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
+                        }
+                    }
+                },
+                "infraBootstrap": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "ignoreErrors": "true",
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--environment bootstrap " +
+                                       "--logdest syslog " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                        }
+                    }
+                },
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "infra"
+                        },
+                        {
+                            "ConfigSet": "puppetFinal"
+                        }
+                    ],
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ],
+                    "infraUpdate": [
+                        "infraLoad",
+                        "infraPuppetRun",
+                        "infraPuppetFinal"
+                    ],
+                    "infra": [
+                        "infraLoad",
+                        "infraBootstrap",
+                        "infraPuppetRun"
+                    ]
+                }
+            }
+        }
+
+        data = PuppetProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
+    @mock.patch('time.time', _mock_time)
     def test_ci_contains_expected_data(self):
         args = {
             'infrastructure': 'zip.tgz',
