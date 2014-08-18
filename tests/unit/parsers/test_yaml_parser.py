@@ -20,10 +20,6 @@ from pmcf.parsers import yaml_parser
 from pmcf.exceptions import ParserFailure
 
 
-def _mock_validate(data, schema):
-    return None
-
-
 def _mock_validate_raises(data, schema):
     raise jsonschema.exceptions.ValidationError('error')
 
@@ -66,13 +62,11 @@ class TestParser(object):
         assert_raises(ParserFailure,
                       parser._get_value_for_env, data, 'test', 'thingy')
 
-    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parse_invalid_args_raises(self):
         parser = yaml_parser.YamlParser()
         fname = 'tests/data/yaml/ais-test-farm.yaml'
         assert_raises(ParserFailure, parser.parse_file, fname, {})
 
-    @mock.patch('jsonschema.validate', _mock_validate)
     def test_parser_raises_invalid_environment(self):
         args = {
             'environment': 'nosuchstage',
@@ -103,7 +97,6 @@ class TestParser(object):
         parser._stack['resources']['instance'].append({})
         assert_raises(ParserFailure, parser.validate)
 
-    @mock.patch('jsonschema.validate', _mock_validate)
     def test_instance_defaultsg(self):
         args = {
             'environment': 'stage',
@@ -118,7 +111,6 @@ class TestParser(object):
         sgs = ['app', 'sg-123']
         assert_equals(data['resources']['instance'][0]['sg'], sgs)
 
-    @mock.patch('jsonschema.validate', _mock_validate)
     def test_instance_present_dev(self):
         args = {
             'environment': 'dev',
@@ -132,7 +124,6 @@ class TestParser(object):
         data = parser.parse_file(fname, args)
         assert_equals(len(data['resources']['instance']), 2)
 
-    @mock.patch('jsonschema.validate', _mock_validate)
     def test_instance_missing_prod(self):
         args = {
             'environment': 'prod',
@@ -215,7 +206,6 @@ class TestParserData(object):
     def __init__(self):
         self.data = {}
 
-    @mock.patch('jsonschema.validate', _mock_validate)
     def setup(self):
         args = {
             'environment': 'stage',
