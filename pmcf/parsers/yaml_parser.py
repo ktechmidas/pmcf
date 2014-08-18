@@ -115,6 +115,11 @@ class YamlParser(BaseParser):
                 args['instance_secretkey']
 
         for instance in data['resources'].get('instance', []):
+            if instance.get('dns'):
+                if not instance['dns'].get('zone', '').endswith('.'):
+                    raise ParserFailure("DNS zone must end with '.' on %s" %
+                                        instance['name'])
+
             for field in ['size', 'count', 'image']:
                 item = instance.get(field, None)
                 if item:
