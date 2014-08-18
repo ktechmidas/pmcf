@@ -327,7 +327,7 @@ class JSONOutput(BaseOutput):
                 asgtags.append(
                     autoscaling.Tag(
                         key='DNS',
-                        value=json.dumps(dnstag),
+                        value=json.dumps(dnstag, sort_keys=True),
                         propogate=True,
                     ))
 

@@ -1951,8 +1951,8 @@ class TestJSONOutput(object):
                                 "PropagateAtLaunch": True,
                                 "Value":
                                     '{"r": "app", ' +
-                                    '"z": "test.aws.sequoia.piksel.com.", ' +
-                                    '"t": "per-instance-public"}'
+                                    '"t": "per-instance-public", ' +
+                                    '"z": "test.aws.sequoia.piksel.com."}'
                             }
                         ]
                     },
