@@ -271,6 +271,30 @@ class TestPuppetProvisioner(object):
         data = PuppetProvisioner().provisioner_policy(args)
         assert_equals(data, pp_data)
 
+    def test_provisioner_policy_contains_expected_data_find_nodes(self):
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'find_nodes': 'true'
+        }
+        pp_data = {
+            'Version': '2012-10-17',
+            'Statement': [
+                {
+                    'Action': ['ec2:DescribeInstances'],
+                    'Effect': 'Allow',
+                    'Resource': '*'
+                }
+            ]
+        }
+        data = PuppetProvisioner().provisioner_policy(args)
+        assert_equals(data, pp_data)
+
     def test_provisioner_policy_contains_expected_data_no_artifacts(self):
         args = {
             'bucket': 'testbucket',
