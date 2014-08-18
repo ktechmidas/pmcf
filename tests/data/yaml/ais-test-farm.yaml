@@ -7,6 +7,7 @@ config:
       - prod
   subnets:
       - subnet-123
+  vpcid: 1234
   provisioner: PuppetProvisioner
   profile: instance-profile/deploy-client
   audit_output: piksel-provisioning

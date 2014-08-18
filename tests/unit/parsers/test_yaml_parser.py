@@ -200,6 +200,68 @@ resources:
         data = parser.parse(data, args)
         assert_equals(len(data['resources']['instance']), 1)
 
+    def test_parser_instance_subnets_valid(self):
+        data = """
+config:
+  name: ais
+  environments:
+    - dev
+  subnets:
+    - 1243
+  vpcid: 1123
+resources:
+  instance:
+    - name: app
+      count: 3
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(data, args)
+        assert_equals(len(data['resources']['instance']), 1)
+
+    def test_parser_instance_subnets_invalid_no_vpcid(self):
+        data = """
+config:
+  name: ais
+  environments:
+    - dev
+  subnets:
+    - 1243
+resources:
+  instance:
+    - name: app
+      count: 3
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        assert_raises(ParserFailure, parser.parse, data, args)
+
 
 class TestParserData(object):
 
@@ -235,6 +297,7 @@ class TestParserData(object):
             'subnets',
             'provisioner',
             'profile',
+            'vpcid',
         ]
         assert_equals(set(keys), set(self.data['config'].keys()))
 

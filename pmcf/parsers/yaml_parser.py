@@ -173,10 +173,12 @@ class YamlParser(BaseParser):
                     )
 
         for instance in self._stack['resources']['instance']:
-            if data['config'].get('subnets') and data['config'].get('vpcid'):
+            if data['config'].get('subnets'):
                 instance['subnets'] = instance.get(
                     'subnets',
                     data['config']['subnets'])
+                if not data['config'].get('vpcid'):
+                    raise ParserFailure("subnets without vpcid is invalid")
 
             if self._stack['config'].get('notify', None):
                 instance['notify'] = instance.get(
