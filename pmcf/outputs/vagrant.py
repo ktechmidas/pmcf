@@ -54,7 +54,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "trusty"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/%s/%s"
 
-""" % ("trusty/20140428", "trusty-server-cloudimg-amd64-vagrant-disk1.box")
+""" % ("trusty/current", "trusty-server-cloudimg-amd64-vagrant-disk1.box")
 
         instance_template = """
   tags = {

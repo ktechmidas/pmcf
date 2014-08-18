@@ -81,7 +81,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
 end""" % (
-            "trusty/20140428",
+            "trusty/current",
             "trusty-server-cloudimg-amd64-vagrant-disk1.box"
         )
         ret = VagrantOutput().add_resources(data, md)
