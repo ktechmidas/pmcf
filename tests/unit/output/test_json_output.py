@@ -1997,8 +1997,6 @@ class TestJSONOutput(object):
             }]
         }
         tmpl = out.add_resources(res, cfg)
-        print tmpl
-        print json.dumps(ret, sort_keys=True)
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)

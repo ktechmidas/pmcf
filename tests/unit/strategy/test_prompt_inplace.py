@@ -34,7 +34,6 @@ class TestPromptInPlaceStrategy(object):
     def test_allowed_update_should_match_valid(self):
         strategy = PromptInPlace()
         match = strategy.allowed_update()
-        print match
         matcher = '%s.LCfoo.%s.%s.%s.%s.%s' % (
             'Resources',
             'Metadata',
