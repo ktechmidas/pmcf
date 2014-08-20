@@ -93,3 +93,18 @@ metadata endpoint suitable for consumption by
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+:mod:`pmcf.provisioners.block`
+===============================
+
+.. automodule:: pmcf.provisioners.block
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: BlockingProvisioner
+    :members:
+    :undoc-members:
+    :show-inheritance:

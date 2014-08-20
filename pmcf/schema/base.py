@@ -36,6 +36,18 @@ definitions:
         required:
             - provider
         additionalProperties: false
+    blockprovisioner:
+        type: object
+        properties:
+            provider:
+                enum:
+                    - BlockingProvisioner
+            args:
+                type:
+                    object
+        required:
+            - provider
+        additionalProperties: false
     puppetprovisioner:
         type: object
         properties:
@@ -146,6 +158,7 @@ definitions:
                     - $ref: "#/definitions/puppetprovisioner"
                     - $ref: "#/definitions/awsfwprovisioner"
                     - $ref: "#/definitions/noopprovisioner"
+                    - $ref: "#/definitions/blockprovisioner"
             sg:
                 type: array
             subnets:

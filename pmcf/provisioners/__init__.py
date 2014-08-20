@@ -22,6 +22,7 @@
 
 from pmcf.provisioners.awsfw import AWSFWProvisioner
 from pmcf.provisioners.base_provisioner import BaseProvisioner
+from pmcf.provisioners.block import BlockingProvisioner
 from pmcf.provisioners.chef import ChefProvisioner
 from pmcf.provisioners.noop import NoopProvisioner
 from pmcf.provisioners.puppet import PuppetProvisioner
@@ -29,6 +30,7 @@ from pmcf.provisioners.puppet import PuppetProvisioner
 __all__ = [
     AWSFWProvisioner,
     BaseProvisioner,
+    BlockingProvisioner,
     ChefProvisioner,
     NoopProvisioner,
     PuppetProvisioner,
