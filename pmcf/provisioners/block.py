@@ -13,9 +13,9 @@
 #    under the License.
 
 """
-..  module:: pmcf.provisioners.noop
+..  module:: pmcf.provisioners.block
     :platform: Unix
-    :synopsis: module containing noop provisioner class
+    :synopsis: module containing blocking provisioner class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
@@ -32,7 +32,7 @@ class BlockingProvisioner(BaseProvisioner):
 
     def userdata(self, args):
         """
-        Validates resource against local policy.
+        Signals wait condition at end of boot cycle
 
         :param args: provisioner arguments
         :type args: dict.
