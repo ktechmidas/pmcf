@@ -101,9 +101,10 @@ class YamlParser(BaseParser):
         if data['config'].get('environments', None):
             self._stack['config'].pop('environments', None)
             if args['environment'] not in data['config']['environments']:
-                raise ParserFailure('environment %s not in %s' %
-                                    (args['environment'],
-                                     data['config']['environments']))
+                if args['action'] != 'delete':
+                    raise ParserFailure('environment %s not in %s' %
+                                        (args['environment'],
+                                         data['config']['environments']))
 
         if args.get('accesskey') and args.get('secretkey'):
             self._stack['config']['access'] = args['accesskey']
