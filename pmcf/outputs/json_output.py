@@ -317,7 +317,7 @@ class JSONOutput(BaseOutput):
             ]
             if inst.get('dns'):
                 dnstag = {
-                    'r': inst['name'],
+                    'r': inst['dns'].get('record', inst['name']),
                     'z': "%s.%s" % (
                         config['environment'],
                         inst['dns']['zone'],

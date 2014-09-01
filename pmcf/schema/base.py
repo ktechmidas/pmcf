@@ -124,6 +124,8 @@ definitions:
             dns:
                 type: object
                 properties:
+                    record:
+                        type: string
                     type:
                         enum:
                             - per-instance-private
