@@ -105,7 +105,7 @@ def _mock_describe_stack_raises_does_not_exist(obj, name):
 
 
 def _mock_describe_stack(obj, name):
-    return {}
+    return [Stack()]
 
 
 def _mock_describe_stack_fails(obj, name):
@@ -558,7 +558,7 @@ class TestAWSCFNOutput(object):
                       metadata, action='delete', upload=True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_false)
     def test_run_trigger_stack_does_not_exist_returns_true(self):
         cfno = AWSCFNOutput()
@@ -575,7 +575,7 @@ class TestAWSCFNOutput(object):
         assert_equals(True, cfno.run('{"a": "b"}', metadata, action='trigger'))
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
                 _mock_get_difference_no_diff)
@@ -594,7 +594,7 @@ class TestAWSCFNOutput(object):
         assert_equals(True, cfno.run('{"a": "b"}', metadata, action='trigger'))
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
                 _mock_get_difference_diff)
@@ -614,7 +614,7 @@ class TestAWSCFNOutput(object):
                       '{"a": "b"}', metadata, action='trigger')
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
                 _mock_get_difference_diff)
@@ -643,7 +643,7 @@ class TestAWSCFNOutput(object):
                                action='trigger', upload=True), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
                 _mock_get_difference_diff)
@@ -670,7 +670,7 @@ class TestAWSCFNOutput(object):
                                action='trigger', upload=False), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     def test_run_update_stack_existing_stack_no_update_allowed_raises(self):
         cfno = AWSCFNOutput()
@@ -689,7 +689,7 @@ class TestAWSCFNOutput(object):
                       metadata, action='update')
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch(
         'boto.cloudformation.CloudFormationConnection.validate_template',
@@ -714,7 +714,7 @@ class TestAWSCFNOutput(object):
                                action='update', upload=True), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch(
         'boto.cloudformation.CloudFormationConnection.validate_template',
@@ -737,7 +737,7 @@ class TestAWSCFNOutput(object):
                                action='update', upload=False), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
-    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_false)
     def test_run_update_stack_nonexisting_stack_returns_true(self):
         cfno = AWSCFNOutput()
@@ -753,6 +753,26 @@ class TestAWSCFNOutput(object):
         }
         assert_equals(cfno.run('{"a": "b"}', metadata, poll=False,
                                action='update', upload=True), True)
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack)
+    def test__stack_updatable_exists(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno._stack_updatable(cfn, 'test'))
+
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_fails)
+    def test__stack_updatable_nonexistant(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno._stack_updatable(cfn, 'test'))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack)

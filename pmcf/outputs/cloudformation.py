@@ -66,6 +66,28 @@ class AWSCFNOutput(JSONOutput):
             return False
         return True
 
+    def _stack_updatable(self, cfn, stack):
+        """
+        Checks to see if a given stack exists and is ready to be updated
+
+        :param cfn: boto cloudformation connection object
+        :type cfn: object.
+        :param stack: Stack name to check
+        :type stack: str.
+        :returns: boolean
+        """
+
+        LOG.info('Checking whether stack %s is able to be updated' % stack)
+        try:
+            ret = cfn.describe_stacks(stack)
+            if len(ret) == 1:
+                stack = ret[0]
+                if stack.stack_status.endswith('COMPLETE'):
+                    return True
+        except boto.exception.BotoServerError:
+            pass
+        return False
+
     def _stack_exists(self, cfn, stack):
         """
         Checks to see if a given stack already exists
@@ -80,9 +102,10 @@ class AWSCFNOutput(JSONOutput):
         LOG.info('Checking for existance of stack %s' % stack)
         try:
             cfn.describe_stacks(stack)
+            return True
         except boto.exception.BotoServerError:
-            return False
-        return True
+            pass
+        return False
 
     def _need_iam_caps(self, data):
         """
@@ -220,7 +243,7 @@ class AWSCFNOutput(JSONOutput):
 
             data = json.dumps(json.loads(data))
             if action == 'trigger':
-                if self._stack_exists(cfn, metadata['name']):
+                if self._stack_updatable(cfn, metadata['name']):
                     LOG.info('stack %s exists, triggering', metadata['name'])
                     allowed_update = strategy.allowed_update()
 
@@ -264,7 +287,7 @@ class AWSCFNOutput(JSONOutput):
                                      capabilities=capabilities, tags=tags)
 
             elif action == 'update':
-                if self._stack_exists(cfn, metadata['name']):
+                if self._stack_updatable(cfn, metadata['name']):
                     if not strategy.should_update(action):
                         raise ProvisionerException(
                             'Stack exists but strategy does not allow update')
