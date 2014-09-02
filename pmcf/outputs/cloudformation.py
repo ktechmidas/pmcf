@@ -292,6 +292,10 @@ class AWSCFNOutput(JSONOutput):
                         raise ProvisionerException(
                             'Stack exists but strategy does not allow update')
 
+                    if strategy.should_prompt('update'):
+                        if not self._show_prompt(cfn, metadata['name'], data):
+                            return True
+
                     LOG.info("stack %s exists, updating",
                              metadata['name'])
                     if upload:

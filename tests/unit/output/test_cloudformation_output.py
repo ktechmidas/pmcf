@@ -364,8 +364,8 @@ class TestAWSCFNOutput(object):
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._show_prompt',
-                _mock_return_true)
-    def test_run_with_prompt_true_succeeds(self):
+                _mock_return_false)
+    def test_run_with_prompt_false_succeeds(self):
         cfno = AWSCFNOutput()
         metadata = {
             'region': 'eu-west-1',
@@ -379,7 +379,7 @@ class TestAWSCFNOutput(object):
                 'Name': 'test'
             }
         }
-        assert_equals(cfno.run('{"a": "b"}', metadata), True)
+        assert_equals(cfno.run('{"a": "b"}', metadata, action='update'), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
