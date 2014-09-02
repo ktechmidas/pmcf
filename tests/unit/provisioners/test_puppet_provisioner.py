@@ -202,6 +202,14 @@ class TestPuppetProvisioner(object):
                                        "--environment bootstrap " +
                                        "--logdest syslog " +
                                        "/var/tmp/puppet/manifests/site.pp",
+                        },
+                        "02-run_puppet": {
+                            "ignoreErrors": "true",
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--environment bootstrap " +
+                                       "--logdest syslog " +
+                                       "/var/tmp/puppet/manifests/site.pp",
                         }
                     }
                 },

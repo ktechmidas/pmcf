@@ -208,7 +208,15 @@ class PuppetProvisioner(BaseProvisioner):
                                        "--logdest syslog " +
                                        "/var/tmp/puppet/manifests/site.pp",
                             "ignoreErrors": "true",
-                        }
+                        },
+                        "02-run_puppet": {
+                            "command": "puppet apply --modulepath " +
+                                       "/var/tmp/puppet/modules " +
+                                       "--environment bootstrap " +
+                                       "--logdest syslog " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                            "ignoreErrors": "true",
+                        },
                     }
                 }
 
