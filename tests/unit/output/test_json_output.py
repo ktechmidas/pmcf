@@ -690,6 +690,66 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_sg_valid_vpc(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "sgtest": {
+                    "Properties": {
+                        "GroupDescription": "security group for test",
+                        "SecurityGroupIngress": [
+                            {
+                                "FromPort": 22,
+                                "IpProtocol": "tcp",
+                                "SourceSecurityGroupId": "womble",
+                                "ToPort": 22
+                            },
+                            {
+                                "CidrIp": "10.1.2.0/24",
+                                "FromPort": 80,
+                                "IpProtocol": "tcp",
+                                "ToPort": 80
+                            }
+                        ],
+                        "VpcId": "test",
+                    },
+                    "Type": "AWS::EC2::SecurityGroup"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test',
+            'vpcid': 'test',
+        }
+        res = {
+            'instance': [],
+            'load_balancer': [],
+            'role': [],
+            'secgroup': [{
+                'name': 'test',
+                'rules': [
+                    {
+                        'from_port': 22,
+                        'to_port': 22,
+                        'protocol': 'tcp',
+                        'source_group': 'womble'
+                    },
+                    {
+                        'from_port': 80,
+                        'to_port': 80,
+                        'protocol': 'tcp',
+                        'source_cidr': '10.1.2.0/24'
+                    }
+                ]
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_sg_valid_ref_vpc(self):
         out = JSONOutput()
         ret = {

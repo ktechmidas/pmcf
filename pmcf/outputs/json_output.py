@@ -78,8 +78,12 @@ class JSONOutput(BaseOutput):
                         sg_rule_data['SourceSecurityGroupName'] = sg_group
                         sg_rule_data['SourceSecurityGroupOwnerId'] = sg_owner
                     else:
-                        sg_rule_data['SourceSecurityGroupName'] =\
-                            rule['source_group']
+                        if config.get('vpcid', None):
+                            sg_rule_data['SourceSecurityGroupId'] =\
+                                rule['source_group']
+                        else:
+                            sg_rule_data['SourceSecurityGroupName'] =\
+                                rule['source_group']
 
                     rules.append(ec2.SecurityGroupRule(
                         FromPort=rule['from_port'],
