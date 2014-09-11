@@ -339,15 +339,18 @@ class AWSCFNOutput(JSONOutput):
             seen_events = set()
             stack = None
             while True:
+                time.sleep(3)
                 try:
                     stack = cfn.describe_stacks(name)[0]
+                    all_events = stack.describe_events()
                 except boto.exception.BotoServerError, e:
                     LOG.info(e.message)
                     if action == 'delete' and \
                             e.message.endswith('does not exist'):
                         return True
+                    if e.message.endswith('Rate exceeded'):
+                        continue
                     return False
-                all_events = stack.describe_events()
                 for event in sorted(all_events, key=lambda x: x.timestamp):
                     if event.event_id in seen_events:
                         continue
@@ -363,7 +366,6 @@ class AWSCFNOutput(JSONOutput):
                 if stack.stack_status.endswith('COMPLETE') or\
                         stack.stack_status.endswith('FAILED'):
                     break
-                time.sleep(3)
             if stack.stack_status.endswith('FAILED') or\
                     stack.stack_status.startswith('ROLLBACK') or\
                     stack.stack_status.startswith('DELETE'):

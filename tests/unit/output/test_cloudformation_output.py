@@ -847,10 +847,12 @@ class TestAWSCFNOutput(object):
         sys.stdout = open('/dev/null', 'w')
         assert_equals(True, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     def test_do_poll_false_returns_true(self):
         cfno = AWSCFNOutput()
         assert_equals(True, cfno.do_poll(None, 'test', False, 'create'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack)
     def test_do_poll_true_returns_true(self):
@@ -861,6 +863,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_failed_mock_stack)
     def test_do_poll_true_returns_false_on_failure(self):
@@ -871,6 +874,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(False, cfno.do_poll(cfn, 'test', True, 'create'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_rollback_mock_stack)
     def test_do_poll_true_returns_false_on_rollback(self):
@@ -881,6 +885,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(False, cfno.do_poll(cfn, 'test', True, 'create'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_same_event)
     def test_do_poll_true_returns_true_multiple_same_events(self):
@@ -891,6 +896,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_old_events)
     def test_do_poll_true_returns_true_multiple_old_events(self):
@@ -901,6 +907,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_returns_mock_stack_different_status)
     @mock.patch('time.sleep', _mock_sleep)
@@ -936,6 +943,7 @@ class TestAWSCFNOutput(object):
         assert_raises(ProvisionerException, cfno._upload_stack,
                       '{}', 'test', creds)
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_raises_does_not_exist)
     def test_do_poll_true_delete_returns_true_on_non_existing_stack(self):
@@ -946,6 +954,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True, 'delete'))
 
+    @mock.patch('time.sleep', _mock_sleep)
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_raises_does_not_exist)
     def test_do_poll_true_create_returns_false_on_non_existing_stack(self):
