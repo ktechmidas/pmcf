@@ -20,6 +20,7 @@
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
+import copy
 import logging
 import yaml
 
@@ -139,6 +140,7 @@ class YamlParser(BaseParser):
                                                 field)
 
         for sg in data['resources'].get('secgroup', []):
+            new_rules = []
             for rule in sg['rules']:
                 for field in ['source_group', 'source_cidr']:
                     item = rule.get(field, None)
@@ -147,6 +149,14 @@ class YamlParser(BaseParser):
                             self._get_value_for_env(item,
                                                     args['environment'],
                                                     field)
+                        if isinstance(rule[field], list):
+                            saved_list = rule[field]
+                            rule[field] = saved_list.pop()
+                            for source in saved_list:
+                                new_rule = copy.deepcopy(rule)
+                                new_rule.update({field: source})
+                                new_rules.append(new_rule)
+            sg['rules'].extend(new_rules)
 
         dropped = []
         for idx, instance in enumerate(data['resources'].get('instance', [])):
