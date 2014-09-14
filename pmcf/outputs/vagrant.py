@@ -41,20 +41,21 @@ class VagrantOutput(BaseOutput):
         """
 
         LOG.info('Start building Vagrantfile')
+        net = config.get('vagrant_net', '10.0.5')
         vagrantfile = """
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
 
-base_ip = "10.0.5."
+base_ip = "%s."
 iter = 0
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "trusty"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/%s/%s"
 
-""" % ("trusty/current", "trusty-server-cloudimg-amd64-vagrant-disk1.box")
+""" % (net, "trusty/current", "trusty-server-cloudimg-amd64-vagrant-disk1.box")
 
         instance_template = """
   tags = {
