@@ -13,32 +13,14 @@
       License for the specific language governing permissions and limitations
       under the License.
 
-
-User Guide
-==========
-
-In this section you will find information on using the Piksel Managed Cloud Framework
-
 Getting Started
----------------
-.. toctree::
-   :maxdepth: 1
+===============
 
-   getting_started
+PMCF is a set of python libraries and an executable.  The source code can be found
+`here <https://https://gitlab.piksel.com/pmcf/python-pmcf>`_.  To install and get
+started, clone it, then use virtualenv to get started::
 
-
-Configuring runtime behaviour
------------------------------
-.. toctree::
-   :maxdepth: 1
-
-   configfile
-   cli
-
-
-Configuring stacks
-------------------
-.. toctree::
-   :maxdepth: 3
-
-   schema/index
+  mkvirtualenv pmcf
+  workon pmcf
+  pip install -rrequirements.txt
+  python setup.py install
