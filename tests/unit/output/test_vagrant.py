@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import json
 from nose.tools import assert_equals, assert_raises
 
 from pmcf.exceptions import ProvisionerException
@@ -49,43 +50,52 @@ class TestVagrantOutput(object):
                 'name': 'test'
             }]
         }
+        instance_data = json.dumps([
+            {
+                "ip": "10.0.5.3",
+                "name": "test",
+                "tags": {
+                    "app": "test",
+                    "vagrant_net": "10.0.5",
+                    "stack": "test",
+                    "stage": "dev"
+                }
+            }
+        ], sort_keys=True)
+
         should = """
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
 
-base_ip = "10.0.5."
-iter = 0
-
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "trusty"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/%s/%s"
 
+  instances = '%s'
 
-  tags = {
-    "app"   => "test",
-    "stack" => "test",
-    "stage" => "dev",
-  }
-  config.vm.define "test" do |app|
-    iter += 2
-    app.vm.hostname = "test"
-    app.vm.network :private_network, ip: base_ip + "#{iter}"
-    app.vm.provision :puppet do |puppet|
-      puppet.manifests_path = 'puppet/manifests'
-      puppet.manifest_file = 'site.pp'
-      puppet.module_path = 'puppet/modules'
-      puppet.facter = tags
+  JSON.load(instances).each do |instance|
+    config.vm.define instance['name'] do |app|
+      app.vm.hostname = instance['name']
+      app.vm.network :private_network, ip: instance['ip']
+      app.vm.provision :puppet do |puppet|
+        puppet.manifests_path = 'puppet/manifests'
+        puppet.manifest_file = 'site.pp'
+        puppet.module_path = 'puppet/modules'
+        puppet.facter = instance['tags']
+        puppet.hiera_config_path = 'puppet/hiera.yaml'
+        puppet.working_directory = '/vagrant/puppet'
+      end
     end
   end
-
-end""" % (
+end
+""" % (
             "trusty/current",
-            "trusty-server-cloudimg-amd64-vagrant-disk1.box"
+            "trusty-server-cloudimg-amd64-vagrant-disk1.box",
+            instance_data,
         )
         ret = VagrantOutput().add_resources(data, md)
-        print ret
         assert_equals(ret, should)
 
     def test_run_succeeds(self):

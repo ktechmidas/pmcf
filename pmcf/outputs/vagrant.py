@@ -19,6 +19,7 @@
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
+import json
 import logging
 
 from pmcf.exceptions import ProvisionerException
@@ -42,52 +43,57 @@ class VagrantOutput(BaseOutput):
 
         LOG.info('Start building Vagrantfile')
         net = config.get('vagrant_net', '10.0.5')
+        last_octet = 2
+
         vagrantfile = """
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
 VAGRANTFILE_API_VERSION = "2"
 
-base_ip = "%s."
-iter = 0
-
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = "trusty"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/%s/%s"
 
-""" % (net, "trusty/current", "trusty-server-cloudimg-amd64-vagrant-disk1.box")
+""" % ("trusty/current", "trusty-server-cloudimg-amd64-vagrant-disk1.box")
 
-        instance_template = """
-  tags = {
-    "app"   => "%s",
-    "stack" => "%s",
-    "stage" => "dev",
-  }
-  config.vm.define "%s" do |app|
-    iter += 2
-    app.vm.hostname = "%s"
-    app.vm.network :private_network, ip: base_ip + "#{iter}"
-    app.vm.provision :puppet do |puppet|
-      puppet.manifests_path = 'puppet/manifests'
-      puppet.manifest_file = 'site.pp'
-      puppet.module_path = 'puppet/modules'
-      puppet.facter = tags
-    end
-  end
-
-"""
+        inst_block = []
         for inst in resources['instance']:
+            last_octet += 1
             try:
-                vagrantfile += instance_template % (
-                    inst['name'],
-                    config['name'],
-                    inst['name'],
-                    inst['name']
-                )
+                inst_block.append({
+                    'name': '%s' % inst['name'],
+                    'ip': '%s.%s' % (net, last_octet),
+                    'tags': {
+                        'app': inst['name'],
+                        'stack': config['name'],
+                        'stage': 'dev',
+                        'vagrant_net': net
+                    }
+                })
             except KeyError, e:
                 raise ProvisionerException("Missing field %s" % str(e))
+        vagrantfile += "  instances = '%s'" % json.dumps(inst_block,
+                                                         sort_keys=True)
+        vagrantfile += """
 
-        vagrantfile += "end"
+  JSON.load(instances).each do |instance|
+    config.vm.define instance['name'] do |app|
+      app.vm.hostname = instance['name']
+      app.vm.network :private_network, ip: instance['ip']
+      app.vm.provision :puppet do |puppet|
+        puppet.manifests_path = 'puppet/manifests'
+        puppet.manifest_file = 'site.pp'
+        puppet.module_path = 'puppet/modules'
+        puppet.facter = instance['tags']
+        puppet.hiera_config_path = 'puppet/hiera.yaml'
+        puppet.working_directory = '/vagrant/puppet'
+      end
+    end
+  end
+end
+"""
+
         LOG.info('Finished building Vagrantfile')
         return vagrantfile
 
