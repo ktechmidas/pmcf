@@ -98,6 +98,36 @@ class TestParser(object):
         parser._stack['resources']['instance'].append({})
         assert_raises(ParserFailure, parser.validate)
 
+    def test_sg_list(self):
+        ds = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  secgroup:
+    - name: test
+      rules:
+        - port: 8000
+          protocol: tcp
+          source_cidr:
+            - 54.76.250.234/32
+            - 83.98.0.0/17
+            - 93.57.15.30/32
+            - 80.113.0.0/17
+            - 83.97.8.0/20
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(ds, args)
+        assert_equals(len(data['resources']['secgroup'][0]['rules']), 5)
+
     def test_instance_defaultsg(self):
         args = {
             'environment': 'stage',
