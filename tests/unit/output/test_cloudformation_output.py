@@ -104,6 +104,13 @@ def _mock_describe_stack_raises_does_not_exist(obj, name):
     raise boto.exception.BotoServerError(status, reason, body=body)
 
 
+def _mock_describe_stack_raises_limit_exceeded(obj, name):
+    status = 404
+    reason = 'nope'
+    body = {'message': 'Rate exceeded'}
+    raise boto.exception.BotoServerError(status, reason, body=body)
+
+
 def _mock_describe_stack(obj, name):
     return [Stack()]
 
@@ -205,6 +212,15 @@ def _mock_describe_stack_returns_mock_stack_different_status(self, stack):
     return [Stack()]
 
 _mock_describe_stack_returns_mock_stack_different_status.counter = 0
+
+
+def _mock_describe_stack_raises_different_exceptions(self, stack):
+    _mock_describe_stack_raises_different_exceptions.counter += 1
+    if _mock_describe_stack_raises_different_exceptions.counter < 2:
+        _mock_describe_stack_raises_limit_exceeded(self, stack)
+    _mock_describe_stack_raises_does_not_exist(self, stack)
+
+_mock_describe_stack_raises_different_exceptions.counter = 0
 
 
 def _mock_sleep(sleep_time):
@@ -947,6 +963,17 @@ class TestAWSCFNOutput(object):
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack_raises_does_not_exist)
     def test_do_poll_true_delete_returns_true_on_non_existing_stack(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(True, cfno.do_poll(cfn, 'test', True, 'delete'))
+
+    @mock.patch('time.sleep', _mock_sleep)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_raises_different_exceptions)
+    def test_do_poll_true_delete_catches_rate_limit(self):
         cfno = AWSCFNOutput()
         cfn = boto.connect_cloudformation(
             aws_access_key_id='access',
