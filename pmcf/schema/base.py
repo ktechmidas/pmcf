@@ -257,6 +257,56 @@ definitions:
             - listener
             - healthcheck
         additionalProperties: false
+    vpc_peer:
+        properties:
+            peerid:
+                type: string
+            netrange:
+                type: string
+        required:
+            - peerid
+            - netrange
+        additionalProperties: false
+    vpc_route:
+        properties:
+            cidr:
+                type: string
+            gateway:
+                type: string
+            subnets:
+                type: array
+        required:
+            - cidr
+            - gateway
+            - subnets
+        additionalProperties: false
+    network:
+        properties:
+            name:
+                type: string
+            netrange:
+                type: string
+            public:
+                type: boolean
+            private:
+                type: boolean
+            routes:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/vpc_route"
+            peers:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/vpc_peer"
+            zones:
+                type: array
+        required:
+            - name
+            - netrange
+            - zones
+        additionalProperties: false
     secgrouprule_cidr_port:
         properties:
             port:
@@ -350,6 +400,10 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/load_balancer"
+            network:
+                type: array
+                items:
+                    $ref: "#/definitions/network"
             secgroup:
                 type: array
                 items:
