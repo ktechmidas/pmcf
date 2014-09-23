@@ -143,3 +143,13 @@ class TestUtils(object):
         b = {"a": {"b": [1, 2, 4]}}
         output = utils.valchange(a, b)
         assert_equals(True, len(output) == 1)
+
+    def test_split_subnets_three(self):
+        assert_equals(4, len(utils.split_subnets('10.0.0.0/8', 3)))
+
+    def test_split_subnets_five(self):
+        assert_equals(8, len(utils.split_subnets('10.0.0.0/8', 5)))
+
+    def test_split_subnets_invalid(self):
+        assert_raises(exceptions.PropertyException,
+                      utils.split_subnets, '10.0.0.0/30', 5)
