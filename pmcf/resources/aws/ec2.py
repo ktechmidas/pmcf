@@ -16,6 +16,7 @@
 # provides
 
 from troposphere import ec2
+from pmcf.resources.aws.helpers import ec2 as rec2
 
 from pmcf.utils import error, init_error
 
@@ -321,7 +322,7 @@ class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
             error(self, e.message)
 
 
-class Route(ec2.Route):
+class Route(rec2.Route):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
@@ -337,7 +338,8 @@ class Route(ec2.Route):
     def validate(self):
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
-                set(['GatewayId', 'InstanceId', 'NetworkInterfaceId']))) != 1:
+                set(['GatewayId', 'InstanceId',
+                     'NetworkInterfaceId', 'VpcPeeringConnectionId']))) != 1:
             error(self, 'One of GatewayId, InstanceId, or NetworkInterfaceId '
                         'are required')
 
@@ -621,6 +623,20 @@ class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
             error(self, 'InternetGatewayId or VpnGatewayId are required')
 
 
+class VPCPeeringConnection(rec2.VPCPeeringConnection):
+    def __init__(self, title, template=None, **kwargs):
+        try:
+            super(self.__class__, self).__init__(title, template, **kwargs)
+        except ValueError, e:
+            init_error(e.message, self.__class__.__name__, title)
+
+    def JSONrepr(self):
+        try:
+            return super(self.__class__, self).JSONrepr()
+        except ValueError, e:
+            error(self, e.message)
+
+
 class VPNConnection(ec2.VPNConnection):
     def __init__(self, title, template=None, **kwargs):
         try:
@@ -720,6 +736,7 @@ __all__ = [
     VPC,
     VPCDHCPOptionsAssociation,
     VPCGatewayAttachment,
+    VPCPeeringConnection,
     VPNConnection,
     VPNConnectionRoute,
     VPNGateway,

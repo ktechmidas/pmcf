@@ -1636,3 +1636,30 @@ class TestEc2Resource(TestResource):
         assert_raises(
             PropertyException,
             ec2.VPNGatewayRoutePropagation, 'bad-name')
+
+    def test_vpc_peering_connection_bad_name(self):
+        assert_raises(
+            PropertyException,
+            ec2.VPCPeeringConnection, 'bad-name')
+
+    def test_vpc_peering_connection_invalid_no_vpcid(self):
+        vpcpc = ec2.VPCPeeringConnection(
+            "test",
+            PeerVpcId='testvpc-123'
+        )
+        assert_raises(PropertyException, vpcpc.JSONrepr)
+
+    def test_vpc_peering_connection_valid(self):
+        vpcpc = ec2.VPCPeeringConnection(
+            "test",
+            PeerVpcId='testvpc-123',
+            VpcId='testvpc-12345'
+        )
+        data = {
+            'Properties': {
+                'PeerVpcId': 'testvpc-123',
+                'VpcId': 'testvpc-12345'
+            },
+            'Type': 'AWS::EC2::VPCPeeringConnection'
+        }
+        assert_equals(self._data_for_resource(vpcpc), data)
