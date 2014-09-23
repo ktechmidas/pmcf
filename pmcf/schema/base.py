@@ -161,6 +161,8 @@ definitions:
                     - $ref: "#/definitions/awsfwprovisioner"
                     - $ref: "#/definitions/noopprovisioner"
                     - $ref: "#/definitions/blockprovisioner"
+            public:
+                type: boolean
             sg:
                 type: array
             subnets:
@@ -261,11 +263,8 @@ definitions:
         properties:
             peerid:
                 type: string
-            netrange:
-                type: string
         required:
             - peerid
-            - netrange
         additionalProperties: false
     vpc_route:
         properties:
@@ -273,12 +272,9 @@ definitions:
                 type: string
             gateway:
                 type: string
-            subnets:
-                type: array
         required:
             - cidr
             - gateway
-            - subnets
         additionalProperties: false
     vpc_subnet:
         properties:
@@ -286,6 +282,8 @@ definitions:
                 type: string
             name:
                 type: string
+            public:
+                type: boolean
             zone:
                 type: string
         required:

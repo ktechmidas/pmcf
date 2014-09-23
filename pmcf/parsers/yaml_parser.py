@@ -41,7 +41,7 @@ class YamlParser(BaseParser):
 
     def _split_subnets(self, cidr, split):
         """
-        Finds the nearest power of two to the number of availability zones,
+        Finds the nearest power of two to the number of desired subnets,
         Splits a CIDR into that many sub CIDRs, and returns the array.
 
         :param cidr: CIDR for entire range
@@ -51,6 +51,9 @@ class YamlParser(BaseParser):
         :raises: :class:`pmcf.exceptions.ParserFailure`
         :returns: list.
         """
+
+        # Find the next closest power of two to a number
+        # For 3, return 4, for 5 return 8
 
         power = 0
         while split > 0:
@@ -143,10 +146,36 @@ class YamlParser(BaseParser):
             self._stack['config']['instance_secret'] =\
                 args['instance_secretkey']
 
-#        for net in data['resources'].get('network', []):
-#            zones = data['resources']['network'][net]['zones']
-#            netrange = data['resources']['network'][net]['netrange']
-#            netname = data['resources']['network'][net]['name']
+        for idx, net in enumerate(data['resources'].get('network', [])):
+            zones = net['zones']
+            netrange = net['netrange']
+            netname = net['name']
+            private = net.get('private', False)
+            public = net.get('public', True)
+            subnets = net.get('subnets', None)
+            net['public'] = public
+            net['private'] = private
+            if not subnets:
+                subnets = []
+                numsubnets = len(zones) * (int(private) + int(public))
+                subcidrs = self._split_subnets(netrange, numsubnets)
+                settings = []
+                if public:
+                    for z in zones:
+                        settings.append('public')
+                if private:
+                    for z in zones:
+                        settings.append('private')
+
+                for n in range(0, numsubnets):
+                    subnets.append({
+                        'cidr': str(subcidrs[n]),
+                        'name': "%s-%s-%s" % (netname, zones[n], settings[n]),
+                        'public': settings[n] == 'public',
+                        'zone': zones[n],
+                    })
+
+                data['resources']['network'][idx]['subnets'] = subnets
 
         for instance in data['resources'].get('instance', []):
             if instance.get('public', None) is None:

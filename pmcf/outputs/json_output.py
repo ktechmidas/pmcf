@@ -56,6 +56,99 @@ class JSONOutput(BaseOutput):
         data.add_description(desc)
         data.add_version()
 
+        for net in resources.get('network', []):
+            data.add_resource(ec2.VPC(
+                "VPC%s" % net['name'],
+                EnableDnsSupport=True,
+                EnableDnsHostnames=True,
+                CidrBlock=net['netrange'],
+                Tags=[
+                    {'Key': 'Name',
+                     'Value': net['name']},
+                ]))
+            data.add_resource(ec2.InternetGateway(
+                "IG%s" % net['name'],
+                Tags=[
+                    {'Key': 'Name',
+                     'Value': net['name']},
+                ]))
+            data.add_resource(ec2.RouteTable(
+                "RT%s" % net['name'],
+                VpcId=Ref("VPC%s" % net['name']),
+                Tags=[
+                    {'Key': 'Name',
+                     'Value': net['name']},
+                ]))
+            if net['public']:
+                data.add_resource(ec2.VPCGatewayAttachment(
+                    "VPCIG%s" % net['name'],
+                    VpcId=Ref("VPC%s" % net['name']),
+                    InternetGatewayId=Ref("IG%s" % net['name'])
+                ))
+                data.add_resource(ec2.Route(
+                    "DefaultRoute%s" % net['name'],
+                    DependsOn="VPCIG%s" % net['name'],
+                    RouteTableId=Ref("RT%s" % net['name']),
+                    DestinationCidrBlock="0.0.0.0/0",
+                    GatewayId=Ref("IG%s" % net['name']),
+                ))
+
+            for peer in net.get('peers', []):
+                other_net = [n for n in resources['network']
+                             if n['name'] == peer['peerid'][1:]][0]
+                data.add_resource(ec2.VPCPeeringConnection(
+                    "%s%sPeering" % (peer['peerid'][1:], net['name']),
+                    VpcId=Ref("VPC%s" % net['name']),
+                    PeerVpcId=Ref("VPC%s" % peer['peerid'][1:])
+                ))
+                data.add_resource(ec2.Route(
+                    "Route%s%s" % (peer['peerid'][1:], net['name']),
+                    RouteTableId=Ref("RT%s" % net['name']),
+                    DestinationCidrBlock=other_net['netrange'],
+                    VpcPeeringConnectionId=Ref(
+                        "%s%sPeering" % (peer['peerid'][1:], net['name']))
+                ))
+                data.add_resource(ec2.Route(
+                    "Route%s%s" % (net['name'], peer['peerid'][1:]),
+                    RouteTableId=Ref("RT%s" % other_net['name']),
+                    DestinationCidrBlock=net['netrange'],
+                    VpcPeeringConnectionId=Ref(
+                        "%s%sPeering" % (peer['peerid'][1:], net['name']))
+                ))
+
+            for idx, route in enumerate(net.get('routes', [])):
+                rt_args = {
+                    'RouteTableId': Ref("RT%s" % net['name']),
+                    'DestinationCidrBlock': route['cidr'],
+                }
+                if route['gateway'].startswith('='):
+                    gw = Ref("%sPeer%s" % (route['gateway'][1:], net['name']))
+                else:
+                    gw = route['gateway']
+
+                rt_args['GatewayId'] = gw
+                data.add_resource(ec2.Route(
+                    "Route%s%s" % (idx, net['name']),
+                    **rt_args
+                ))
+
+            for idx, subnet in enumerate(net['subnets']):
+                data.add_resource(ec2.Subnet(
+                    "%sSubnet%s" % (net['name'], idx),
+                    VpcId=Ref("VPC%s" % net['name']),
+                    CidrBlock=subnet['cidr'],
+                    Tags=[
+                        {'Key': 'Name',
+                         'Value': subnet['name']},
+                        {'Key': 'Public',
+                         'Value': subnet['public']},
+                    ]))
+                data.add_resource(ec2.SubnetRouteTableAssociation(
+                    "%sSRTA%s" % (net['name'], idx),
+                    SubnetId=Ref("%sSubnet%s" % (net['name'], idx)),
+                    RouteTableId=Ref("RT%s" % net['name']),
+                ))
+
         sgs = {}
         for sg in resources['secgroup']:
             rules = []
