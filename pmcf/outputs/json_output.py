@@ -155,22 +155,6 @@ class JSONOutput(BaseOutput):
                         "%s%sPeering" % (peer['peerid'][1:], net['name']))
                 ))
 
-            for idx, route in enumerate(net.get('routes', [])):
-                rt_args = {
-                    'RouteTableId': Ref("RT%s" % net['name']),
-                    'DestinationCidrBlock': route['cidr'],
-                }
-                if route['gateway'].startswith('='):
-                    gw = Ref("%sPeer%s" % (route['gateway'][1:], net['name']))
-                else:
-                    gw = route['gateway']
-
-                rt_args['GatewayId'] = gw
-                data.add_resource(ec2.Route(
-                    "Route%s%s" % (idx, net['name']),
-                    **rt_args
-                ))
-
             for idx, subnet in enumerate(net['subnets']):
                 data.add_resource(ec2.Subnet(
                     "%sSubnet%s" % (net['name'], idx),
