@@ -723,7 +723,6 @@ class TestJSONOutput(object):
         cfg = {
             'name': 'test',
             'environment': 'test',
-            'vpcid': 'test',
         }
         res = {
             'instance': [],
@@ -731,6 +730,7 @@ class TestJSONOutput(object):
             'role': [],
             'secgroup': [{
                 'name': 'test',
+                'vpcid': 'test',
                 'rules': [
                     {
                         'from_port': 22,
@@ -792,7 +792,6 @@ class TestJSONOutput(object):
         cfg = {
             'name': 'test',
             'environment': 'test',
-            'vpcid': 'vpc-123',
         }
         res = {
             'instance': [],
@@ -801,6 +800,7 @@ class TestJSONOutput(object):
             'secgroup': [
                 {
                     'name': 'womble',
+                    'vpcid': 'vpc-123',
                     'rules': [
                         {
                             'port': 80,
@@ -811,6 +811,7 @@ class TestJSONOutput(object):
                 },
                 {
                     'name': 'test',
+                    'vpcid': 'vpc-123',
                     'rules': [
                         {
                             'port': 80,
@@ -1013,7 +1014,6 @@ class TestJSONOutput(object):
         cfg = {
             'name': 'test',
             'environment': 'test',
-            'vpcid': 'vpc-123',
         }
         res = {
             'instance': [],
@@ -1021,6 +1021,7 @@ class TestJSONOutput(object):
             'role': [],
             'secgroup': [{
                 'name': 'test',
+                'vpcid': 'vpc-123',
                 'rules': [
                     {
                         'port': 80,

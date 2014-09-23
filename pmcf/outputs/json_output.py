@@ -160,7 +160,7 @@ class JSONOutput(BaseOutput):
                 if rule.get('source_group'):
                     sg_rule_data = {}
                     if rule['source_group'].startswith('='):
-                        if config.get('vpcid', None):
+                        if sg.get('vpcid', None):
                             sg_rule_data['SourceSecurityGroupId'] =\
                                 Ref(sgs[rule['source_group'][1:]])
                         else:
@@ -171,7 +171,7 @@ class JSONOutput(BaseOutput):
                         sg_rule_data['SourceSecurityGroupName'] = sg_group
                         sg_rule_data['SourceSecurityGroupOwnerId'] = sg_owner
                     else:
-                        if config.get('vpcid', None):
+                        if sg.get('vpcid', None):
                             sg_rule_data['SourceSecurityGroupId'] =\
                                 rule['source_group']
                         else:
@@ -192,8 +192,8 @@ class JSONOutput(BaseOutput):
                         CidrIp=rule['source_cidr'],
                     ))
             sgargs = {}
-            if config.get('vpcid'):
-                sgargs['VpcId'] = config['vpcid']
+            if sg.get('vpcid'):
+                sgargs['VpcId'] = sg['vpcid']
             sgs[name] = ec2.SecurityGroup(
                 sgname,
                 GroupDescription='security group for %s' % sg['name'],

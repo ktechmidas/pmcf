@@ -385,6 +385,8 @@ definitions:
         properties:
             name:
                 type: string
+            vpcid:
+                type: string
             rules:
                 type: array
                 items:

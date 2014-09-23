@@ -204,6 +204,9 @@ class YamlParser(BaseParser):
                                                 field)
 
         for sg in data['resources'].get('secgroup', []):
+            if not sg.get('vpcid', None) and data['config'].get('vpcid'):
+                sg['vpcid'] = data['config']['vpcid']
+
             new_rules = []
             for rule in sg['rules']:
                 for field in ['source_group', 'source_cidr']:
