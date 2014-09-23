@@ -22,11 +22,11 @@
 
 import copy
 import logging
-from netaddr import IPNetwork
 import yaml
 
 from pmcf.exceptions import ParserFailure
 from pmcf.parsers.base_parser import BaseParser
+from pmcf.utils import split_subnets
 
 LOG = logging.getLogger(__name__)
 
@@ -38,35 +38,6 @@ class YamlParser(BaseParser):
     This is the supported parser class, as it translates almost directly to
     the supported internal schema.
     """
-
-    def _split_subnets(self, cidr, split):
-        """
-        Finds the nearest power of two to the number of desired subnets,
-        Splits a CIDR into that many sub CIDRs, and returns the array.
-
-        :param cidr: CIDR for entire range
-        :type cidr: str.
-        :param split: Number to split into
-        :type split: int.
-        :raises: :class:`pmcf.exceptions.ParserFailure`
-        :returns: list.
-        """
-
-        # Find the next closest power of two to a number
-        # For 3, return 4, for 5 return 8
-
-        power = 0
-        while split > 0:
-            split >>= 1
-            power += 1
-
-        try:
-            ip = IPNetwork(cidr)
-            prefix = ip.prefixlen
-            newprefix = prefix + power
-            return list(ip.subnet(newprefix))
-        except Exception, e:
-            raise ParserFailure(str(e))
 
     def _get_value_for_env(self, data, environment, field):
         """
@@ -158,7 +129,7 @@ class YamlParser(BaseParser):
             if not subnets:
                 subnets = []
                 numsubnets = len(zones) * (int(private) + int(public))
-                subcidrs = self._split_subnets(netrange, numsubnets)
+                subcidrs = split_subnets(netrange, numsubnets)
                 settings = []
                 if public:
                     for z in zones:

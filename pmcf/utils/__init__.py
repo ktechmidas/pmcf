@@ -24,6 +24,7 @@ import curses
 import difflib
 import json
 import logging
+from netaddr import IPNetwork
 import os
 import sys
 
@@ -209,6 +210,36 @@ def make_diff(old, new):
     return ret
 
 
+def split_subnets(cidr, split):
+    """
+    Finds the nearest power of two to the number of desired subnets,
+    Splits a CIDR into that many sub CIDRs, and returns the array.
+
+    :param cidr: CIDR for entire range
+    :type cidr: str.
+    :param split: Number to split into
+    :type split: int.
+    :raises: :class:`pmcf.exceptions.PropertyException`
+    :returns: list.
+    """
+
+    # Find the next closest power of two to a number
+    # For 3, return 4, for 5 return 8
+
+    power = 0
+    while split > 0:
+        split >>= 1
+        power += 1
+
+    try:
+        ip = IPNetwork(cidr)
+        prefix = ip.prefixlen
+        newprefix = prefix + power
+        return list(ip.subnet(newprefix))
+    except Exception, e:
+        raise PropertyException(str(e))
+
+
 __all__ = [
     colourise_output,
     error,
@@ -217,5 +248,6 @@ __all__ = [
     init_error,
     is_term,
     make_diff,
+    split_subnets,
     valchange,
 ]
