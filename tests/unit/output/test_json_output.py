@@ -26,6 +26,855 @@ def _mock_ud(self, args):
 
 class TestJSONOutput(object):
 
+    def test_network_valid(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "IGtest": {
+                    "Properties": {
+                        "Tags": [{"Key": "Name", "Value": "test"}]
+                    },
+                    "Type": "AWS::EC2::InternetGateway"
+                },
+                "RTtest": {
+                    "Properties": {
+                        "Tags": [{"Key": "Name", "Value": "test"}],
+                        "VpcId": {"Ref": "VPCtest"}
+                    },
+                    "Type": "AWS::EC2::RouteTable"
+                },
+                "VPCtest": {
+                    "Properties": {
+                        "CidrBlock": "10.0.0.0/8",
+                        "EnableDnsHostnames": "true",
+                        "EnableDnsSupport": "true",
+                        "Tags": [{"Key": "Name", "Value": "test"}]},
+                    "Type": "AWS::EC2::VPC"
+                },
+                "testSRTA0": {
+                    "Properties": {
+                        "RouteTableId": {"Ref": "RTtest"},
+                        "SubnetId": {"Ref": "testSubnet0"}
+                    },
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation"
+                },
+                "testSRTA1": {
+                    "Properties": {
+                        "RouteTableId": {"Ref": "RTtest"},
+                        "SubnetId": {"Ref": "testSubnet1"}
+                    },
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation"
+                },
+                "testSubnet0": {
+                    "Properties": {
+                        "CidrBlock": "10.0.0.0/9",
+                        "Tags": [
+                            {"Key": "Name", "Value": "test-a"},
+                            {"Key": "Public", "Value": False}
+                        ],
+                        "VpcId": {"Ref": "VPCtest"}
+                    },
+                    "Type": "AWS::EC2::Subnet"
+                },
+                "testSubnet1": {
+                    "Properties": {
+                        "CidrBlock": "10.128.0.0/9",
+                        "Tags": [
+                            {"Key": "Name", "Value": "test-b"},
+                            {"Key": "Public", "Value": False}
+                        ],
+                        "VpcId": {"Ref": "VPCtest"}
+                    },
+                    "Type": "AWS::EC2::Subnet"
+                }
+            }
+        }
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'instance': [],
+            'secgroup': [],
+            'role': [],
+            'load_balancer': [],
+            'network': [
+                {
+                    'name': 'test',
+                    'netrange': '10.0.0.0/8',
+                    'public': False,
+                    'subnets': [
+                        {
+                            'name': 'test-a',
+                            'cidr': '10.0.0.0/9',
+                            'zone': 'a',
+                            'public': False,
+                        },
+                        {
+                            'name': 'test-b',
+                            'cidr': '10.128.0.0/9',
+                            'zone': 'b',
+                            'public': False,
+                        },
+                    ],
+                    'zones': ['a', 'b']
+                }
+            ]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    def test_network_valid_public(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "RTtest": {
+                    "Type": "AWS::EC2::RouteTable",
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test"
+                            }
+                        ],
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        }
+                    }
+                },
+                "testSRTA1": {
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties": {
+                        "SubnetId": {
+                            "Ref": "testSubnet1"
+                        },
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        }
+                    }
+                },
+                "testSRTA0": {
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties": {
+                        "SubnetId": {
+                            "Ref": "testSubnet0"
+                        },
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        }
+                    }
+                },
+                "testSubnet0": {
+                    "Type": "AWS::EC2::Subnet",
+                    "Properties": {
+                        "CidrBlock": "10.0.0.0/9",
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test-a"
+                            },
+                            {
+                                "Key": "Public",
+                                "Value": True,
+                            }
+                        ],
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        }
+                    }
+                },
+                "IGtest": {
+                    "Type": "AWS::EC2::InternetGateway",
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test"
+                            }
+                        ]
+                    }
+                },
+                "VPCIGtest": {
+                    "Type": "AWS::EC2::VPCGatewayAttachment",
+                    "Properties": {
+                        "InternetGatewayId": {
+                            "Ref": "IGtest"
+                        },
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        }
+                    }
+                },
+                "VPCtest": {
+                    "Type": "AWS::EC2::VPC",
+                    "Properties": {
+                        "CidrBlock": "10.0.0.0/8",
+                        "EnableDnsHostnames": "true",
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test"
+                            }
+                        ],
+                        "EnableDnsSupport": "true"
+                    }
+                },
+                "DefaultRoutetest": {
+                    "Type": "AWS::EC2::Route",
+                    "Properties": {
+                        "GatewayId": {
+                            "Ref": "IGtest"
+                        },
+                        "DestinationCidrBlock": "0.0.0.0/0",
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        }
+                    },
+                    "DependsOn": "VPCIGtest"
+                },
+                "testSubnet1": {
+                    "Type": "AWS::EC2::Subnet",
+                    "Properties": {
+                        "CidrBlock": "10.128.0.0/9",
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test-b"
+                            },
+                            {
+                                "Key": "Public",
+                                "Value": True,
+                            }
+                        ],
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        }
+                    }
+                }
+            }
+        }
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'instance': [],
+            'secgroup': [],
+            'role': [],
+            'load_balancer': [],
+            'network': [
+                {
+                    'name': 'test',
+                    'netrange': '10.0.0.0/8',
+                    'public': True,
+                    'subnets': [
+                        {
+                            'name': 'test-a',
+                            'cidr': '10.0.0.0/9',
+                            'zone': 'a',
+                            'public': True,
+                        },
+                        {
+                            'name': 'test-b',
+                            'cidr': '10.128.0.0/9',
+                            'zone': 'b',
+                            'public': True,
+                        },
+                    ],
+                    'zones': ['a', 'b']
+                }
+            ]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    def test_network_valid_vpn(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "RTtest": {
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ]
+                    },
+                    "Type": "AWS::EC2::RouteTable"
+                },
+                "testCG0": {
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ],
+                        "IpAddress": "1.2.3.4",
+                        "BgpAsn": 65000,
+                        "Type": "ipsec.1"
+                    },
+                    "Type": "AWS::EC2::CustomerGateway"
+                },
+                "VPCIGtest": {
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "InternetGatewayId": {
+                            "Ref": "IGtest"
+                        }
+                    },
+                    "Type": "AWS::EC2::VPCGatewayAttachment"
+                },
+                "VPCVPNGWtest": {
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "VpnGatewayId": {
+                            "Ref": "testVPNGW"
+                        }
+                    },
+                    "Type": "AWS::EC2::VPCGatewayAttachment"
+                },
+                "DefaultRoutetest": {
+                    "DependsOn": "VPCIGtest",
+                    "Properties": {
+                        "GatewayId": {
+                            "Ref": "IGtest"
+                        },
+                        "DestinationCidrBlock": "0.0.0.0/0",
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        }
+                    },
+                    "Type": "AWS::EC2::Route"
+                },
+                "testVPNGW": {
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ],
+                        "Type": "ipsec.1"
+                    },
+                    "Type": "AWS::EC2::VPNGateway"
+                },
+                "VPCtest": {
+                    "Properties": {
+                        "EnableDnsSupport": "true",
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ],
+                        "CidrBlock": "10.0.0.0/8",
+                        "EnableDnsHostnames": "true"
+                    },
+                    "Type": "AWS::EC2::VPC"
+                },
+                "IGtest": {
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ]
+                    },
+                    "Type": "AWS::EC2::InternetGateway"
+                },
+                "VGRPtest": {
+                    "DependsOn": "VPCVPNGWtest",
+                    "Properties": {
+                        "RouteTableIds": [
+                            {
+                                "Ref": "RTtest"
+                            }
+                        ],
+                        "VpnGatewayId": {
+                            "Ref": "testVPNGW"
+                        }
+                    },
+                    "Type": "AWS::EC2::VPNGatewayRoutePropagation"
+                },
+                "testSubnet1": {
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "Tags": [
+                            {
+                                "Value": "test-b",
+                                "Key": "Name"
+                            },
+                            {
+                                "Value": True,
+                                "Key": "Public"
+                            }
+                        ],
+                        "CidrBlock": "10.128.0.0/9"
+                    },
+                    "Type": "AWS::EC2::Subnet"
+                },
+                "testSubnet0": {
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "Tags": [
+                            {
+                                "Value": "test-a",
+                                "Key": "Name"
+                            },
+                            {
+                                "Value": True,
+                                "Key": "Public"
+                            }
+                        ],
+                        "CidrBlock": "10.0.0.0/9"
+                    },
+                    "Type": "AWS::EC2::Subnet"
+                },
+                "testSRTA0": {
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        },
+                        "SubnetId": {
+                            "Ref": "testSubnet0"
+                        }
+                    },
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation"
+                },
+                "testSRTA1": {
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        },
+                        "SubnetId": {
+                            "Ref": "testSubnet1"
+                        }
+                    },
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation"
+                },
+                "testVPNC0": {
+                    "DependsOn": "VPCVPNGWtest",
+                    "Properties": {
+                        "CustomerGatewayId": {
+                            "Ref": "testCG0"
+                        },
+                        "VpnGatewayId": {
+                            "Ref": "testVPNGW"
+                        },
+                        "Type": "ipsec.1"
+                    },
+                    "Type": "AWS::EC2::VPNConnection"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'instance': [],
+            'secgroup': [],
+            'role': [],
+            'load_balancer': [],
+            'network': [
+                {
+                    'name': 'test',
+                    'netrange': '10.0.0.0/8',
+                    'public': True,
+                    'subnets': [
+                        {
+                            'name': 'test-a',
+                            'cidr': '10.0.0.0/9',
+                            'zone': 'a',
+                            'public': True,
+                        },
+                        {
+                            'name': 'test-b',
+                            'cidr': '10.128.0.0/9',
+                            'zone': 'b',
+                            'public': True,
+                        },
+                    ],
+                    'vpn': [
+                        {'asn': 65000, 'ip': '1.2.3.4'},
+                    ],
+                    'zones': ['a', 'b']
+                }
+            ]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    def test_network_valid_peer(self):
+        out = JSONOutput()
+        ret = {
+            "Description": "test test stack",
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Resources": {
+                "RTtest2": {
+                    "Type": "AWS::EC2::RouteTable",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest2"
+                        },
+                        "Tags": [
+                            {
+                                "Value": "test2",
+                                "Key": "Name"
+                            }
+                        ]
+                    }
+                },
+                "VPCIGtest": {
+                    "Type": "AWS::EC2::VPCGatewayAttachment",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "InternetGatewayId": {
+                            "Ref": "IGtest"
+                        }
+                    }
+                },
+                "testSubnet0": {
+                    "Type": "AWS::EC2::Subnet",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "CidrBlock": "10.0.0.0/9",
+                        "Tags": [
+                            {
+                                "Value": "test-a",
+                                "Key": "Name"
+                            },
+                            {
+                                "Value": True,
+                                "Key": "Public"
+                            }
+                        ]
+                    }
+                },
+                "Routetest2test": {
+                    "Type": "AWS::EC2::Route",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        },
+                        "DestinationCidrBlock": "11.0.0.0/8",
+                        "VpcPeeringConnectionId": {
+                            "Ref": "testtest2Peering"
+                        }
+                    }
+                },
+                "test2Subnet1": {
+                    "Type": "AWS::EC2::Subnet",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest2"
+                        },
+                        "CidrBlock": "11.128.0.0/9",
+                        "Tags": [
+                            {
+                                "Value": "test-b",
+                                "Key": "Name"
+                            },
+                            {
+                                "Value": True,
+                                "Key": "Public"
+                            }
+                        ]
+                    }
+                },
+                "test2Subnet0": {
+                    "Type": "AWS::EC2::Subnet",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest2"
+                        },
+                        "CidrBlock": "11.0.0.0/9",
+                        "Tags": [
+                            {
+                                "Value": "test-a",
+                                "Key": "Name"
+                            },
+                            {
+                                "Value": True,
+                                "Key": "Public"
+                            }
+                        ]
+                    }
+                },
+                "testSRTA1": {
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        },
+                        "SubnetId": {
+                            "Ref": "testSubnet1"
+                        }
+                    }
+                },
+                "testSRTA0": {
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        },
+                        "SubnetId": {
+                            "Ref": "testSubnet0"
+                        }
+                    }
+                },
+                "IGtest": {
+                    "Type": "AWS::EC2::InternetGateway",
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ]
+                    }
+                },
+                "test2SRTA1": {
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest2"
+                        },
+                        "SubnetId": {
+                            "Ref": "test2Subnet1"
+                        }
+                    }
+                },
+                "VPCtest": {
+                    "Type": "AWS::EC2::VPC",
+                    "Properties": {
+                        "CidrBlock": "10.0.0.0/8",
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ],
+                        "EnableDnsHostnames": "true",
+                        "EnableDnsSupport": "true"
+                    }
+                },
+                "Routetesttest2": {
+                    "Type": "AWS::EC2::Route",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest2"
+                        },
+                        "DestinationCidrBlock": "10.0.0.0/8",
+                        "VpcPeeringConnectionId": {
+                            "Ref": "testtest2Peering"
+                        }
+                    }
+                },
+                "DefaultRoutetest": {
+                    "Type": "AWS::EC2::Route",
+                    "DependsOn": "VPCIGtest",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest"
+                        },
+                        "DestinationCidrBlock": "0.0.0.0/0",
+                        "GatewayId": {
+                            "Ref": "IGtest"
+                        }
+                    }
+                },
+                "DefaultRoutetest2": {
+                    "Type": "AWS::EC2::Route",
+                    "DependsOn": "VPCIGtest2",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest2"
+                        },
+                        "DestinationCidrBlock": "0.0.0.0/0",
+                        "GatewayId": {
+                            "Ref": "IGtest2"
+                        }
+                    }
+                },
+                "testtest2Peering": {
+                    "Type": "AWS::EC2::VPCPeeringConnection",
+                    "Properties": {
+                        "PeerVpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "VpcId": {
+                            "Ref": "VPCtest2"
+                        }
+                    }
+                },
+                "IGtest2": {
+                    "Type": "AWS::EC2::InternetGateway",
+                    "Properties": {
+                        "Tags": [
+                            {
+                                "Value": "test2",
+                                "Key": "Name"
+                            }
+                        ]
+                    }
+                },
+                "RTtest": {
+                    "Type": "AWS::EC2::RouteTable",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "Tags": [
+                            {
+                                "Value": "test",
+                                "Key": "Name"
+                            }
+                        ]
+                    }
+                },
+                "VPCIGtest2": {
+                    "Type": "AWS::EC2::VPCGatewayAttachment",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest2"
+                        },
+                        "InternetGatewayId": {
+                            "Ref": "IGtest2"
+                        }
+                    }
+                },
+                "testSubnet1": {
+                    "Type": "AWS::EC2::Subnet",
+                    "Properties": {
+                        "VpcId": {
+                            "Ref": "VPCtest"
+                        },
+                        "CidrBlock": "10.128.0.0/9",
+                        "Tags": [
+                            {
+                                "Value": "test-b",
+                                "Key": "Name"
+                            },
+                            {
+                                "Value": True,
+                                "Key": "Public"
+                            }
+                        ]
+                    }
+                },
+                "test2SRTA0": {
+                    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties": {
+                        "RouteTableId": {
+                            "Ref": "RTtest2"
+                        },
+                        "SubnetId": {
+                            "Ref": "test2Subnet0"
+                        }
+                    }
+                },
+                "VPCtest2": {
+                    "Type": "AWS::EC2::VPC",
+                    "Properties": {
+                        "CidrBlock": "11.0.0.0/8",
+                        "Tags": [
+                            {
+                                "Value": "test2",
+                                "Key": "Name"
+                            }
+                        ],
+                        "EnableDnsHostnames": "true",
+                        "EnableDnsSupport": "true"
+                    }
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'instance': [],
+            'secgroup': [],
+            'role': [],
+            'load_balancer': [],
+            'network': [
+                {
+                    'name': 'test',
+                    'netrange': '10.0.0.0/8',
+                    'public': True,
+                    'subnets': [
+                        {
+                            'name': 'test-a',
+                            'cidr': '10.0.0.0/9',
+                            'zone': 'a',
+                            'public': True,
+                        },
+                        {
+                            'name': 'test-b',
+                            'cidr': '10.128.0.0/9',
+                            'zone': 'b',
+                            'public': True,
+                        },
+                    ],
+                    'zones': ['a', 'b']
+                },
+                {
+                    'name': 'test2',
+                    'netrange': '11.0.0.0/8',
+                    'public': True,
+                    'subnets': [
+                        {
+                            'name': 'test-a',
+                            'cidr': '11.0.0.0/9',
+                            'zone': 'a',
+                            'public': True,
+                        },
+                        {
+                            'name': 'test-b',
+                            'cidr': '11.128.0.0/9',
+                            'zone': 'b',
+                            'public': True,
+                        },
+                    ],
+                    'peers': [
+                        {'peerid': '=test'},
+                    ],
+                    'zones': ['a', 'b']
+                },
+            ]
+        }
+        tmpl = out.add_resources(res, cfg)
+        print json.dumps(json.loads(tmpl), indent=4)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_lb_valid(self):
         out = JSONOutput()
         ret = {
