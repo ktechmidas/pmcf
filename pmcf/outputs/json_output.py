@@ -193,7 +193,10 @@ class JSONOutput(BaseOutput):
                     ))
             sgargs = {}
             if sg.get('vpcid'):
-                sgargs['VpcId'] = sg['vpcid']
+                if sg['vpcid'].startswith('='):
+                    sgargs['VpcId'] = Ref('VPC%s' % sg['vpcid'][1:])
+                else:
+                    sgargs['VpcId'] = sg['vpcid']
             sgs[name] = ec2.SecurityGroup(
                 sgname,
                 GroupDescription='security group for %s' % sg['name'],
