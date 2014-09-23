@@ -280,6 +280,19 @@ definitions:
             - gateway
             - subnets
         additionalProperties: false
+    vpc_subnet:
+        properties:
+            cidr:
+                type: string
+            name:
+                type: string
+            zone:
+                type: string
+        required:
+            - cidr
+            - name
+            - zone
+        additionalProperties: false
     network:
         properties:
             name:
@@ -295,6 +308,11 @@ definitions:
                 minItems: 1
                 items:
                     $ref: "#/definitions/vpc_route"
+            subnets:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/vpc_subnet"
             peers:
                 type: array
                 minItems: 1
@@ -305,7 +323,7 @@ definitions:
         required:
             - name
             - netrange
-            - zones
+            - subnets
         additionalProperties: false
     secgrouprule_cidr_port:
         properties:

@@ -22,6 +22,7 @@
 
 import copy
 import logging
+from netaddr import IPNetwork
 import yaml
 
 from pmcf.exceptions import ParserFailure
@@ -37,6 +38,32 @@ class YamlParser(BaseParser):
     This is the supported parser class, as it translates almost directly to
     the supported internal schema.
     """
+
+    def _split_subnets(self, cidr, split):
+        """
+        Finds the nearest power of two to the number of availability zones,
+        Splits a CIDR into that many sub CIDRs, and returns the array.
+
+        :param cidr: CIDR for entire range
+        :type cidr: str.
+        :param split: Number to split into
+        :type split: int.
+        :raises: :class:`pmcf.exceptions.ParserFailure`
+        :returns: list.
+        """
+
+        power = 0
+        while split > 0:
+            split >>= 1
+            power += 1
+
+        try:
+            ip = IPNetwork(cidr)
+            prefix = ip.prefixlen
+            newprefix = prefix + power
+            return list(ip.subnet(newprefix))
+        except Exception, e:
+            raise ParserFailure(str(e))
 
     def _get_value_for_env(self, data, environment, field):
         """
@@ -115,6 +142,11 @@ class YamlParser(BaseParser):
                 args['instance_accesskey']
             self._stack['config']['instance_secret'] =\
                 args['instance_secretkey']
+
+#        for net in data['resources'].get('network', []):
+#            zones = data['resources']['network'][net]['zones']
+#            netrange = data['resources']['network'][net]['netrange']
+#            netname = data['resources']['network'][net]['name']
 
         for instance in data['resources'].get('instance', []):
             if instance.get('dns'):
