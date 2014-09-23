@@ -93,6 +93,45 @@ class JSONOutput(BaseOutput):
                     GatewayId=Ref("IG%s" % net['name']),
                 ))
 
+            if net.get('vpn', None):
+                data.add_resource(ec2.VPNGateway(
+                    "%sVPNGW" % (net['name']),
+                    Type="ipsec.1",
+                    Tags=[
+                        {'Key': 'Name',
+                         'Value': net['name']},
+                    ]
+                ))
+                data.add_resource(ec2.VPCGatewayAttachment(
+                    "VPCVPNGW%s" % net['name'],
+                    VpcId=Ref("VPC%s" % net['name']),
+                    VpnGatewayId=Ref("%sVPNGW" % net['name'])
+                ))
+                data.add_resource(ec2.VPNGatewayRoutePropagation(
+                    "VGRP%s" % net['name'],
+                    DependsOn="VPCVPNGW%s" % net['name'],
+                    RouteTableIds=[Ref("RT%s" % net['name'])],
+                    VpnGatewayId=Ref("%sVPNGW" % net['name'])
+                ))
+            for idx, vpn in enumerate(net.get('vpn', [])):
+                data.add_resource(ec2.CustomerGateway(
+                    "%sCG%s" % (net['name'], idx),
+                    Type="ipsec.1",
+                    BgpAsn=vpn['asn'],
+                    IpAddress=vpn['ip'],
+                    Tags=[
+                        {'Key': 'Name',
+                         'Value': net['name']},
+                    ]
+                ))
+                data.add_resource(ec2.VPNConnection(
+                    "%sVPNC%s" % (net['name'], idx),
+                    DependsOn="VPCVPNGW%s" % net['name'],
+                    Type='ipsec.1',
+                    CustomerGatewayId=Ref("%sCG%s" % (net['name'], idx)),
+                    VpnGatewayId=Ref("%sVPNGW" % net['name'])
+                ))
+
             for peer in net.get('peers', []):
                 other_net = [n for n in resources['network']
                              if n['name'] == peer['peerid'][1:]][0]

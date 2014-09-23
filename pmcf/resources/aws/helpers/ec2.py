@@ -38,7 +38,17 @@ class VPCPeeringConnection(AWSObject):
     }
 
 
+class VPNGatewayRoutePropagation(AWSObject):
+    type = "AWS::EC2::VPNGatewayRoutePropagation"
+
+    props = {
+        'RouteTableIds': (list, False),
+        'VpnGatewayId': (basestring, True),
+    }
+
+
 __all__ = [
     Route,
     VPCPeeringConnection,
+    VPNGatewayRoutePropagation,
 ]

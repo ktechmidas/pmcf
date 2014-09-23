@@ -684,7 +684,7 @@ class VPNGateway(ec2.VPNGateway):
             error(self, 'Type must be ipsec.1')
 
 
-class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
+class VPNGatewayRoutePropagation(rec2.VPNGatewayRoutePropagation):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)

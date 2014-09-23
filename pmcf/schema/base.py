@@ -291,6 +291,16 @@ definitions:
             - name
             - zone
         additionalProperties: false
+    vpc_vpn:
+        properties:
+            asn:
+                type: integer
+            ip:
+                type: string
+        required:
+            - asn
+            - ip
+        additionalProperties: false
     network:
         properties:
             name:
@@ -316,6 +326,11 @@ definitions:
                 minItems: 1
                 items:
                     $ref: "#/definitions/vpc_peer"
+            vpn:
+                type: array
+                minItems: 1
+                items:
+                    $ref: "#/definitions/vpc_vpn"
             zones:
                 type: array
         required:
