@@ -1107,6 +1107,7 @@ class TestJSONOutput(object):
                         'roles': ['jetty']
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1241,6 +1242,7 @@ class TestJSONOutput(object):
                         'roles': ['jetty']
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1332,6 +1334,7 @@ class TestJSONOutput(object):
                         'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': ['app'],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1413,6 +1416,7 @@ class TestJSONOutput(object):
                         'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': ['app'],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1519,6 +1523,7 @@ class TestJSONOutput(object):
                         'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': ['app'],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1600,6 +1605,7 @@ class TestJSONOutput(object):
                         'profile': 'deploy-client',
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1751,6 +1757,7 @@ class TestJSONOutput(object):
                     },
                     'provider': 'PuppetProvisioner',
                 },
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -1871,6 +1878,7 @@ class TestJSONOutput(object):
                             'roles': ['jetty']
                         },
                         'provider': 'AWSFWProvisioner'},
+                    'public': False,
                     'sg': [],
                     'size': 'm1.large',
                     'sshKey': 'bootstrap'
@@ -1890,6 +1898,7 @@ class TestJSONOutput(object):
                             'roles': ['jetty']
                         },
                         'provider': 'AWSFWProvisioner'},
+                    'public': False,
                     'sg': [],
                     'size': 'm1.large',
                     'sshKey': 'bootstrap'
@@ -1973,6 +1982,7 @@ class TestJSONOutput(object):
                         'roles': ['jetty']
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap',
@@ -2051,6 +2061,7 @@ class TestJSONOutput(object):
                 'provisioner': {
                     'args': {},
                     'provider': 'NoopProvisioner'},
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'
@@ -2130,6 +2141,7 @@ class TestJSONOutput(object):
                         'roles': ['jetty']
                     },
                     'provider': 'AWSFWProvisioner'},
+                'public': False,
                 'sg': [],
                 'size': 'm1.large',
                 'sshKey': 'bootstrap'

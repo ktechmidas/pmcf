@@ -294,6 +294,9 @@ class JSONOutput(BaseOutput):
             if ci is not None:
                 lcargs['Metadata'] = ci
 
+            if inst['public']:
+                lcargs['AssociatePublicIpAddress'] = True
+
             if args.get('profile'):
                 lcargs['IamInstanceProfile'] = args['profile']
             lc = autoscaling.LaunchConfiguration(

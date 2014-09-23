@@ -149,6 +149,9 @@ class YamlParser(BaseParser):
 #            netname = data['resources']['network'][net]['name']
 
         for instance in data['resources'].get('instance', []):
+            if instance.get('public', None) is None:
+                instance['public'] = True
+
             if instance.get('dns'):
                 if not instance['dns'].get('zone', '').endswith('.'):
                     raise ParserFailure("DNS zone must end with '.' on %s" %
