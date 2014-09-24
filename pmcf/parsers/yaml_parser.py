@@ -257,7 +257,7 @@ class YamlParser(BaseParser):
                     })
                     if data['config'].get('vpcid'):
                         self._stack['resources']['secgroup'][0]['vpcid'] =\
-                                data['config']['vpcid']
+                            data['config']['vpcid']
                     instance['sg'] = instance.get('sg', [])
                     instance['sg'].append(instance['name'])
             if not self._stack['config'].get('nodefaultsg'):
