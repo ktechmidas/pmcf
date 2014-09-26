@@ -69,6 +69,7 @@ class TestJSONOutput(object):
                 },
                 "testSubnet0": {
                     "Properties": {
+                        "AvailabilityZone": "a",
                         "CidrBlock": "10.0.0.0/9",
                         "Tags": [
                             {"Key": "Name", "Value": "test-a"},
@@ -80,6 +81,7 @@ class TestJSONOutput(object):
                 },
                 "testSubnet1": {
                     "Properties": {
+                        "AvailabilityZone": "b",
                         "CidrBlock": "10.128.0.0/9",
                         "Tags": [
                             {"Key": "Name", "Value": "test-b"},
@@ -171,6 +173,7 @@ class TestJSONOutput(object):
                 "testSubnet0": {
                     "Type": "AWS::EC2::Subnet",
                     "Properties": {
+                        "AvailabilityZone": "a",
                         "CidrBlock": "10.0.0.0/9",
                         "Tags": [
                             {
@@ -239,6 +242,7 @@ class TestJSONOutput(object):
                 "testSubnet1": {
                     "Type": "AWS::EC2::Subnet",
                     "Properties": {
+                        "AvailabilityZone": "b",
                         "CidrBlock": "10.128.0.0/9",
                         "Tags": [
                             {
@@ -414,6 +418,7 @@ class TestJSONOutput(object):
                 },
                 "testSubnet1": {
                     "Properties": {
+                        "AvailabilityZone": "b",
                         "VpcId": {
                             "Ref": "VPCtest"
                         },
@@ -433,6 +438,7 @@ class TestJSONOutput(object):
                 },
                 "testSubnet0": {
                     "Properties": {
+                        "AvailabilityZone": "a",
                         "VpcId": {
                             "Ref": "VPCtest"
                         },
@@ -560,6 +566,7 @@ class TestJSONOutput(object):
                 "testSubnet0": {
                     "Type": "AWS::EC2::Subnet",
                     "Properties": {
+                        "AvailabilityZone": "a",
                         "VpcId": {
                             "Ref": "VPCtest"
                         },
@@ -591,6 +598,7 @@ class TestJSONOutput(object):
                 "test2Subnet1": {
                     "Type": "AWS::EC2::Subnet",
                     "Properties": {
+                        "AvailabilityZone": "b",
                         "VpcId": {
                             "Ref": "VPCtest2"
                         },
@@ -610,6 +618,7 @@ class TestJSONOutput(object):
                 "test2Subnet0": {
                     "Type": "AWS::EC2::Subnet",
                     "Properties": {
+                        "AvailabilityZone": "a",
                         "VpcId": {
                             "Ref": "VPCtest2"
                         },
@@ -772,6 +781,7 @@ class TestJSONOutput(object):
                 "testSubnet1": {
                     "Type": "AWS::EC2::Subnet",
                     "Properties": {
+                        "AvailabilityZone": "b",
                         "VpcId": {
                             "Ref": "VPCtest"
                         },
@@ -872,7 +882,6 @@ class TestJSONOutput(object):
             ]
         }
         tmpl = out.add_resources(res, cfg)
-        print json.dumps(json.loads(tmpl), indent=4)
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid(self):

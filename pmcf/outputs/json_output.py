@@ -159,6 +159,7 @@ class JSONOutput(BaseOutput):
                 data.add_resource(ec2.Subnet(
                     "%sSubnet%s" % (net['name'], idx),
                     VpcId=Ref("VPC%s" % net['name']),
+                    AvailabilityZone=subnet['zone'],
                     CidrBlock=subnet['cidr'],
                     Tags=[
                         {'Key': 'Name',
