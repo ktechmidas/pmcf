@@ -84,8 +84,10 @@ class AWSCFNOutput(JSONOutput):
                 stack = ret[0]
                 if stack.stack_status.endswith('COMPLETE'):
                     return True
-        except boto.exception.BotoServerError:
-            pass
+        except boto.exception.BotoServerError, e:
+            if e.message.endswith('Rate exceeded'):
+                time.sleep(1)
+                return self._stack_updatable(cfn, stack)
         return False
 
     def _stack_exists(self, cfn, stack):
@@ -103,8 +105,10 @@ class AWSCFNOutput(JSONOutput):
         try:
             cfn.describe_stacks(stack)
             return True
-        except boto.exception.BotoServerError:
-            pass
+        except boto.exception.BotoServerError, e:
+            if e.message.endswith('Rate exceeded'):
+                time.sleep(1)
+                return self._stack_exists(cfn, stack)
         return False
 
     def _need_iam_caps(self, data):
