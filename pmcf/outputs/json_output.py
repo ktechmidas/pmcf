@@ -251,6 +251,7 @@ class JSONOutput(BaseOutput):
                 listeners.append(elasticloadbalancing.Listener(**kwargs))
 
             name = "ELB%s" % re.sub(r'\W+', '', lb['name'])
+            lbtagname = '%s::%s' % (lb['name'], config['environment'])
             elb = {
                 'CrossZone': True,
                 'HealthCheck': elasticloadbalancing.HealthCheck(
@@ -261,8 +262,10 @@ class JSONOutput(BaseOutput):
                     Timeout=2,
                     UnhealthyThreshold=3
                 ),
-                'Listeners': listeners
+                'Listeners': listeners,
+                'Tags': [{'Key': 'Name', 'Value': lbtagname}],
             }
+
             if lb.get('sg'):
                 elb['SecurityGroups'] = []
                 for sg in lb['sg']:
