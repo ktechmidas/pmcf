@@ -921,7 +921,8 @@ class TestJSONOutput(object):
                                 "LoadBalancerPort": 80,
                                 "Protocol": "HTTP"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -1017,7 +1018,8 @@ class TestJSONOutput(object):
                                 "LoadBalancerPort": 80,
                                 "Protocol": "HTTP"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -1115,7 +1117,8 @@ class TestJSONOutput(object):
                                 "LoadBalancerPort": 80,
                                 "Protocol": "HTTP"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -1192,7 +1195,8 @@ class TestJSONOutput(object):
                                 "LoadBalancerPort": 80,
                                 "Protocol": "HTTP"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -1283,6 +1287,7 @@ class TestJSONOutput(object):
                             }
                         ],
                         "SecurityGroups": [{"Ref": "sgelb"}],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -1366,7 +1371,8 @@ class TestJSONOutput(object):
                                 "SSLCertificateId": "test",
                                 "Protocol": "HTTPS"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -1446,7 +1452,8 @@ class TestJSONOutput(object):
                                 "LoadBalancerPort": 80,
                                 "Protocol": "HTTP"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -2013,7 +2020,8 @@ class TestJSONOutput(object):
                                 "LoadBalancerPort": 80,
                                 "Protocol": "HTTP"
                             }
-                        ]
+                        ],
+                        "Tags": [{"Key": "Name", "Value": "test::test"}],
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 },
