@@ -271,7 +271,7 @@ class AWSCFNOutput(JSONOutput):
                                          capabilities=capabilities, tags=tags)
 
                 else:
-                    LOG.info("stack %s doesn't exist", metadata['name'])
+                    LOG.info("stack %s not updatable", metadata['name'])
                     return True
 
             elif action == 'create':
