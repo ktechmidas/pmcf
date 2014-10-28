@@ -29,7 +29,7 @@ from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import autoscaling, ec2, iam, elasticloadbalancing
 from pmcf.resources.aws import cloudformation as cfn
-from pmcf.resources.aws import route53
+from pmcf.resources.aws import route53, sqs
 from pmcf.utils import import_from_string
 
 LOG = logging.getLogger(__name__)
@@ -55,6 +55,13 @@ class JSONOutput(BaseOutput):
         desc = "%s %s stack" % (config['name'], config['environment'])
         data.add_description(desc)
         data.add_version()
+
+        for queue in resources.get('queue', []):
+            data.add_resource(sqs.Queue(
+                "SQS%s" % queue['name'],
+                QueueName=queue['name'],
+                MessageRetentionPeriod=queue.get('retention', 60),
+            ))
 
         for net in resources.get('network', []):
             data.add_resource(ec2.VPC(

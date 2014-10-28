@@ -338,6 +338,15 @@ definitions:
             - netrange
             - subnets
         additionalProperties: false
+    queue:
+        properties:
+            name:
+                type: string
+            retention:
+                type: integer
+        required:
+            - name
+        additionalProperties: false
     secgrouprule_cidr_port:
         properties:
             port:
@@ -437,6 +446,10 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/network"
+            queue:
+                type: array
+                items:
+                    $ref: "#/definitions/queue"
             secgroup:
                 type: array
                 items:

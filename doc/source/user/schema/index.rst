@@ -52,3 +52,4 @@ Schemas for individual resources
    instance
    loadbalancer
    secgroup
+   queue
