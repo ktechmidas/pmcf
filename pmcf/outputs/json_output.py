@@ -139,6 +139,24 @@ class JSONOutput(BaseOutput):
                     VpnGatewayId=Ref("%sVPNGW" % net['name'])
                 ))
 
+            for route in net.get('routes', []):
+                route_ref = {
+                    'RouteTableId': Ref("RT%s" % net['name']),
+                    'DestinationCidrBlock': route['cidr'],
+                }
+                if route['gateway'].startswith('='):
+                    route_ref['VpcPeeringConnectionId'] = Ref(
+                        "%s%sPeering" % (net['name'], route['gateway'][1:]))
+                else:
+                    route_ref['GatewayId'] = route['gateway']
+
+                data.add_resource(ec2.Route(
+                    "Route%s%s" % (
+                        route['cidr'].replace('.', '').replace('/', ''),
+                        net['name']),
+                    **route_ref
+                ))
+
             for peer in net.get('peers', []):
                 other_net = [n for n in resources['network']
                              if n['name'] == peer['peerid'][1:]][0]
