@@ -4,6 +4,12 @@ from setuptools import find_packages, setup
 
 from pmcf.version import VERSION
 
+req_lines = [line.strip() for line in open('requirements.txt').readlines()]
+install_reqs = list(filter(None, req_lines))
+
+t_lines = [line.strip() for line in open('test-requirements.txt').readlines()]
+test_reqs = list(filter(None, t_lines))
+
 setup(
     name="pmcf",
     version=VERSION,
@@ -13,27 +19,8 @@ setup(
     url="http://www.piksel.com",
     packages=find_packages('.', exclude=['tests*']),
     test_suite="nose.collector",
-    install_requires=[
-        "awacs",
-        "argparse",
-        "boto",
-        "jsonschema",
-        "PyYAML",
-        "netaddr",
-        "troposphere",
-        "xmltodict",
-    ],
-    tests_require=[
-        "cov-core",
-        "coverage",
-        "flake8",
-        "mock",
-        "nose",
-        "nose-cov",
-        "pep8",
-        "Sphinx",
-        "tox",
-    ],
+    install_requires=install_reqs,
+    tests_require=test_reqs,
     entry_points={
         'console_scripts': [
             'pmcf = pmcf.cli.cli:main',
