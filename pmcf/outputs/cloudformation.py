@@ -296,6 +296,22 @@ class AWSCFNOutput(JSONOutput):
                         raise ProvisionerException(
                             'Stack exists but strategy does not allow update')
 
+                    allowed_update = strategy.allowed_update()
+
+                    diff = self._get_difference(cfn, metadata['name'], data)
+                    if len(diff) == 0:
+                        LOG.warning('No difference, not updating')
+                        return True
+
+                    changes = 0
+                    for change in diff:
+                        if allowed_update.match(change):
+                            continue
+                        changes += 1
+                    if changes == 0:
+                        LOG.warning('No difference, not updating')
+                        return True
+
                     if strategy.should_prompt('update'):
                         if not self._show_prompt(cfn, metadata['name'], data):
                             return True
