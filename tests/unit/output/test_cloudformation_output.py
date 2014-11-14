@@ -381,6 +381,10 @@ class TestAWSCFNOutput(object):
                 _mock_describe_stack)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._show_prompt',
                 _mock_return_true)
+    @mock.patch('pmcf.strategy.inplace.InPlace.allowed_update',
+                _mock_allowed_update)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
     def test_run_with_prompt_true_succeeds(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -457,6 +461,10 @@ class TestAWSCFNOutput(object):
                 _mock_describe_stack)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._show_prompt',
                 _mock_return_false)
+    @mock.patch('pmcf.strategy.inplace.InPlace.allowed_update',
+                _mock_allowed_update)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
     def test_run_with_prompt_false_succeeds(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -714,6 +722,10 @@ class TestAWSCFNOutput(object):
                 _mock_create_stack_url)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._upload_stack',
                 _mock_upload)
+    @mock.patch('pmcf.strategy.inplace.InPlace.allowed_update',
+                _mock_allowed_update)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
     def test_run_update_existing_stack_upload_returns_true(self):
         cfno = AWSCFNOutput()
         metadata = {
@@ -737,6 +749,10 @@ class TestAWSCFNOutput(object):
         _mock_validate_template)
     @mock.patch('boto.cloudformation.CloudFormationConnection.update_stack',
                 _mock_create_stack)
+    @mock.patch('pmcf.strategy.inplace.InPlace.allowed_update',
+                _mock_allowed_update)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._get_difference',
+                _mock_get_difference_diff)
     def test_run_update_existing_stack_returns_true(self):
         cfno = AWSCFNOutput()
         metadata = {
