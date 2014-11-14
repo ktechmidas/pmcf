@@ -21,6 +21,7 @@ setup(
     test_suite="nose.collector",
     install_requires=install_reqs,
     tests_require=test_reqs,
+    zip_safe=False,
     entry_points={
         'console_scripts': [
             'pmcf = pmcf.cli.cli:main',
