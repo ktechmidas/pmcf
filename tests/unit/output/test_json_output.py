@@ -907,6 +907,10 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -1004,6 +1008,10 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -1099,6 +1107,10 @@ class TestJSONOutput(object):
                 "ELBtest": {
                     "Properties": {
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -1181,6 +1193,10 @@ class TestJSONOutput(object):
                         ],
                         "Scheme": "internal",
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -1271,6 +1287,10 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -1356,6 +1376,10 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -1438,6 +1462,10 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,
@@ -2006,6 +2034,10 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "CrossZone": "true",
+                        "ConnectionDrainingPolicy": {
+                            "Enabled": "true"
+                            "Timeout": 10,
+                        },
                         "HealthCheck": {
                             "HealthyThreshold": 3,
                             "Interval": 5,

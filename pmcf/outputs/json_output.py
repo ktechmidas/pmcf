@@ -277,6 +277,11 @@ class JSONOutput(BaseOutput):
 
             name = "ELB%s" % re.sub(r'\W+', '', lb['name'])
             lbtagname = '%s::%s' % (lb['name'], config['environment'])
+
+            ecdp = elasticloadbalancing.ConnectionDrainingPolicy(
+                Enabled=True,
+                Timeout=10,
+            )
             elb = {
                 'CrossZone': True,
                 'HealthCheck': elasticloadbalancing.HealthCheck(
@@ -288,6 +293,7 @@ class JSONOutput(BaseOutput):
                     UnhealthyThreshold=3
                 ),
                 'Listeners': listeners,
+                'ConnectionDrainingPolicy': ecdp,
                 'Tags': [{'Key': 'Name', 'Value': lbtagname}],
             }
 
