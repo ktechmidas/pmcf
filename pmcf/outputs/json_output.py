@@ -296,6 +296,11 @@ class JSONOutput(BaseOutput):
                 'ConnectionDrainingPolicy': ecdp,
                 'Tags': [{'Key': 'Name', 'Value': lbtagname}],
             }
+            for inst in resources['instance']:
+                if name.lstrip('ELB') in inst.get('lb', []):
+                    elb['Tags'].append({
+                        'Key': 'App',
+                        'Value': inst['name']})
 
             if lb.get('sg'):
                 elb['SecurityGroups'] = []
