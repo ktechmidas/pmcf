@@ -68,6 +68,8 @@ definitions:
                         type: string
                     find_nodes:
                         type: boolean
+                    custom_profile:
+                        type: object
                 required:
                     - bucket
                 additionalProperties: false
