@@ -908,7 +908,7 @@ class TestJSONOutput(object):
                         },
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1009,7 +1009,7 @@ class TestJSONOutput(object):
                         },
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1108,7 +1108,7 @@ class TestJSONOutput(object):
                     "Properties": {
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1194,7 +1194,7 @@ class TestJSONOutput(object):
                         "Scheme": "internal",
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1288,7 +1288,7 @@ class TestJSONOutput(object):
                         },
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1377,7 +1377,7 @@ class TestJSONOutput(object):
                         },
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1463,7 +1463,7 @@ class TestJSONOutput(object):
                         },
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -1481,7 +1481,12 @@ class TestJSONOutput(object):
                                 "Protocol": "HTTP"
                             }
                         ],
-                        "Tags": [{"Key": "Name", "Value": "test::test"}],
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test::test"
+                            }
+                        ]
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 }
@@ -2035,7 +2040,7 @@ class TestJSONOutput(object):
                         },
                         "CrossZone": "true",
                         "ConnectionDrainingPolicy": {
-                            "Enabled": "true"
+                            "Enabled": True,
                             "Timeout": 10,
                         },
                         "HealthCheck": {
@@ -2053,7 +2058,16 @@ class TestJSONOutput(object):
                                 "Protocol": "HTTP"
                             }
                         ],
-                        "Tags": [{"Key": "Name", "Value": "test::test"}],
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "Value": "test::test"
+                            },
+                            {
+                                "Key": "App",
+                                "Value": "app"
+                            }
+                        ]
                     },
                     "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
                 },
