@@ -37,33 +37,40 @@ LOG = logging.getLogger(__name__)
 
 class JSONOutput(BaseOutput):
 
-    def add_resources(self, resources, config):
+    def _add_queues(self, data, queues, config):
         """
-        Creates JSON-formatted string representation of stack resourcs
-        suitable for use with AWS Cloudformation
+        Iterates and creates AWS SQS queues
 
-        :param resources: Internal data structure of resources
-        :type resources: dict.
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param queues: list of queue definitions
+        :type queues: list.
         :param config: Config key/value pairs
         :type config: dict.
-        :returns: string
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         """
 
-        LOG.info('Start building template')
-        data = Template()
-        desc = "%s %s stack" % (config['name'], config['environment'])
-        data.add_description(desc)
-        data.add_version()
-
-        for queue in resources.get('queue', []):
+        for queue in queues:
             data.add_resource(sqs.Queue(
                 "SQS%s" % queue['name'],
                 QueueName=queue['name'],
                 MessageRetentionPeriod=queue.get('retention', 60),
             ))
 
-        for net in resources.get('network', []):
+    def _add_nets(self, data, nets, config):
+        """
+        Iterates and creates AWS VPC networks
+
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param nets: list of network definitions
+        :type nets: list.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
+        for net in nets:
             data.add_resource(ec2.VPC(
                 "VPC%s" % net['name'],
                 EnableDnsSupport=True,
@@ -158,7 +165,7 @@ class JSONOutput(BaseOutput):
                 ))
 
             for peer in net.get('peers', []):
-                other_net = [n for n in resources['network']
+                other_net = [n for n in nets
                              if n['name'] == peer['peerid'][1:]][0]
                 data.add_resource(ec2.VPCPeeringConnection(
                     "%s%sPeering" % (peer['peerid'][1:], net['name']),
@@ -198,8 +205,22 @@ class JSONOutput(BaseOutput):
                     RouteTableId=Ref("RT%s" % net['name']),
                 ))
 
+    def _add_secgroups(self, data, secgroups, config):
+        """
+        Iterates and creates AWS VPC networks
+
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param secgroups: list of security group definitions
+        :type secgroups: list.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :returns: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
         sgs = {}
-        for sg in resources['secgroup']:
+        for sg in secgroups:
             rules = []
             sgname = 'sg%s' % re.sub(r'\W+', '', sg['name'])
             name = sg['name']
@@ -254,9 +275,26 @@ class JSONOutput(BaseOutput):
             )
             LOG.debug('Adding sg: %s' % sgs[name].JSONrepr())
             data.add_resource(sgs[name])
+        return sgs
+
+    def _add_lbs(self, data, loadbalancers, config, sgs, instances):
+        """
+        Iterates and creates AWS VPC networks
+
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param loadbalancers: list of security group definitions
+        :type loadbalancers: list.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :param sgs: list of security group definitions
+        :type sgs: list.
+        :returns: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
 
         lbs = {}
-        for lb in resources['load_balancer']:
+        for lb in loadbalancers:
             lb_hc_tgt = lb['healthcheck']['protocol'] + ':' + \
                 str(lb['healthcheck']['port'])
             if lb['healthcheck'].get('path'):
@@ -296,7 +334,7 @@ class JSONOutput(BaseOutput):
                 'ConnectionDrainingPolicy': ecdp,
                 'Tags': [{'Key': 'Name', 'Value': lbtagname}],
             }
-            for inst in resources['instance']:
+            for inst in instances:
                 if name.lstrip('ELB') in inst.get('lb', []):
                     elb['Tags'].append({
                         'Key': 'App',
@@ -363,6 +401,35 @@ class JSONOutput(BaseOutput):
 
             LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
             data.add_resource(lbs[name])
+        return lbs
+
+    def add_resources(self, resources, config):
+        """
+        Creates JSON-formatted string representation of stack resourcs
+        suitable for use with AWS Cloudformation
+
+        :param resources: Internal data structure of resources
+        :type resources: dict.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :returns: string
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
+        LOG.info('Start building template')
+        data = Template()
+        desc = "%s %s stack" % (config['name'], config['environment'])
+        data.add_description(desc)
+        data.add_version()
+
+        self._add_queues(data, resources.get('queue', []), config)
+        self._add_nets(data, resources.get('network', []), config)
+        sgs = self._add_secgroups(data, resources['secgroup'], config)
+        lbs = self._add_lbs(data,
+                            resources['load_balancer'],
+                            config,
+                            sgs,
+                            resources['instance'])
 
         for inst in resources['instance']:
             ud = None
