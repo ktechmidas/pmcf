@@ -247,6 +247,14 @@ class YamlParser(BaseParser):
                             'infrastructure': "%s.tar.gz" % instance['name'],
                         }
                     }
+
+            if instance['provisioner'].get('args', {}).get('custom_profile'):
+                instance['provisioner']['args']['custom_profile'] =\
+                    self._get_value_for_env(
+                        instance['provisioner']['args']['custom_profile'],
+                        args['environment'],
+                        'custom_profile')
+
             if instance.get('sg', []) == []:
                 sgs = self._stack['resources']['secgroup']
                 found = instance['name'] in [x['name'] for x in sgs]
