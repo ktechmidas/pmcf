@@ -69,7 +69,7 @@ definitions:
                     find_nodes:
                         type: boolean
                     custom_profile:
-                        type: object
+                        type: array
                 required:
                     - bucket
                 additionalProperties: false

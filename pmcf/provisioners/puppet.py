@@ -97,6 +97,8 @@ class PuppetProvisioner(BaseProvisioner):
                 "Resource": "*",
             })
 
+        statement['Statement'].extend(args.get('custom_profile', []))
+
         if len(statement['Statement']) > 0:
             return statement
         return None
