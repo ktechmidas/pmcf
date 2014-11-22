@@ -207,7 +207,7 @@ class JSONOutput(BaseOutput):
 
     def _add_secgroups(self, data, secgroups, config):
         """
-        Iterates and creates AWS VPC networks
+        Iterates and creates AWS Security Groups
 
         :param data: Template object
         :type data: :class:`troposphere.Template`
@@ -279,11 +279,11 @@ class JSONOutput(BaseOutput):
 
     def _add_lbs(self, data, loadbalancers, config, sgs, instances):
         """
-        Iterates and creates AWS VPC networks
+        Iterates and creates AWS ELBs
 
         :param data: Template object
         :type data: :class:`troposphere.Template`
-        :param loadbalancers: list of security group definitions
+        :param loadbalancers: list of load balancer definitions
         :type loadbalancers: list.
         :param config: Config key/value pairs
         :type config: dict.
@@ -403,35 +403,25 @@ class JSONOutput(BaseOutput):
             data.add_resource(lbs[name])
         return lbs
 
-    def add_resources(self, resources, config):
+    def _add_instances(self, data, instances, config, sgs, lbs):
         """
-        Creates JSON-formatted string representation of stack resourcs
-        suitable for use with AWS Cloudformation
+        Iterates and creates AWS ELBs
 
-        :param resources: Internal data structure of resources
-        :type resources: dict.
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param instances: list of instance definitions
+        :type instances: list.
         :param config: Config key/value pairs
         :type config: dict.
-        :returns: string
+        :param sgs: list of security group definitions
+        :type sgs: list.
+        :param lbs: list of load balancer definitions
+        :type lbs: list.
+        :returns: dict.
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         """
 
-        LOG.info('Start building template')
-        data = Template()
-        desc = "%s %s stack" % (config['name'], config['environment'])
-        data.add_description(desc)
-        data.add_version()
-
-        self._add_queues(data, resources.get('queue', []), config)
-        self._add_nets(data, resources.get('network', []), config)
-        sgs = self._add_secgroups(data, resources['secgroup'], config)
-        lbs = self._add_lbs(data,
-                            resources['load_balancer'],
-                            config,
-                            sgs,
-                            resources['instance'])
-
-        for inst in resources['instance']:
+        for inst in instances:
             ud = None
             ci = None
             args = inst['provisioner']['args']
@@ -599,6 +589,39 @@ class JSONOutput(BaseOutput):
             )
             LOG.debug('Adding asg: %s' % asg.JSONrepr())
             data.add_resource(asg)
+
+    def add_resources(self, resources, config):
+        """
+        Creates JSON-formatted string representation of stack resourcs
+        suitable for use with AWS Cloudformation
+
+        :param resources: Internal data structure of resources
+        :type resources: dict.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :returns: string
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
+        LOG.info('Start building template')
+        data = Template()
+        desc = "%s %s stack" % (config['name'], config['environment'])
+        data.add_description(desc)
+        data.add_version()
+
+        self._add_queues(data, resources.get('queue', []), config)
+        self._add_nets(data, resources.get('network', []), config)
+        sgs = self._add_secgroups(data, resources['secgroup'], config)
+        lbs = self._add_lbs(data,
+                            resources['load_balancer'],
+                            config,
+                            sgs,
+                            resources['instance'])
+        self._add_instances(data,
+                            resources['instance'],
+                            config,
+                            sgs,
+                            lbs)
 
         LOG.info('Finished building template')
         return data.to_json(indent=None)
