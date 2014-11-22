@@ -51,5 +51,6 @@ Schemas for individual resources
 
    instance
    loadbalancer
+   network
    secgroup
    queue

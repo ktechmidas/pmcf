@@ -16,10 +16,10 @@
 Load Balancer Schema
 ====================
 
-The schema for security groups is, like the other parts of the schema,
+The schema for load balancers is, like the other parts of the schema,
 composed from smaller building blocks to make a larger whole.
 
-The basic format of a security group is:
+The basic format of a load balancer is:
 
 :name:
         The name of the load balancer

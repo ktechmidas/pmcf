@@ -106,11 +106,22 @@ The args dict for PuppetProvisioner has the following mandatory fields:
 
 Optional parameters are:
 
+:find_nodes:
+        Boolean.  Whether to grant an additional IAM profile that allows
+        searching for other hosts in EC2.
+
+:custom_profile:
+        Arbitrary JSON document describing custom IAM profile.
+
 :infrastructure:
         Name of the infrastructure artifact to download from S3
 
 :application:
         Name of the application artifact to download from S3
+
+:appname:
+        Name of the application, if different to the name of the stack.
+
 
 AWSFWProvisioner takes:
 
