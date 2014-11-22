@@ -29,6 +29,13 @@ LOG = logging.getLogger(__name__)
 
 
 class BlockingProvisioner(BaseProvisioner):
+    """
+    Blocking Provisioner class
+
+    This class assembles userdata suitable for use by cloud-init, but only
+    enough to satisfy wait conditions.  Only suitable for test conditions
+    that need to wait for instance to come all the way up before proceeding.
+    """
 
     def userdata(self, args):
         """

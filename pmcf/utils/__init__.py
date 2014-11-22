@@ -99,6 +99,17 @@ def is_term():
 
 
 def colourise_output(start, line, end='reset'):
+    """
+    Wrapper method to return colourised output when running in a terminal.
+
+    :param start: One of 'red', 'green', 'yellow' or 'cyan'
+    :type start: str.
+    :param line: Text to be colourised.
+    :type line: str.
+    :param end: Typically, 'reset' to clear the colourisation.
+    :type end: str.
+    :returns: str.
+    """
     # Simple coloured output
 
     if not is_term():

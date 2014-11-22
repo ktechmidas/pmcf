@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.strategy.prompt_inplace
     :platform: Unix
-    :synopsis: module containing abstract base strategy class
+    :synopsis: module containing a prompting in-place strategy class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 
 class PromptInPlace(BaseStrategy):
     """
-    Abstract base class for strategy classes.
+    Prompting in-place class for strategy.
 
     The PMCF Strategy classes are responsible for instrumenting the output
     layers.  They respond to methods about whether to prompt, proceed

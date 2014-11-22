@@ -15,7 +15,7 @@
 """
 ..  module:: pmcf.strategy.inplace
     :platform: Unix
-    :synopsis: module containing abstract base strategy class
+    :synopsis: module containing in-place strategy class
 
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 
 class InPlace(BaseStrategy):
     """
-    Abstract base class for strategy classes.
+    In-placeclass for strategy.
 
     The PMCF Strategy classes are responsible for instrumenting the output
     layers.  They respond to methods about whether to prompt, proceed

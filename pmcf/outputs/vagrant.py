@@ -29,6 +29,12 @@ LOG = logging.getLogger(__name__)
 
 
 class VagrantOutput(BaseOutput):
+    """
+    Vagrant output class
+
+    Responsible for Vagrantfile output of a stack definition.
+    """
+
     def add_resources(self, resources, config):
         """
         Creates a Vagrantfile from stripped-down stack definition.

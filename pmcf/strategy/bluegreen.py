@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 
 class BlueGreen(BaseStrategy):
     """
-    Abstract base class for strategy classes.
+    Blue/Green class for strategy.
 
     The PMCF Strategy classes are responsible for instrumenting the output
     layers.  They respond to methods about whether to prompt, proceed

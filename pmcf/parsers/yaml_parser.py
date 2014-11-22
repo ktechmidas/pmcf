@@ -33,7 +33,7 @@ LOG = logging.getLogger(__name__)
 
 class YamlParser(BaseParser):
     """
-    Baseline Parser class.
+    YAML Parser class.
 
     This is the supported parser class, as it translates almost directly to
     the supported internal schema.

@@ -28,6 +28,14 @@ LOG = logging.getLogger(__name__)
 
 
 class ChefProvisioner(BaseProvisioner):
+    """
+    Chef Provisioner class
+
+    This class assembles userdata suitable for use by cloud-init, and provides
+    methods to boot strap a chef run.
+
+    Currently unimplemented.
+    """
 
     def userdata(self, args):
         """

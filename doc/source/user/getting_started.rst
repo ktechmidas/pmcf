@@ -22,5 +22,4 @@ started, clone it, then use virtualenv to get started::
 
   mkvirtualenv pmcf
   workon pmcf
-  pip install -rrequirements.txt
   python setup.py install

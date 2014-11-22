@@ -28,10 +28,16 @@ LOG = logging.getLogger(__name__)
 
 
 class NoopProvisioner(BaseProvisioner):
+    """
+    Noop Provisioner class
+
+    This class assembles userdata suitable for use by cloud-init, but does
+    nothing.
+    """
 
     def userdata(self, args):
         """
-        Validates resource against local policy.
+        Returns no userdata.
 
         :param args: provisioner arguments
         :type args: dict.

@@ -31,9 +31,9 @@ LOG = logging.getLogger(__name__)
 
 class JSONPolicy(BasePolicy):
     """
-    Baseline Policy class.
+    JSON Policy class.
 
-    This is the supported policy class.
+    This is the only supported policy class.
     """
 
     def __init__(self, json_file='/etc/pmcf/policy.json'):
