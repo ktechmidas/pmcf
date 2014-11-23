@@ -337,6 +337,7 @@ class TestParserData(object):
             'instance',
             'load_balancer',
             'secgroup',
+            'network',
             'cdn',
             'db',
         ]
@@ -379,3 +380,9 @@ class TestParserData(object):
 
     def test_parser_sg_has_valid_rule_count_app2(self):
         assert_equals(0, len(self.data['resources']['secgroup'][0]['rules']))
+
+    def test_parser_network_has_correct_count(self):
+        assert_equals(2, len(self.data['resources']['network']))
+
+    def test_parser_network_has_correct_subnet_count(self):
+        assert_equals(3, len(self.data['resources']['network'][0]['subnets']))

@@ -61,6 +61,24 @@ resources:
       sshKey: bootstrap
       monitoring: False
       size: m1.large
+  network:
+    - name: test
+      netrange: 10.203.8.0/24
+      zones:
+        - eu-west-1a
+        - eu-west-1b
+        - eu-west-1c
+      peers:
+        - peerid: =demo
+      vpn:
+        - asn: 65000
+          ip: 83.98.1.51
+    - name: demo
+      netrange: 10.203.9.0/24
+      zones:
+        - eu-west-1a
+        - eu-west-1b
+        - eu-west-1c
   secgroup:
     - name: app
       rules:
