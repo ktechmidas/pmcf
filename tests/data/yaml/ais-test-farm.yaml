@@ -55,6 +55,12 @@ resources:
       sg:
         - app
       size: m1.large
+      provisioner:
+        provider: PuppetProvisioner
+        args:
+          infrastructure: dnshelper.tar.gz
+          bucket: piksel-provisioning
+          custom_profile: [{'foo': 'bar'}]
     - name: app2
       count: 1
       image: ami-0bceb93b
@@ -64,6 +70,8 @@ resources:
   network:
     - name: test
       netrange: 10.203.8.0/24
+      private: True
+      public: True
       zones:
         - eu-west-1a
         - eu-west-1b

@@ -348,6 +348,12 @@ class TestParserData(object):
             True,
             'notify' in self.data['resources']['instance'][0].keys())
 
+    def test_parser_resource_first_instance_has_custom_profile(self):
+        inst = self.data['resources']['instance'][0]
+        assert_equals(
+            True,
+            'custom_profile' in inst['provisioner']['args'].keys())
+
     def test_parser_resource_second_instance_has_notify(self):
         assert_equals(
             True,
@@ -385,4 +391,4 @@ class TestParserData(object):
         assert_equals(2, len(self.data['resources']['network']))
 
     def test_parser_network_has_correct_subnet_count(self):
-        assert_equals(3, len(self.data['resources']['network'][0]['subnets']))
+        assert_equals(6, len(self.data['resources']['network'][0]['subnets']))
