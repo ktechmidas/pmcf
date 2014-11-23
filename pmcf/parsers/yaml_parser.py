@@ -121,29 +121,28 @@ class YamlParser(BaseParser):
             zones = net['zones']
             netrange = net['netrange']
             netname = net['name']
-            private = net.get('private', False)
-            public = net.get('public', True)
-            subnets = net.get('subnets', None)
-            net['public'] = public
-            net['private'] = private
-            if not subnets:
+            net['public'] = net.get('public', True)
+            net['private'] = net.get('private', False)
+            if not net.get('subnets', None):
                 subnets = []
-                numsubnets = len(zones) * (int(private) + int(public))
+                numsubnets = len(zones) * (
+                    int(net['private']) + int(net['public']))
                 subcidrs = split_subnets(netrange, numsubnets)
                 settings = []
-                if public:
+                if net['public']:
                     for z in zones:
                         settings.append('public')
-                if private:
+                if net['private']:
                     for z in zones:
                         settings.append('private')
 
                 for n in range(0, numsubnets):
+                    z = n % len(zones)
                     subnets.append({
                         'cidr': str(subcidrs[n]),
-                        'name': "%s-%s-%s" % (netname, zones[n], settings[n]),
+                        'name': "%s-%s-%s" % (netname, zones[z], settings[n]),
                         'public': settings[n] == 'public',
-                        'zone': zones[n],
+                        'zone': zones[z],
                     })
 
                 data['resources']['network'][idx]['subnets'] = subnets
