@@ -171,10 +171,8 @@ class TestEc2Resource(TestResource):
         assert_equals(self._data_for_resource(ebsbd), data)
 
     def test_ebs_block_device_valid_standard(self):
-        data = {'VolumeType': 'standard'}
-        ebsbd = ec2.EBSBlockDevice(
-            "test",
-        )
+        data = {'VolumeType': 'gp2'}
+        ebsbd = ec2.EBSBlockDevice('test')
         assert_equals(self._data_for_resource(ebsbd), data)
 
     def test_block_device_mapping_invalid_no_type(self):

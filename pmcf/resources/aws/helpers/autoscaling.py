@@ -13,7 +13,7 @@
 #    under the License.
 
 from troposphere import AWSObject, AWSProperty
-from troposphere.validators import positive_integer, integer
+from troposphere.validators import positive_integer, integer, boolean
 from troposphere.autoscaling import NotificationConfiguration
 
 
@@ -70,6 +70,24 @@ class AutoScalingGroup(AWSObject):
                     "MinInstancesInService must be less than the "
                     "autoscaling group's MaxSize")
         return True
+
+
+class EBSBlockDevice(AWSProperty):
+    props = {
+        'DeleteOnTermination': (boolean, False),
+        'Iops': (integer, False),
+        'SnapshotId': (basestring, False),
+        'VolumeSize': (integer, False),
+        'VolumeType': (basestring, False),
+    }
+
+
+class BlockDeviceMapping(AWSProperty):
+    props = {
+        'DeviceName': (basestring, True),
+        'Ebs': (EBSBlockDevice, False),
+        'VirtualName': (basestring, False),
+    }
 
 
 __all__ = [

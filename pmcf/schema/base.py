@@ -192,6 +192,11 @@ definitions:
                type: string
            device:
                type: string
+           type:
+                enum:
+                    - io1
+                    - gp2
+                    - standard
         required:
             - size
             - device

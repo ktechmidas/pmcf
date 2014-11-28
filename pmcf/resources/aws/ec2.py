@@ -96,15 +96,19 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
     def validate(self):
         super(self.__class__, self).validate()
 
-        if self.properties.get('VolumeType') == 'io1':
-            iops = int(self.properties.get('Iops', 0))
-            if iops < 100 or iops > 2000:
-                error(self, 'iops property not in range 100-2000')
+        if self.properties.get('VolumeType'):
+            if self.properties['VolumeType'] == 'io1':
+                iops = int(self.properties.get('Iops', 0))
+                if iops < 100 or iops > 2000:
+                    error(self, 'iops property not in range 100-2000')
+            elif self.properties['VolumeType'] in ['standard', 'gp2']:
+                if self.properties.get('Iops'):
+                    error(self, 'iops property not allowed on volumes '
+                                'of type standard or gp2')
+            else:
+                error(self, 'Unknown VolumeType')
         else:
-            self.properties['VolumeType'] = 'standard'
-            if self.properties.get('Iops'):
-                error(self, 'iops property not allowed on volumes '
-                            'of type standard')
+            self.properties['VolumeType'] = 'gp2'
 
         return True
 
@@ -531,6 +535,10 @@ class Volume(ec2.Volume):
         if self.properties.get('VolumeType') == 'io1':
             if iops < 100 or iops > 4000:
                 error(self, 'iops property not in range 100-4000')
+        elif self.properties.get('VolumeType') == 'gp2':
+            if self.properties.get('Iops'):
+                error(self, 'iops property not allowed on volumes '
+                            'of type gp2')
         else:
             self.properties['VolumeType'] = 'standard'
             if self.properties.get('Iops'):

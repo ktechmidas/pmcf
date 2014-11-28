@@ -589,6 +589,15 @@ class TestASGResource(TestResource):
         )
         assert_equals(self._data_for_resource(t), data)
 
+    def test_ebs_block_device_invalid_type(self):
+        ebsbd = asg.EBSBlockDevice(
+            "test",
+            DependsOn='mumble',
+            VolumeType='wibble',
+            VolumeSize=50
+        )
+        assert_raises(PropertyException, ebsbd.JSONrepr)
+
     def test_ebs_block_device_invalid_no_snapshot_or_size(self):
         ebsbd = asg.EBSBlockDevice(
             "test",
@@ -621,6 +630,18 @@ class TestASGResource(TestResource):
         ebsbd = asg.EBSBlockDevice(
             "test",
             VolumeSize=50
+        )
+        assert_equals(self._data_for_resource(ebsbd), data)
+
+    def test_ebs_block_device_valid_size_and_type(self):
+        data = {
+            "VolumeSize": 50,
+            "VolumeType": "io1",
+        }
+        ebsbd = asg.EBSBlockDevice(
+            "test",
+            VolumeSize=50,
+            VolumeType='io1',
         )
         assert_equals(self._data_for_resource(ebsbd), data)
 

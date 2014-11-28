@@ -544,8 +544,18 @@ class JSONOutput(BaseOutput):
                         DeviceName="/dev/xvd%s" % chr(98 + disk)
                     ))
 
+            for block_dev in inst.get('block_device', []):
+                block_devs.append(autoscaling.BlockDeviceMapping(
+                    DeviceName=block_dev['device'],
+                    Ebs=autoscaling.EBSBlockDevice(
+                        VolumeSize=block_dev['size'],
+                        VolumeType=block_dev['type'],
+                    )
+                ))
+
             if block_devs:
                 lcargs['BlockDeviceMappings'] = block_devs
+
             inst_sgs = []
             for sg in inst['sg']:
                 if sgs.get(sg):

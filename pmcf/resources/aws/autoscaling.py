@@ -203,7 +203,7 @@ class Trigger(asg.Trigger):
             error(self, e.message)
 
 
-class EBSBlockDevice(asg.EBSBlockDevice):
+class EBSBlockDevice(autoscaling.EBSBlockDevice):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)
@@ -215,9 +215,16 @@ class EBSBlockDevice(asg.EBSBlockDevice):
         if len(set(self.properties.keys()).intersection(
                 set(['SnapshotId', 'VolumeSize']))) != 1:
             error(self, "Need to specify one of `SnapshotId', `VolumeSize'")
+        if 'VolumeType' in self.properties.keys():
+            allowed_types = ['standard', 'io1', 'gp2']
+            if self.properties['VolumeType'] not in allowed_types:
+                error(self, "Bad VolumeType: `%s' - must be one of `%s'" % (
+                    self.properties['VolumeType'],
+                    ("', `").join(allowed_types)
+                ))
 
 
-class BlockDeviceMapping(asg.BlockDeviceMapping):
+class BlockDeviceMapping(autoscaling.BlockDeviceMapping):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)
