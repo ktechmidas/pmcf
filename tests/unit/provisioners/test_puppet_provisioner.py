@@ -34,46 +34,58 @@ class TestPuppetProvisioner(object):
             'infrastructure': 'foo.zip',
         }
         uri = "https://s3.amazonaws.com/cloudformation-examples/"
-
-        script = {
-            "Fn::Join": [
-                "",
-                [
-                    "#!/bin/bash\n",
-                    "error_exit() {\n",
-                    "   sleep 3600\n",
-                    "   cfn-signal -e 1 -r \"$1\" '",
-                    {
-                        "Ref": "blah"
-                    },
-                    "'\n",
-                    "   exit 1\n",
-                    "}\n\n",
-                    "err=\"\"\n",
-                    "apt-get -y install python-setuptools\n",
-                    "easy_install %s" % uri,
-                    "aws-cfn-bootstrap-latest.tar.gz\n",
-                    "if cfn-init --region ",
-                    {
-                        "Ref": "AWS::Region"
-                    },
-                    " -c startup -s ",
-                    {
-                        "Ref": "AWS::StackId"
-                    },
-                    " -r LCtest",
-                    "; then\n",
-                    "cfn-signal -e 0 -r Success '",
-                    {
-                        "Ref": "blah"
-                    },
-                    "'\n",
-                    "else\n",
-                    "    error_exit \"Failed to run cfn-init\"\n",
-                    "fi\n"
-                ]
-            ]
-        }
+        script = {"Fn::Join": ["", [
+            "#!/bin/bash\n",
+            "error_exit() {\n",
+            "   sleep 3600\n",
+            "   cfn-signal -e 1 -r \"$1\" '",
+            {
+                "Ref": "blah"
+            },
+            "'\n",
+            "   exit 1\n",
+            "}\n\n",
+            'setup_disks() {\n',
+            '    ret=0\n',
+            '    disks=$(ls /dev/xvd[b-z] 2>/dev/null)\n',
+            '    if test -n "${disks}"; then\n',
+            '        apt-get install -y lvm2 || ret=$?\n',
+            '        umount /mnt || ret=$(($ret|$?))\n',
+            '        pvcreate ${disks} || ret=$(($ret|$?))\n',
+            '        vgcreate data ${disks} || ret=$(($ret|$?))\n',
+            '        extents=$(vgs --noheadings -o vg_free_count) || ',
+            'ret=$(($ret|$?))\n',
+            '        lvcreate -l ${extents} -n mnt data || ret=$(($ret|$?))\n',
+            '        mkfs.ext4 -m 1 /dev/data/mnt || ret=$(($ret|$?))\n',
+            '        sed -i "s~xvdb~data/mnt~" /etc/fstab || ',
+            'ret=$(($ret|$?))\n',
+            '        mount -a || ret=$(($ret|$?))\n',
+            '    fi\n',
+            '    return $ret\n',
+            '}\n\n',
+            'setup_disks || error_exit "failed to setup disks"\n',
+            "apt-get -y install python-setuptools\n",
+            "easy_install %s" % uri,
+            "aws-cfn-bootstrap-latest.tar.gz\n",
+            "if cfn-init --region ",
+            {
+                "Ref": "AWS::Region"
+            },
+            " -c startup -s ",
+            {
+                "Ref": "AWS::StackId"
+            },
+            " -r LCtest",
+            "; then\n",
+            "cfn-signal -e 0 -r Success '",
+            {
+                "Ref": "blah"
+            },
+            "'\n",
+            "else\n",
+            "    error_exit \"Failed to run cfn-init\"\n",
+            "fi\n"
+        ]]}
         data = PuppetProvisioner().userdata(args)
         data = json.loads(json.dumps(data, cls=awsencode))
         assert_equals(data, script)
