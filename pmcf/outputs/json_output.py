@@ -498,6 +498,54 @@ class JSONOutput(BaseOutput):
                 'KeyName': inst['sshKey'],
                 'InstanceMonitoring': inst['monitoring'],
             }
+
+            extra_disk_table = {
+                "c1.medium": 1,
+                "c1.xlarge": 4,
+                "c3.large": 2,
+                "c3.xlarge": 2,
+                "c3.2xlarge": 2,
+                "c3.4xlarge": 2,
+                "c3.8xlarge": 2,
+                "cc2.8xlarge": 4,
+                "cg1.4xlarge": 2,
+                "cr1.8xlarge": 2,
+                "g2.2xlarge": 1,
+                "hi1.4xlarge": 2,
+                "hs1.8xlarge": 24,
+                "i2.xlarge": 1,
+                "i2.2xlarge": 2,
+                "i2.4xlarge": 4,
+                "i2.8xlarge": 8,
+                "m1.small": 1,
+                "m1.medium": 1,
+                "m1.large": 2,
+                "m1.xlarge": 4,
+                "m2.xlarge": 1,
+                "m2.2xlarge": 1,
+                "m2.4xlarge": 2,
+                "m3.medium": 1,
+                "m3.large": 1,
+                "m3.xlarge": 2,
+                "m3.2xlarge": 2,
+                "r3.large": 1,
+                "r3.xlarge": 1,
+                "r3.2xlarge": 1,
+                "r3.4xlarge": 1,
+                "r3.8xlarge": 2,
+            }
+
+            block_devs = []
+            if inst['size'] in extra_disk_table.keys():
+                for disk in range(extra_disk_table[inst['size']]):
+                    # Magic Number - ASCII 'b' is 98
+                    block_devs.append(autoscaling.BlockDeviceMapping(
+                        VirtualName="ephemeral%d" % disk,
+                        DeviceName="/dev/xvd%s" % chr(98 + disk)
+                    ))
+
+            if block_devs:
+                lcargs['BlockDeviceMappings'] = block_devs
             inst_sgs = []
             for sg in inst['sg']:
                 if sgs.get(sg):

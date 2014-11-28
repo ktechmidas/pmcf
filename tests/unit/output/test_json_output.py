@@ -1428,7 +1428,6 @@ class TestJSONOutput(object):
             ]
         }
         tmpl = out.add_resources(res, cfg)
-        print tmpl
         assert_equals(json.loads(tmpl), ret)
 
     def test_lb_valid(self):
@@ -2514,6 +2513,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
                         "InstanceType": "m1.large",
@@ -2649,6 +2658,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
                         "InstanceType": "m1.large",
@@ -2755,6 +2774,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "IamInstanceProfile": "deploy-client",
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
@@ -2838,6 +2867,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "IamInstanceProfile": "deploy-client",
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
@@ -2934,6 +2973,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "IamInstanceProfile": "deploy-client",
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
@@ -3027,6 +3076,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "IamInstanceProfile": "deploy-client",
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
@@ -3112,6 +3171,16 @@ class TestJSONOutput(object):
                 "LCapp": {
                     "Metadata": "",
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "IamInstanceProfile": {
                             "Ref": "Profileapp"
                         },
@@ -3236,6 +3305,16 @@ class TestJSONOutput(object):
                 "LCapp2": {
                     "Type": "AWS::AutoScaling::LaunchConfiguration",
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "UserData": {
                             "Fn::Base64": ""
                         },
@@ -3302,6 +3381,16 @@ class TestJSONOutput(object):
                 "LCapp": {
                     "Type": "AWS::AutoScaling::LaunchConfiguration",
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "UserData": {
                             "Fn::Base64": ""
                         },
@@ -3404,6 +3493,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
                         "InstanceType": "m1.large",
@@ -3490,6 +3589,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
                         "InstanceType": "m1.large",
@@ -3565,6 +3674,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "AssociatePublicIpAddress": "true",
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
@@ -3609,7 +3728,6 @@ class TestJSONOutput(object):
             }]
         }
         tmpl = out.add_resources(res, cfg)
-        print tmpl
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
@@ -3647,6 +3765,16 @@ class TestJSONOutput(object):
                 },
                 "LCapp": {
                     "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
                         "ImageId": "ami-e97f849e",
                         "InstanceMonitoring": "false",
                         "InstanceType": "m1.large",
@@ -3660,7 +3788,6 @@ class TestJSONOutput(object):
                 }
             }
         }
-
         cfg = {
             'name': 'test',
             'environment': 'test'
