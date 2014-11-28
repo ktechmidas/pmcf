@@ -69,6 +69,8 @@ class PMCFCLI(object):
                     'environment': stack['config']['environment'],
                 }
             except KeyError, e:
+                if self.args.get('debug', False):
+                    LOG.exception(e.message)
                 raise ParserFailure(str(e))
 
             for k in ['owner', 'version', 'strategy']:
@@ -81,7 +83,10 @@ class PMCFCLI(object):
             return not self.output.run(data, metadata,
                                        self.args['poll'], self.args['action'])
         except PMCFException, e:
-            LOG.error(e.message)
+            if self.args.get('debug', False):
+                LOG.exception(e.message)
+            else:
+                LOG.error(e.message)
             return True
 
 
