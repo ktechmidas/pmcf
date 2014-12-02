@@ -694,6 +694,8 @@ class TestAWSCFNOutput(object):
                                action='trigger', upload=False), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     def test_run_update_stack_existing_stack_no_update_allowed_raises(self):
@@ -713,6 +715,8 @@ class TestAWSCFNOutput(object):
                       metadata, action='update')
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch(
@@ -742,6 +746,8 @@ class TestAWSCFNOutput(object):
                                action='update', upload=True), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_true)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_true)
     @mock.patch(
@@ -769,6 +775,8 @@ class TestAWSCFNOutput(object):
                                action='update', upload=False), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
     @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_updatable',
                 _mock_stack_exists_false)
     def test_run_update_stack_nonexisting_stack_returns_true(self):
