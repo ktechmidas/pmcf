@@ -291,6 +291,10 @@ class AWSCFNOutput(JSONOutput):
                                      capabilities=capabilities, tags=tags)
 
             elif action == 'update':
+                if not self._stack_exists(cfn, metadata['name']):
+                    LOG.info("stack %s doesn't exist", metadata['name'])
+                    return True
+
                 if self._stack_updatable(cfn, metadata['name']):
                     if not strategy.should_update(action):
                         raise ProvisionerException(
@@ -328,7 +332,7 @@ class AWSCFNOutput(JSONOutput):
                         cfn.update_stack(metadata['name'], data,
                                          capabilities=capabilities, tags=tags)
                 else:
-                    LOG.info("stack %s doesn't exist", metadata['name'])
+                    LOG.info("stack %s not updateable", metadata['name'])
                     return True
 
             self.do_audit(data, metadata)
