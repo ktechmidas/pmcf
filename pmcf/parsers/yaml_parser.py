@@ -156,7 +156,7 @@ class YamlParser(BaseParser):
                     raise ParserFailure("DNS zone must end with '.' on %s" %
                                         instance['name'])
 
-            for field in ['size', 'count', 'image', 'sg']:
+            for field in ['size', 'count', 'image', 'sg', 'block_device']:
                 item = instance.get(field, None)
                 if item:
                     instance[field] =\
