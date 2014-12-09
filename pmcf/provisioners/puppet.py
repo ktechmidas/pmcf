@@ -133,7 +133,7 @@ class PuppetProvisioner(BaseProvisioner):
             '    disks=$(ls /dev/xvd[b-z] 2>/dev/null)\n',
             '    if test -n "${disks}"; then\n',
             '        apt-get install -y lvm2 || ret=$?\n',
-            '        umount /mnt || ret=$(($ret|$?))\n',
+            '        umount /mnt\n',
             '        pvcreate ${disks} || ret=$(($ret|$?))\n',
             '        vgcreate data ${disks} || ret=$(($ret|$?))\n',
             '        extents=$(vgs --noheadings -o vg_free_count) || ',
