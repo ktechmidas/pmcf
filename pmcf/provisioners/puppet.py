@@ -29,6 +29,10 @@ from pmcf.provisioners.base_provisioner import BaseProvisioner
 LOG = logging.getLogger(__name__)
 
 
+
+arrtg
+
+
 class PuppetProvisioner(BaseProvisioner):
     """
     Puppet Provisioner class
