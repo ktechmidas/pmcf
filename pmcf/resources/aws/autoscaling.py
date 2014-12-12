@@ -16,7 +16,6 @@ import time
 from troposphere import autoscaling as asg
 from troposphere import UpdatePolicy
 
-from pmcf.resources.aws.helpers import autoscaling
 from pmcf.utils import error, init_error
 
 EC2_INSTANCE_LAUNCH = asg.EC2_INSTANCE_LAUNCH
@@ -52,7 +51,7 @@ class NotificationConfiguration(asg.NotificationConfiguration):
             error(self, e.message)
 
 
-class MetricsCollection(autoscaling.MetricsCollection):
+class MetricsCollection(asg.MetricsCollection):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)
@@ -85,7 +84,7 @@ class MetricsCollection(autoscaling.MetricsCollection):
         return True
 
 
-class AutoScalingGroup(autoscaling.AutoScalingGroup):
+class AutoScalingGroup(asg.AutoScalingGroup):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
@@ -109,6 +108,29 @@ class AutoScalingGroup(autoscaling.AutoScalingGroup):
             error(self, "Need to specify one of `InstanceId', "
                         "`LaunchConfigurationName'")
 
+        valid_policies = set([
+            'Default',
+            'OldestInstance',
+            'NewestInstance',
+            'OldestLaunchConfiguration',
+            'ClosestToNextInstanceHour',
+        ])
+
+        if self.properties.get('TerminationPolicies'):
+            invalid_policies = set(self.properties['TerminationPolicies']) -\
+                valid_policies
+            if len(invalid_policies) > 0:
+                raise ValueError(
+                    "Invalid TerminationPolicy declaration: "
+                    "%s not valid" % invalid_policies)
+
+        if 'UpdatePolicy' in self.resource:
+            update_policy = self.resource['UpdatePolicy']
+            if int(update_policy.MinInstancesInService) >= int(self.MaxSize):
+                raise ValueError(
+                    "The UpdatePolicy attribute "
+                    "MinInstancesInService must be less than the "
+                    "autoscaling group's MaxSize")
         return True
 
 
@@ -203,7 +225,7 @@ class Trigger(asg.Trigger):
             error(self, e.message)
 
 
-class EBSBlockDevice(autoscaling.EBSBlockDevice):
+class EBSBlockDevice(asg.EBSBlockDevice):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)
@@ -224,7 +246,7 @@ class EBSBlockDevice(autoscaling.EBSBlockDevice):
                 ))
 
 
-class BlockDeviceMapping(autoscaling.BlockDeviceMapping):
+class BlockDeviceMapping(asg.BlockDeviceMapping):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)

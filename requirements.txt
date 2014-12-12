@@ -4,5 +4,5 @@ boto==2.31.1
 jsonschema==2.3.0
 PyYAML==3.11
 netaddr==0.7.12
-troposphere==0.5.0
+troposphere==0.6.2
 xmltodict==0.9.0

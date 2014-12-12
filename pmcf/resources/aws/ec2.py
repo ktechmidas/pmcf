@@ -16,7 +16,6 @@
 # provides
 
 from troposphere import ec2
-from pmcf.resources.aws.helpers import ec2 as rec2
 
 from pmcf.utils import error, init_error
 
@@ -326,7 +325,7 @@ class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
             error(self, e.message)
 
 
-class Route(rec2.Route):
+class Route(ec2.Route):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
@@ -631,7 +630,7 @@ class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
             error(self, 'InternetGatewayId or VpnGatewayId are required')
 
 
-class VPCPeeringConnection(rec2.VPCPeeringConnection):
+class VPCPeeringConnection(ec2.VPCPeeringConnection):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
@@ -692,7 +691,7 @@ class VPNGateway(ec2.VPNGateway):
             error(self, 'Type must be ipsec.1')
 
 
-class VPNGatewayRoutePropagation(rec2.VPNGatewayRoutePropagation):
+class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
