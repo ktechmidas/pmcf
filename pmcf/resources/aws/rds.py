@@ -15,7 +15,6 @@
 from troposphere import rds
 
 from pmcf.utils import error, init_error
-from pmcf.resources.aws.helpers import rds as prds
 
 
 class DBInstance(rds.DBInstance):
@@ -51,7 +50,7 @@ class DBInstance(rds.DBInstance):
                             "`MultiAZ'")
 
 
-class DBParameterGroup(prds.DBParameterGroup):
+class DBParameterGroup(rds.DBParameterGroup):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
@@ -63,6 +62,11 @@ class DBParameterGroup(prds.DBParameterGroup):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+    def validate(self):
+        super(self.__class__, self).validate()
+        if not self.properties.get('Family'):
+            error(self, "Must specify `Family'")
 
 
 class DBSubnetGroup(rds.DBSubnetGroup):
@@ -114,7 +118,7 @@ class DBSecurityGroup(rds.DBSecurityGroup):
             error(self, e.message)
 
 
-class DBSecurityGroupIngress(prds.DBSecurityGroupIngress):
+class DBSecurityGroupIngress(rds.DBSecurityGroupIngress):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)

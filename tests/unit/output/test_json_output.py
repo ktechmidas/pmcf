@@ -2000,7 +2000,7 @@ class TestJSONOutput(object):
                     "Properties": {
                         "AccessLoggingPolicy": {
                             "EmitInterval": 60,
-                            "Enabled": "true",
+                            "Enabled": True,
                             "S3BucketName": "c4-elb-logs",
                             "S3BucketPrefix": "stage/ais"
                         },

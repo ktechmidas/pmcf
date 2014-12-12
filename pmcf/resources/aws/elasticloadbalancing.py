@@ -17,11 +17,10 @@
 
 from troposphere import elasticloadbalancing as elb
 
-from pmcf.resources.aws.helpers import elasticloadbalancing
 from pmcf.utils import error, init_error
 
 
-class AccessLoggingPolicy(elasticloadbalancing.AccessLoggingPolicy):
+class AccessLoggingPolicy(elb.AccessLoggingPolicy):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)
@@ -149,7 +148,7 @@ class ConnectionDrainingPolicy(elb.ConnectionDrainingPolicy):
             error(self, e.message)
 
 
-class LoadBalancer(elasticloadbalancing.LoadBalancer):
+class LoadBalancer(elb.LoadBalancer):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)

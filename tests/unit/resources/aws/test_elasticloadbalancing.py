@@ -59,7 +59,7 @@ class TestELBResource(TestResource):
     def test_access_logging_policy_valid_enabled(self):
         data = {
             'EmitInterval': 5,
-            'Enabled': 'true',
+            'Enabled': True,
             'S3BucketName': 'testme-123',
             'S3BucketPrefix': 'logs/dev'
         }
@@ -70,16 +70,22 @@ class TestELBResource(TestResource):
             S3BucketName='testme-123',
             S3BucketPrefix='logs/dev',
         )
+
         assert_equals(self._data_for_resource(alp), data)
 
     def test_access_logging_policy_valid_disabled(self):
         data = {
-            'Enabled': 'false',
+            'Enabled': False,
+            'EmitInterval': 5,
+            'S3BucketName': 'testme-123',
         }
         alp = elb.AccessLoggingPolicy(
             "test",
             Enabled=False,
+            EmitInterval=5,
+            S3BucketName='testme-123',
         )
+
         assert_equals(self._data_for_resource(alp), data)
 
     def test_app_cookie_stickiness_policy_invalid_no_policy(self):
