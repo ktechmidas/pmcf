@@ -147,7 +147,7 @@ class PuppetProvisioner(BaseProvisioner):
             '    return $ret\n',
             '}\n\n',
             'setup_disks || error_exit "failed to setup disks"\n',
-            'apt-get -y install python-setuptools\n',
+            'apt-get -y install python-setuptools python-pbr\n',
             'easy_install https://s3.amazonaws.com/cloudformation-examples/',
             'aws-cfn-bootstrap-latest.tar.gz\n',
             'if cfn-init --region ',
