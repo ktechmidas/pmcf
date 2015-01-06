@@ -15,6 +15,7 @@ Python-pmcf is one part of a larger set of software that together provide
 a workflow aimed at increasing velocity, reducing cost, and lowering risk.
 
 DEPLOYMENT
+==========
 
 Effective roll-out of multiple environments through single stack
 declaration, minimizing risk and reducing management overhead.
@@ -24,6 +25,7 @@ environments. Auto recreation when required ensures only the
 necessary instances are running at any point in time.
 
 PROVISIONING
+============
 
 Support for multiple Amazon Web Services including auto-scaling,
 VPC, private load balancers etc.
