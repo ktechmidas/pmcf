@@ -19,26 +19,24 @@ Command line arguments
 =======================
 
 positional arguments::
-
-    stackfile             path to stack (farm) definition file
+  stackfile             path to stack (farm) definition file
 
 optional arguments::
-
-    -h, --help            show this help message and exit
-    -v, --verbose         set loglevel to verbose
-    -d, --debug           set loglevel to debug
-    -q, --quiet           set loglevel to quiet
-    -e ENVIRONMENT, --environment ENVIRONMENT
-                          run config for this environment
-    -p PROFILE, --profile PROFILE
-                          use config profile
-    -P POLICYFILE, --policyfile POLICYFILE
-                          alternate policy file
-    -c CONFIGFILE, --configfile CONFIGFILE
-                          alternate config file
-    -a ACTION, --action ACTION
-                          action (one of create, update, trigger or delete)
-    --poll                poll until completion
+  -h, --help            show this help message and exit
+  -v, --verbose         set loglevel to verbose
+  -d, --debug           set loglevel to debug
+  -q, --quiet           set loglevel to quiet
+  -e ENVIRONMENT, --environment ENVIRONMENT
+                        run config for this environment
+  -p PROFILE, --profile PROFILE
+                        use config profile
+  -P POLICYFILE, --policyfile POLICYFILE
+                        alternate policy file
+  -c CONFIGFILE, --configfile CONFIGFILE
+                        alternate config file
+  -a {create,update,trigger,delete}, --action {create,update,trigger,delete}
+                        action to take on stack
+  --poll                poll until completion
 
 Sample usage::
 

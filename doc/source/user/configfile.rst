@@ -55,7 +55,7 @@ Valid keys for a section in the config file are and their defaults are::
 
 This will not give you a working config file.  You must select at least a
 valid parser, policy, provisioner and output class.  Some outputs, such as
-the :class:`pmcf.outputs.cloudformation.AWSCFNOutput` derived classed also
+the :class:`pmcf.outputs.cloudformation.AWSCFNOutput` derived classes also
 need AWS credentials.  The AWSFW provisioner needs instance_accesskey and
 instance_secretkey as well to provide the instances with credentials to
 download their apps and roles.
@@ -68,7 +68,7 @@ Config file values:
     subclassing it.
 
 :audit_output:
-    Destination for audit logs.  Individual sublclasses are free to use
+    Destination for audit logs.  Individual subclasses are free to use
     this field as they see fit.  For instance, the
     :class:`pmcf.audit.s3_audit.S3Audit` needs the name of the S3 bucket in
     this field.
@@ -89,7 +89,7 @@ Config file values:
     provided for backwards compatibility with existing configurations only.
 
 :policy:
-    This is the Policy class to use for provide defaults and constraints for
+    This is the Policy class to use for providing defaults and constraints for
     your stack definition.  Must implement the interface of
     :class:`pmcf.policy.base_policy.BasePolicy`, typically by subclassing it.
     The only current implementation is JSONPolicy, which uses a default config
