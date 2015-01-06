@@ -19,9 +19,11 @@ Command line arguments
 =======================
 
 positional arguments::
+
     stackfile             path to stack (farm) definition file
 
 optional arguments::
+
     -h, --help            show this help message and exit
     -v, --verbose         set loglevel to verbose
     -d, --debug           set loglevel to debug
