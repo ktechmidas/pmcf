@@ -7,4 +7,3 @@ netaddr==0.7.12
 troposphere==0.6.2
 xmltodict==0.9.0
 Sphinx==1.2.2
-rst2pdf==0.93
