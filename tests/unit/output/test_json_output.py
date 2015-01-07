@@ -2491,6 +2491,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2633,6 +2634,8 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "ELB",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2743,6 +2746,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2845,6 +2849,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2951,6 +2956,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3054,6 +3060,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3148,6 +3155,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3329,6 +3337,7 @@ class TestJSONOutput(object):
                     "Type": "AWS::AutoScaling::AutoScalingGroup",
                     "Properties": {
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "Tags": [
                             {
                                 "Value": "test::app2::test",
@@ -3356,6 +3365,7 @@ class TestJSONOutput(object):
                     "Type": "AWS::AutoScaling::AutoScalingGroup",
                     "Properties": {
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "Tags": [
                             {
                                 "Value": "test::app::test",
@@ -3470,6 +3480,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3561,6 +3572,7 @@ class TestJSONOutput(object):
                     "Properties": {
                         "AvailabilityZones": {"Fn::GetAZs": ""},
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {"Ref": "LCapp"},
                         "MaxSize": 6,
                         "MinSize": 6,
@@ -3652,6 +3664,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3743,6 +3756,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
