@@ -626,8 +626,6 @@ class JSONOutput(BaseOutput):
             if config.get('vpcid') and inst.get('subnets'):
                 asgargs['VPCZoneIdentifier'] = inst['subnets']
             if inst.get('lb'):
-                asgargs['HealthCheckType'] = 'ELB'
-                asgargs['HealthCheckGracePeriod'] = 600
                 asgargs['LoadBalancerNames'] = [
                     Ref(lbs["ELB" + x]) for x in inst['lb']
                 ]

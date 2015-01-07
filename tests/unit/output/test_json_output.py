@@ -2634,8 +2634,7 @@ class TestJSONOutput(object):
                             "Fn::GetAZs": ""
                         },
                         "DesiredCapacity": 6,
-                        "HealthCheckType": "ELB",
-                        "HealthCheckGracePeriod": 600,
+                        "HealthCheckType": "EC2",
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
