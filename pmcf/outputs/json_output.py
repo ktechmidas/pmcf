@@ -622,6 +622,7 @@ class JSONOutput(BaseOutput):
                 'MinSize': inst['max'],
                 'Tags': asgtags,
                 'HealthCheckType': 'EC2',
+                'HealthCheckGracePeriod': 600,
             }
             if config.get('vpcid') and inst.get('subnets'):
                 asgargs['VPCZoneIdentifier'] = inst['subnets']

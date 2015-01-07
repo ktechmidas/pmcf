@@ -2492,6 +2492,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2635,6 +2636,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2746,6 +2748,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2849,6 +2852,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -2956,6 +2960,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3060,6 +3065,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3155,6 +3161,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3337,6 +3344,7 @@ class TestJSONOutput(object):
                     "Properties": {
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "Tags": [
                             {
                                 "Value": "test::app2::test",
@@ -3365,6 +3373,7 @@ class TestJSONOutput(object):
                     "Properties": {
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "Tags": [
                             {
                                 "Value": "test::app::test",
@@ -3480,6 +3489,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3572,6 +3582,7 @@ class TestJSONOutput(object):
                         "AvailabilityZones": {"Fn::GetAZs": ""},
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {"Ref": "LCapp"},
                         "MaxSize": 6,
                         "MinSize": 6,
@@ -3664,6 +3675,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
@@ -3756,6 +3768,7 @@ class TestJSONOutput(object):
                         },
                         "DesiredCapacity": 6,
                         "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
                         "LaunchConfigurationName": {
                             "Ref": "LCapp"
                         },
