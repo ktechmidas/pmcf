@@ -293,6 +293,8 @@ class AWSFWParser(BaseParser):
                     }
                     inst['block_device'].append(data)
 
+            instance['public'] = True
+
             LOG.debug('Found instance: %s' % inst)
             self._stack['resources']['instance'].append(inst)
         return self._stack['resources']['instance']
