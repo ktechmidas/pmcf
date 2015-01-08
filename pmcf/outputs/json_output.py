@@ -568,7 +568,7 @@ class JSONOutput(BaseOutput):
             if ci is not None:
                 lcargs['Metadata'] = ci
 
-            if inst['public']:
+            if inst.get('public'):
                 lcargs['AssociatePublicIpAddress'] = True
 
             if args.get('profile'):
