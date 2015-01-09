@@ -315,7 +315,6 @@ class TestParser(object):
                 'image': 'ami-e97f849e',
                 'lb': ['app'],
                 'name': 'app',
-                'public': True,
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
@@ -367,7 +366,6 @@ class TestParser(object):
                 'count': 6,
                 'image': 'ami-e97f849e',
                 'name': 'app',
-                'public': True,
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
@@ -402,7 +400,6 @@ class TestParser(object):
                 'count': 6,
                 'image': 'ami-e97f849e',
                 'name': 'app',
-                'public': True,
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
@@ -439,7 +436,6 @@ class TestParser(object):
                 'count': 6,
                 'image': 'ami-e97f849e',
                 'name': 'app',
-                'public': True,
                 'sg': [],
                 'provisioner': {
                     'args': {
@@ -478,7 +474,6 @@ class TestParser(object):
                 'image': 'ami-e97f849e',
                 'lb': ['app'],
                 'name': 'app',
-                'public': True,
                 'provisioner': {
                     'args': {
                         'apps': ['ais-jetty/v2.54-02'],
@@ -633,7 +628,6 @@ class TestParser(object):
                 'count': 6,
                 'image': 'ami-e97f849e',
                 'name': 'app',
-                'public': True,
                 'sg': ['default'],
                 'monitoring': True,
                 'sshKey': 'test',
@@ -681,7 +675,6 @@ class TestParser(object):
                 'count': 6,
                 'image': 'ami-e97f849e',
                 'name': 'app',
-                'public': True,
                 'sg': [],
                 'monitoring': True,
                 'sshKey': 'test',
