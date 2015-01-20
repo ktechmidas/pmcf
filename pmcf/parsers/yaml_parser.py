@@ -156,13 +156,22 @@ class YamlParser(BaseParser):
                     raise ParserFailure("DNS zone must end with '.' on %s" %
                                         instance['name'])
 
-            for field in ['size', 'count', 'image', 'sg', 'block_device']:
+            for field in ['size', 'count', 'image', 'sg',
+                          'monitoring', 'block_device']:
                 item = instance.get(field, None)
                 if item:
                     instance[field] =\
                         self._get_value_for_env(item,
                                                 args['environment'],
                                                 field)
+            if instance['provisioner'].get('args'):
+                for field in ['bucket', 'metrics']:
+                    item = instance['provisioner']['args'].get(field, None)
+                    if item:
+                        instance['provisioner']['args'][field] =\
+                            self._get_value_for_env(item,
+                                                    args['environment'],
+                                                    field)
 
         for lb in data['resources'].get('load_balancer', []):
             for field in ['policy']:

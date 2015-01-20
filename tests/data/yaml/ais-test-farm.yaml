@@ -67,6 +67,9 @@ resources:
       sshKey: bootstrap
       monitoring: False
       size: m1.large
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
   network:
     - name: test
       netrange: 10.203.8.0/24

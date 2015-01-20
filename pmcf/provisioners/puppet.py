@@ -103,6 +103,12 @@ class PuppetProvisioner(BaseProvisioner):
                 "Action": ["ec2:DescribeInstances"],
                 "Resource": "*",
             })
+        if args.get('metrics'):
+            statement['Statement'].append({
+                "Effect": "Allow",
+                "Action": ["cloudwatch:PutMetricData"],
+                "Resource": "*",
+            })
 
         statement['Statement'].extend(args.get('custom_profile', []))
 

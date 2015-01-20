@@ -68,6 +68,8 @@ definitions:
                         type: string
                     find_nodes:
                         type: boolean
+                    metrics:
+                        type: boolean
                     custom_profile:
                         type: array
                 required:
