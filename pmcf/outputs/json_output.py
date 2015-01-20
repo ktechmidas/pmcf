@@ -621,7 +621,7 @@ class JSONOutput(BaseOutput):
                 'MaxSize': inst['min'],
                 'MinSize': inst['max'],
                 'Tags': asgtags,
-                'HealthCheckType': 'EC2',
+                'HealthCheckType': inst.get('healthcheck', 'EC2'),
                 'HealthCheckGracePeriod': 600,
             }
             if config.get('vpcid') and inst.get('subnets'):

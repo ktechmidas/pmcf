@@ -142,6 +142,8 @@ definitions:
                     - type
                     - zone
                 additionalProperties: false
+            healthcheck:
+                type: string
             image:
                 type: string
             monitoring:
