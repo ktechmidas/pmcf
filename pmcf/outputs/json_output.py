@@ -612,6 +612,11 @@ class JSONOutput(BaseOutput):
                         propogate=True,
                     ))
 
+            strategy = import_from_string(
+                'pmcf.strategy',
+                config.get('strategy', 'BlueGreen')
+            )()
+
             inst['min'] = inst.get('min', inst['count'])
             inst['max'] = inst.get('max', inst['count'])
             asgargs = {
@@ -624,6 +629,9 @@ class JSONOutput(BaseOutput):
                 'HealthCheckType': inst.get('healthcheck', 'EC2'),
                 'HealthCheckGracePeriod': 600,
             }
+
+            if strategy.termination_policy() != ['Default']:
+                asgargs['TerminationPolicies'] = strategy.termination_policy()
             if config.get('vpcid') and inst.get('subnets'):
                 asgargs['VPCZoneIdentifier'] = inst['subnets']
             if inst.get('lb'):
