@@ -205,6 +205,18 @@ class YamlParser(BaseParser):
             sg['rules'].extend(new_rules)
 
         dropped = []
+        for idx, sg in enumerate(data['resources'].get('secgroup', [])):
+            stages = sg.pop('stages', [])
+            if stages:
+                if args['environment'] not in stages:
+                    LOG.debug('Found secgroup not present in %s: %s' % (
+                        args['environment'],
+                        sg['name']))
+                    dropped.insert(0, idx)
+        for drop in dropped:
+            data['resources']['secgroup'].pop(drop)
+
+        dropped = []
         for idx, instance in enumerate(data['resources'].get('instance', [])):
             stages = instance.pop('stages', [])
             if stages:
