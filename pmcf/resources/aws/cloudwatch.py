@@ -21,7 +21,7 @@ class MetricDimension(cloudwatch.MetricDimension):
     def __init__(self, title=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
+        except (AttributeError, ValueError), e:
             error(self, e.message)
 
     def JSONrepr(self):
@@ -35,7 +35,7 @@ class Alarm(cloudwatch.Alarm):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
+        except (TypeError, ValueError), e:
             error(self, e.message)
 
     def JSONrepr(self):

@@ -3755,6 +3755,187 @@ class TestJSONOutput(object):
         assert_equals(json.loads(tmpl), ret)
 
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
+    def test_instance_valid_scaling_policy(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "ASGScaleUpapp": {
+                    "Properties": {
+                        "AutoScalingGroupName": {
+                            "Ref": "ASGapp"
+                        },
+                        "AdjustmentType": "PercentChangeInCapacity",
+                        "ScalingAdjustment": "50",
+                        "Cooldown": 300
+                    },
+                    "Type": "AWS::AutoScaling::ScalingPolicy"
+                },
+                "ASGScaleDownapp": {
+                    "Properties": {
+                        "AutoScalingGroupName": {
+                            "Ref": "ASGapp"
+                        },
+                        "AdjustmentType": "ChangeInCapacity",
+                        "ScalingAdjustment": "-1",
+                        "Cooldown": 300
+                    },
+                    "Type": "AWS::AutoScaling::ScalingPolicy"
+                },
+                "CloudwatchDownapp": {
+                    "Properties": {
+                        "Statistic": "Average",
+                        "EvaluationPeriods": 5,
+                        "OKActions": [
+                            {
+                                "Ref": "ASGScaleDownapp"
+                            }
+                        ],
+                        "MetricName": "nodejs_concurrents",
+                        "ActionsEnabled": "true",
+                        "Threshold": "35",
+                        "Period": 300,
+                        "ComparisonOperator": "GreaterThanThreshold",
+                        "Unit": "Count",
+                        "Namespace": "Piksel/sequoiaidentity",
+                        "Dimensions": [
+                            {
+                                "Name": "AutoScalingGroupName",
+                                "Value": {
+                                    "Ref": "ASGapp"
+                                }
+                            }
+                        ]
+                    },
+                    "Type": "AWS::CloudWatch::Alarm"
+                },
+                "CloudwatchUpapp": {
+                    "Properties": {
+                        "Statistic": "Average",
+                        "EvaluationPeriods": 5,
+                        "MetricName": "nodejs_concurrents",
+                        "AlarmActions": [
+                            {
+                                "Ref": "ASGScaleUpapp"
+                            }
+                        ],
+                        "ActionsEnabled": "true",
+                        "Threshold": "50",
+                        "Period": 300,
+                        "ComparisonOperator": "GreaterThanThreshold",
+                        "Unit": "Count",
+                        "Namespace": "Piksel/sequoiaidentity",
+                        "Dimensions": [
+                            {
+                                "Name": "AutoScalingGroupName",
+                                "Value": {
+                                    "Ref": "ASGapp"
+                                }
+                            }
+                        ]
+                    },
+                    "Type": "AWS::CloudWatch::Alarm"
+                },
+                "ASGapp": {
+                    "Properties": {
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        },
+                        "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
+                        "LaunchConfigurationName": {
+                            "Ref": "LCapp"
+                        },
+                        "MaxSize": 6,
+                        "MinSize": 6,
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "PropagateAtLaunch": True,
+                                "Value": "test::app::test"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
+                            }
+                        ],
+                    },
+                    "Type": "AWS::AutoScaling::AutoScalingGroup"
+                },
+                "LCapp": {
+                    "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
+                        "ImageId": "ami-e97f849e",
+                        "InstanceMonitoring": "false",
+                        "InstanceType": "m1.large",
+                        "KeyName": "bootstrap",
+                        "SecurityGroups": [],
+                        "UserData": {
+                            "Fn::Base64": ""
+                        }
+                    },
+                    "Type": "AWS::AutoScaling::LaunchConfiguration"
+                }
+            }
+        }
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'role': [],
+            'instance': [{
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'monitoring': False,
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'appBucket': 'test',
+                        'roleBucket': 'test',
+                        'roles': ['jetty']
+                    },
+                    'provider': 'AWSFWProvisioner'},
+                'public': False,
+                'sg': [],
+                'scaling_policy': {
+                    'metric': "Piksel/sequoiaidentity/nodejs_concurrents",
+                    'unit': 'Count',
+                    'up': {
+                        'stat': 'Average',
+                        'condition': "> 50",
+                        'change': '50%',
+                    },
+                    'down': {
+                        'stat': 'Average',
+                        'condition': "> 35",
+                        'change': "-1",
+                    },
+                },
+                'size': 'm1.large',
+                'sshKey': 'bootstrap'
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
     def test_instance_valid(self):
         out = JSONOutput()
         ret = {
