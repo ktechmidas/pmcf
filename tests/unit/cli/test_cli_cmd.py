@@ -157,6 +157,75 @@ class TestCliCmd(object):
                 _mock_add_resources)
     @mock.patch('pmcf.outputs.JSONOutput.run',
                 _mock_run_fails)
+    def test_invalid_config_keyerror_run_fails(self):
+        options = {
+            'parser': 'AWSFWParser',
+            'policy': 'JSONPolicy',
+            'policyfile': 'tests/data/etc/policy-instance.json',
+            'provisioner': 'AWSFWProvisioner',
+            'output': 'JSONOutput',
+            'verbose': False,
+            'debug': True,
+            'stackfile': 'tests/data/awsfw/ais-stage-farm.xml',
+        }
+        cli = PMCFCLI(options)
+        assert_equals(True, cli.run())
+
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.__init__',
+                _mock_cli_init_no_options)
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.parse_file',
+                _mock_parse_file)
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.validate',
+                _mock_validate)
+    @mock.patch('pmcf.policy.JSONPolicy.__init__',
+                _mock_cli_init_jsonfile_option)
+    @mock.patch('pmcf.policy.JSONPolicy.validate_resource',
+                _mock_parse_file)
+    @mock.patch('pmcf.provisioners.AWSFWProvisioner.__init__',
+                _mock_cli_init_no_options)
+    @mock.patch('pmcf.outputs.JSONOutput.__init__',
+                _mock_cli_init_no_options)
+    @mock.patch('pmcf.outputs.JSONOutput.add_resources',
+                _mock_add_resources)
+    @mock.patch('pmcf.outputs.JSONOutput.run',
+                _mock_run_fails)
+    def test_invalid_config_run_debug_fails(self):
+        options = {
+            'parser': 'AWSFWParser',
+            'policy': 'JSONPolicy',
+            'policyfile': 'tests/data/etc/policy-instance.json',
+            'provisioner': 'AWSFWProvisioner',
+            'output': 'JSONOutput',
+            'verbose': False,
+            'debug': True,
+            'accesskey': 'XXXX',
+            'secretkey': 'YYYY',
+            'region': 'eu-west-1',
+            'poll': False,
+            'action': 'create',
+            'stackfile': 'tests/data/awsfw/ais-stage-farm.xml',
+        }
+        cli = PMCFCLI(options)
+        assert_equals(True, cli.run())
+
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.__init__',
+                _mock_cli_init_no_options)
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.parse_file',
+                _mock_parse_file)
+    @mock.patch('pmcf.parsers.awsfw_parser.AWSFWParser.validate',
+                _mock_validate)
+    @mock.patch('pmcf.policy.JSONPolicy.__init__',
+                _mock_cli_init_jsonfile_option)
+    @mock.patch('pmcf.policy.JSONPolicy.validate_resource',
+                _mock_parse_file)
+    @mock.patch('pmcf.provisioners.AWSFWProvisioner.__init__',
+                _mock_cli_init_no_options)
+    @mock.patch('pmcf.outputs.JSONOutput.__init__',
+                _mock_cli_init_no_options)
+    @mock.patch('pmcf.outputs.JSONOutput.add_resources',
+                _mock_add_resources)
+    @mock.patch('pmcf.outputs.JSONOutput.run',
+                _mock_run_fails)
     def test_invalid_config_run_fails(self):
         options = {
             'parser': 'AWSFWParser',
@@ -165,6 +234,12 @@ class TestCliCmd(object):
             'provisioner': 'AWSFWProvisioner',
             'output': 'JSONOutput',
             'verbose': False,
+            'debug': False,
+            'accesskey': 'XXXX',
+            'secretkey': 'YYYY',
+            'region': 'eu-west-1',
+            'poll': False,
+            'action': 'create',
             'stackfile': 'tests/data/awsfw/ais-stage-farm.xml',
         }
         cli = PMCFCLI(options)
