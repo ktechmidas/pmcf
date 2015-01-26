@@ -709,7 +709,7 @@ class JSONOutput(BaseOutput):
 
                 upalarmargs = {
                     "ActionsEnabled": True,
-                    "AlarmActions": Ref("ASGScaleUp%s" % inst['name']),
+                    "AlarmActions": [Ref("ASGScaleUp%s" % inst['name'])],
                     "ComparisonOperator": str_cond(pol['up']['condition']),
                     "Namespace": ('/').join(pol['metric'].split('/')[:2]),
                     "MetricName": pol['metric'].split('/')[2],
@@ -736,7 +736,7 @@ class JSONOutput(BaseOutput):
 
                 downalarmargs = {
                     "ActionsEnabled": True,
-                    "OKActions": Ref("ASGScaleDown%s" % inst['name']),
+                    "OKActions": [Ref("ASGScaleDown%s" % inst['name'])],
                     "ComparisonOperator": str_cond(pol['down']['condition']),
                     "Namespace": ('/').join(pol['metric'].split('/')[:2]),
                     "MetricName": pol['metric'].split('/')[2],

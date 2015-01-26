@@ -164,6 +164,15 @@ class YamlParser(BaseParser):
                         self._get_value_for_env(item,
                                                 args['environment'],
                                                 field)
+            item = instance.get('scaling_policy', None)
+            if item:
+                instance['scaling_policy'] = self._get_value_for_env(
+                    item,
+                    args['environment'],
+                    'scaling_policy')
+                if instance['scaling_policy'] == []:
+                    instance.pop('scaling_policy', None)
+
             if instance['provisioner'].get('args'):
                 for field in ['bucket', 'metrics']:
                     item = instance['provisioner']['args'].get(field, None)
