@@ -54,14 +54,11 @@ class DBParameterGroup(rds.DBParameterGroup):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
+        except (AttributeError, ValueError), e:
             init_error(e.message, self.__class__.__name__, title)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        return super(self.__class__, self).JSONrepr()
 
     def validate(self):
         super(self.__class__, self).validate()

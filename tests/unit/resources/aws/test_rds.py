@@ -109,6 +109,14 @@ class TestRDSResource(TestResource):
         )
         assert_equals(self._data_for_resource(dbi), data)
 
+    def test_db_parameter_group_invalid_params(self):
+        dbpg = {
+            "Description": 'test',
+            "Parameters": {'foo': 'bar'},
+            "Womble": 'test',
+        }
+        assert_raises(PropertyException, rds.DBParameterGroup, "test", **dbpg)
+
     def test_db_parameter_group_invalid_missing_family(self):
         dbpg = rds.DBParameterGroup(
             'test',
