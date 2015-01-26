@@ -29,7 +29,7 @@ from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import autoscaling, ec2, iam, elasticloadbalancing
 from pmcf.resources.aws import cloudformation as cfn
-from pmcf.resources.aws import route53, sqs
+from pmcf.resources.aws import cloudwatch, route53, sqs
 from pmcf.utils import import_from_string
 
 LOG = logging.getLogger(__name__)
@@ -657,6 +657,109 @@ class JSONOutput(BaseOutput):
             )
             LOG.debug('Adding asg: %s' % asg.JSONrepr())
             data.add_resource(asg)
+
+            if inst.get('scaling_policy'):
+                pol = inst['scaling_policy']
+                scaleuppolargs = {
+                    "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
+                    "Cooldown": pol['up'].get('wait', 300),
+                }
+                amount = pol['up']['change']
+                if pol['up']['change'].find('%') != -1:
+                    scaleuppolargs["AdjustmentType"] =\
+                        "PercentChangeInCapacity"
+                    amount = amount.replace('%', '')
+                else:
+                    scaleuppolargs["AdjustmentType"] = "ChangeInCapacity"
+                scaleuppolargs["ScalingAdjustment"] = amount
+
+                data.add_resource(autoscaling.ScalingPolicy(
+                    "ASGScaleUp%s" % inst['name'],
+                    **scaleuppolargs
+                ))
+
+                scaledownpolargs = {
+                    "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
+                    "Cooldown": pol['up'].get('wait', 300),
+                }
+                amount = pol['down']['change']
+                if pol['down']['change'].find('%') != -1:
+                    scaledownpolargs["AdjustmentType"] =\
+                        "PercentChangeInCapacity"
+                    amount = amount.replace('%', '')
+                else:
+                    scaledownpolargs["AdjustmentType"] = "ChangeInCapacity"
+                scaledownpolargs["ScalingAdjustment"] = amount
+
+                data.add_resource(autoscaling.ScalingPolicy(
+                    "ASGScaleDown%s" % inst['name'],
+                    **scaledownpolargs
+                ))
+
+                def str_cond(cond):
+                    # expect '>= 40'
+                    cond = cond.split()[0]
+                    lookup = {
+                        '>=': 'GreaterThanOrEqualToThreshold',
+                        '>': 'GreaterThanThreshold',
+                        '<': 'LessThanThreshold',
+                        '<=': 'LessThanOrEqualToThreshold',
+                    }
+                    return lookup[cond]
+
+                upalarmargs = {
+                    "ActionsEnabled": True,
+                    "AlarmActions": Ref("ASGScaleUp%s" % inst['name']),
+                    "ComparisonOperator": str_cond(pol['up']['condition']),
+                    "Namespace": ('/').join(pol['metric'].split('/')[:2]),
+                    "MetricName": pol['metric'].split('/')[2],
+                    "Dimensions": [
+                        cloudwatch.MetricDimension(
+                            Name="AutoScalingGroupName",
+                            Value=Ref("ASG%s" % inst['name']),
+                        )
+                    ],
+                    "EvaluationPeriods": pol.get('wait', 5),
+                    "Statistic": pol['up']['stat'],
+                    "Threshold": pol['up']['condition'].split()[1],
+                    "Unit": pol['unit'],
+                }
+                if inst['monitoring']:
+                    upalarmargs['Period'] = 60
+                else:
+                    upalarmargs['Period'] = 300
+
+                data.add_resource(cloudwatch.Alarm(
+                    "CloudwatchUp%s" % inst['name'],
+                    **upalarmargs
+                ))
+
+                downalarmargs = {
+                    "ActionsEnabled": True,
+                    "OKActions": Ref("ASGScaleDown%s" % inst['name']),
+                    "ComparisonOperator": str_cond(pol['down']['condition']),
+                    "Namespace": ('/').join(pol['metric'].split('/')[:2]),
+                    "MetricName": pol['metric'].split('/')[2],
+                    "Dimensions": [
+                        cloudwatch.MetricDimension(
+                            Name="AutoScalingGroupName",
+                            Value=Ref("ASG%s" % inst['name']),
+                        )
+                    ],
+                    "EvaluationPeriods": pol.get('wait', 5),
+                    "Statistic": pol['down']['stat'],
+                    "Threshold": pol['down']['condition'].split()[1],
+                    "Unit": pol['unit'],
+                }
+                if inst['monitoring']:
+                    downalarmargs['Period'] = 60
+                else:
+                    downalarmargs['Period'] = 300
+
+                data.add_resource(cloudwatch.Alarm(
+                    "CloudwatchDown%s" % inst['name'],
+                    **downalarmargs
+                ))
 
     def add_resources(self, resources, config):
         """

@@ -24,6 +24,41 @@
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
 definitions:
+    scaledir:
+        type: object
+        properties:
+            stat:
+                type: string
+            condition:
+                type: string
+            change:
+                type: string
+            interval:
+                type: integer
+            wait:
+                type: integer
+        required:
+            - stat
+            - condition
+            - change
+        additionalProperties: false
+    scalingpolicy:
+        type: object
+        properties:
+            metric:
+                type: string
+            unit:
+                type: string
+            up:
+                $ref: "#/definitions/scaledir"
+            down:
+                $ref: "#/definitions/scaledir"
+        required:
+            - down
+            - metric
+            - unit
+            - up
+        additionalProperties: false
     noopprovisioner:
         type: object
         properties:
@@ -169,6 +204,8 @@ definitions:
                     - $ref: "#/definitions/blockprovisioner"
             public:
                 type: boolean
+            scaling_policy:
+                $ref: "#/definitions/scalingpolicy"
             sg:
                 type: array
             subnets:
