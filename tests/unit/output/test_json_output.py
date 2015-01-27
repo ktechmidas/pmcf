@@ -24,6 +24,10 @@ def _mock_ud(self, args):
     return ''
 
 
+def _mock_tp(self):
+    return ['OldestInstance']
+
+
 class TestJSONOutput(object):
 
     def test_queue_valid(self):
@@ -2819,6 +2823,103 @@ class TestJSONOutput(object):
                         'device': '/dev/xvdd',
                     },
                 ],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'monitoring': False,
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'apps': ['ais-jetty/v2.54-02'],
+                        'appBucket': 'test',
+                        'roleBucket': 'test',
+                        'roles': ['jetty'],
+                        'profile': 'deploy-client',
+                    },
+                    'provider': 'AWSFWProvisioner'},
+                'public': False,
+                'sg': ['app'],
+                'size': 'm1.large',
+                'sshKey': 'bootstrap'
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
+    @mock.patch('pmcf.strategy.bluegreen.BlueGreen.termination_policy',
+                _mock_tp)
+    @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
+    def test_instance_valid_termination_policy(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "ASGapp": {
+                    "Properties": {
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        },
+                        "DesiredCapacity": 6,
+                        "HealthCheckType": "EC2",
+                        "HealthCheckGracePeriod": 600,
+                        "LaunchConfigurationName": {
+                            "Ref": "LCapp"
+                        },
+                        "MaxSize": 6,
+                        "MinSize": 6,
+                        "Tags": [
+                            {
+                                "Key": "Name",
+                                "PropagateAtLaunch": True,
+                                "Value": "test::app::test"
+                            },
+                            {
+                                "Key": "App",
+                                "PropagateAtLaunch": True,
+                                "Value": "app"
+                            }
+                        ],
+                        "TerminationPolicies": ["OldestInstance"],
+                    },
+                    "Type": "AWS::AutoScaling::AutoScalingGroup"
+                },
+                "LCapp": {
+                    "Properties": {
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb",
+                                "VirtualName": "ephemeral0"
+                            },
+                            {
+                                "DeviceName": "/dev/xvdc",
+                                "VirtualName": "ephemeral1"
+                            }
+                        ],
+                        "IamInstanceProfile": "deploy-client",
+                        "ImageId": "ami-e97f849e",
+                        "InstanceMonitoring": "false",
+                        "InstanceType": "m1.large",
+                        "KeyName": "bootstrap",
+                        "SecurityGroups": ["app"],
+                        "UserData": {
+                            "Fn::Base64": ""
+                        }
+                    },
+                    "Type": "AWS::AutoScaling::LaunchConfiguration"
+                }
+            }
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'role': [],
+            'instance': [{
+                'block_device': [],
                 'count': 6,
                 'image': 'ami-e97f849e',
                 'monitoring': False,
