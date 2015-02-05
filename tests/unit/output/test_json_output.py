@@ -69,12 +69,6 @@ class TestJSONOutput(object):
             "AWSTemplateFormatVersion": "2010-09-09",
             "Description": "test test stack",
             "Resources": {
-                "IGtest": {
-                    "Properties": {
-                        "Tags": [{"Key": "Name", "Value": "test"}]
-                    },
-                    "Type": "AWS::EC2::InternetGateway"
-                },
                 "RTtest": {
                     "Properties": {
                         "Tags": [{"Key": "Name", "Value": "test"}],
@@ -171,12 +165,6 @@ class TestJSONOutput(object):
             "AWSTemplateFormatVersion": "2010-09-09",
             "Description": "test test stack",
             "Resources": {
-                "IGtest": {
-                    "Properties": {
-                        "Tags": [{"Key": "Name", "Value": "test"}]
-                    },
-                    "Type": "AWS::EC2::InternetGateway"
-                },
                 "RTtest": {
                     "Properties": {
                         "Tags": [{"Key": "Name", "Value": "test"}],

@@ -80,12 +80,6 @@ class JSONOutput(BaseOutput):
                     {'Key': 'Name',
                      'Value': net['name']},
                 ]))
-            data.add_resource(ec2.InternetGateway(
-                "IG%s" % net['name'],
-                Tags=[
-                    {'Key': 'Name',
-                     'Value': net['name']},
-                ]))
             data.add_resource(ec2.RouteTable(
                 "RT%s" % net['name'],
                 VpcId=Ref("VPC%s" % net['name']),
@@ -94,6 +88,12 @@ class JSONOutput(BaseOutput):
                      'Value': net['name']},
                 ]))
             if net['public']:
+                data.add_resource(ec2.InternetGateway(
+                    "IG%s" % net['name'],
+                    Tags=[
+                        {'Key': 'Name',
+                         'Value': net['name']},
+                    ]))
                 data.add_resource(ec2.VPCGatewayAttachment(
                     "VPCIG%s" % net['name'],
                     VpcId=Ref("VPC%s" % net['name']),
