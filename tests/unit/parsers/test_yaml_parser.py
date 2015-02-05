@@ -391,4 +391,4 @@ class TestParserData(object):
         assert_equals(2, len(self.data['resources']['network']))
 
     def test_parser_network_has_correct_subnet_count(self):
-        assert_equals(6, len(self.data['resources']['network'][0]['subnets']))
+        assert_equals(3, len(self.data['resources']['network'][0]['subnets']))

@@ -73,7 +73,6 @@ resources:
   network:
     - name: test
       netrange: 10.203.8.0/24
-      private: True
       public: True
       zones:
         - eu-west-1a

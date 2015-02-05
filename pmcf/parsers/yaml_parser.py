@@ -122,17 +122,15 @@ class YamlParser(BaseParser):
             netrange = net['netrange']
             netname = net['name']
             net['public'] = net.get('public', True)
-            net['private'] = net.get('private', False)
             if not net.get('subnets', None):
                 subnets = []
-                numsubnets = len(zones) * (
-                    int(net['private']) + int(net['public']))
+                numsubnets = len(zones)
                 subcidrs = split_subnets(netrange, numsubnets)
                 settings = []
                 if net['public']:
                     for z in zones:
                         settings.append('public')
-                if net['private']:
+                else:
                     for z in zones:
                         settings.append('private')
 

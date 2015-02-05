@@ -71,6 +71,13 @@ class JSONOutput(BaseOutput):
         """
 
         for net in nets:
+            subnet_types = set()
+            for idx, subnet in enumerate(net['subnets']):
+                if subnet['public']:
+                    subnet_types.add('public')
+                else:
+                    subnet_types.add('private')
+
             data.add_resource(ec2.VPC(
                 "VPC%s" % net['name'],
                 EnableDnsSupport=True,
@@ -87,6 +94,15 @@ class JSONOutput(BaseOutput):
                     {'Key': 'Name',
                      'Value': net['name']},
                 ]))
+            if len(subnet_types) > 1:
+                data.add_resource(ec2.RouteTable(
+                    "RT%spublic" % net['name'],
+                    VpcId=Ref("VPC%s" % net['name']),
+                    Tags=[
+                        {'Key': 'Name',
+                         'Value': net['name']},
+                    ]))
+
             if net['public']:
                 data.add_resource(ec2.InternetGateway(
                     "IG%s" % net['name'],
@@ -99,10 +115,15 @@ class JSONOutput(BaseOutput):
                     VpcId=Ref("VPC%s" % net['name']),
                     InternetGatewayId=Ref("IG%s" % net['name'])
                 ))
+
+                rt_table_id = Ref("RT%s" % net['name'])
+                if len(subnet_types) > 1:
+                    rt_table_id = Ref("RT%spublic" % net['name'])
+
                 data.add_resource(ec2.Route(
                     "DefaultRoute%s" % net['name'],
                     DependsOn="VPCIG%s" % net['name'],
-                    RouteTableId=Ref("RT%s" % net['name']),
+                    RouteTableId=rt_table_id,
                     DestinationCidrBlock="0.0.0.0/0",
                     GatewayId=Ref("IG%s" % net['name']),
                 ))
@@ -127,6 +148,14 @@ class JSONOutput(BaseOutput):
                     RouteTableIds=[Ref("RT%s" % net['name'])],
                     VpnGatewayId=Ref("%sVPNGW" % net['name'])
                 ))
+                if len(subnet_types) > 1:
+                    data.add_resource(ec2.VPNGatewayRoutePropagation(
+                        "VGRP%spublic" % net['name'],
+                        DependsOn="VPCVPNGW%s" % net['name'],
+                        RouteTableIds=[Ref("RT%spublic" % net['name'])],
+                        VpnGatewayId=Ref("%sVPNGW" % net['name'])
+                    ))
+
             for idx, vpn in enumerate(net.get('vpn', [])):
                 data.add_resource(ec2.CustomerGateway(
                     "%sCG%s" % (net['name'], idx),
@@ -163,6 +192,14 @@ class JSONOutput(BaseOutput):
                         net['name']),
                     **route_ref
                 ))
+                if len(subnet_types) > 1:
+                    route_ref['RouteTableId'] = Ref("RT%spublic" % net['name'])
+                    data.add_resource(ec2.Route(
+                        "Route%s%spublic" % (
+                            route['cidr'].replace('.', '').replace('/', ''),
+                            net['name']),
+                        **route_ref
+                    ))
 
             for peer in net.get('peers', []):
                 other_net = [n for n in nets
@@ -186,6 +223,14 @@ class JSONOutput(BaseOutput):
                     VpcPeeringConnectionId=Ref(
                         "%s%sPeering" % (peer['peerid'][1:], net['name']))
                 ))
+                if len(subnet_types) > 1:
+                    data.add_resource(ec2.Route(
+                        "Route%s%s" % (peer['peerid'][1:], net['name']),
+                        RouteTableId=Ref("RT%spublic" % net['name']),
+                        DestinationCidrBlock=other_net['netrange'],
+                        VpcPeeringConnectionId=Ref(
+                            "%s%sPeering" % (peer['peerid'][1:], net['name']))
+                    ))
 
             for idx, subnet in enumerate(net['subnets']):
                 data.add_resource(ec2.Subnet(

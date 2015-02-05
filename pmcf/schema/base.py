@@ -357,8 +357,6 @@ definitions:
                 type: string
             public:
                 type: boolean
-            private:
-                type: boolean
             routes:
                 type: array
                 minItems: 1
