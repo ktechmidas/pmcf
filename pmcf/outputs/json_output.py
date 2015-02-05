@@ -100,7 +100,7 @@ class JSONOutput(BaseOutput):
                     VpcId=Ref("VPC%s" % net['name']),
                     Tags=[
                         {'Key': 'Name',
-                         'Value': net['name']},
+                         'Value': "%spublic" % net['name']},
                     ]))
 
             if net['public']:
@@ -117,9 +117,6 @@ class JSONOutput(BaseOutput):
                 ))
 
                 rt_table_id = Ref("RT%s" % net['name'])
-                if len(subnet_types) > 1:
-                    rt_table_id = Ref("RT%spublic" % net['name'])
-
                 data.add_resource(ec2.Route(
                     "DefaultRoute%s" % net['name'],
                     DependsOn="VPCIG%s" % net['name'],
@@ -127,6 +124,17 @@ class JSONOutput(BaseOutput):
                     DestinationCidrBlock="0.0.0.0/0",
                     GatewayId=Ref("IG%s" % net['name']),
                 ))
+
+                if len(subnet_types) > 1:
+                    rt_table_id = Ref("RT%spublic" % net['name'])
+
+                    data.add_resource(ec2.Route(
+                        "DefaultRoute%spublic" % net['name'],
+                        DependsOn="VPCIG%s" % net['name'],
+                        RouteTableId=rt_table_id,
+                        DestinationCidrBlock="0.0.0.0/0",
+                        GatewayId=Ref("IG%s" % net['name']),
+                    ))
 
             if net.get('vpn', None):
                 data.add_resource(ec2.VPNGateway(
@@ -244,11 +252,18 @@ class JSONOutput(BaseOutput):
                         {'Key': 'Public',
                          'Value': subnet['public']},
                     ]))
-                data.add_resource(ec2.SubnetRouteTableAssociation(
-                    "%sSRTA%s" % (net['name'], idx),
-                    SubnetId=Ref("%sSubnet%s" % (net['name'], idx)),
-                    RouteTableId=Ref("RT%s" % net['name']),
-                ))
+                if len(subnet_types) > 1 and subnet['public']:
+                    data.add_resource(ec2.SubnetRouteTableAssociation(
+                        "%sSRTA%s" % (net['name'], idx),
+                        SubnetId=Ref("%sSubnet%s" % (net['name'], idx)),
+                        RouteTableId=Ref("RT%spublic" % net['name']),
+                    ))
+                else:
+                    data.add_resource(ec2.SubnetRouteTableAssociation(
+                        "%sSRTA%s" % (net['name'], idx),
+                        SubnetId=Ref("%sSubnet%s" % (net['name'], idx)),
+                        RouteTableId=Ref("RT%s" % net['name']),
+                    ))
 
     def _add_secgroups(self, data, secgroups, config):
         """
