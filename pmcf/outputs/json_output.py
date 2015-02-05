@@ -116,22 +116,20 @@ class JSONOutput(BaseOutput):
                     InternetGatewayId=Ref("IG%s" % net['name'])
                 ))
 
-                rt_table_id = Ref("RT%s" % net['name'])
                 data.add_resource(ec2.Route(
                     "DefaultRoute%s" % net['name'],
                     DependsOn="VPCIG%s" % net['name'],
-                    RouteTableId=rt_table_id,
+                    RouteTableId=Ref("RT%s" % net['name']),
                     DestinationCidrBlock="0.0.0.0/0",
                     GatewayId=Ref("IG%s" % net['name']),
                 ))
 
                 if len(subnet_types) > 1:
-                    rt_table_id = Ref("RT%spublic" % net['name'])
 
                     data.add_resource(ec2.Route(
                         "DefaultRoute%spublic" % net['name'],
                         DependsOn="VPCIG%s" % net['name'],
-                        RouteTableId=rt_table_id,
+                        RouteTableId=Ref("RT%spublic" % net['name']),
                         DestinationCidrBlock="0.0.0.0/0",
                         GatewayId=Ref("IG%s" % net['name']),
                     ))
@@ -212,6 +210,12 @@ class JSONOutput(BaseOutput):
             for peer in net.get('peers', []):
                 other_net = [n for n in nets
                              if n['name'] == peer['peerid'][1:]][0]
+                other_subnet_types = set()
+                for idx, subnet in enumerate(other_net['subnets']):
+                    if bool(subnet['public']):
+                        other_subnet_types.add('public')
+                    else:
+                        other_subnet_types.add('private')
                 data.add_resource(ec2.VPCPeeringConnection(
                     "%s%sPeering" % (peer['peerid'][1:], net['name']),
                     VpcId=Ref("VPC%s" % net['name']),
@@ -231,11 +235,12 @@ class JSONOutput(BaseOutput):
                     VpcPeeringConnectionId=Ref(
                         "%s%sPeering" % (peer['peerid'][1:], net['name']))
                 ))
-                if len(subnet_types) > 1:
+
+                if len(other_subnet_types) > 1:
                     data.add_resource(ec2.Route(
-                        "Route%s%s" % (peer['peerid'][1:], net['name']),
-                        RouteTableId=Ref("RT%spublic" % net['name']),
-                        DestinationCidrBlock=other_net['netrange'],
+                        "Route%s%spublic" % (peer['peerid'][1:], net['name']),
+                        RouteTableId=Ref("RT%spublic" % other_net['name']),
+                        DestinationCidrBlock=net['netrange'],
                         VpcPeeringConnectionId=Ref(
                             "%s%sPeering" % (peer['peerid'][1:], net['name']))
                     ))
