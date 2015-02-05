@@ -499,6 +499,17 @@ class JSONOutput(BaseOutput):
             args['appname'] = args.get('appname', config['name'])
             if config.get("version", None):
                 args["version"] = config["version"]
+
+            if inst.get('nat'):
+                args['eip'] = []
+                for ei in range(0, inst['count']):
+                    eip = ec2.EIP(
+                        "EIP%s%s" % (inst['name'], ei),
+                        Domain='vpc',
+                    )
+                    args['eip'].append(eip)
+                    data.add_resource(eip)
+
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',
                                              provider)()

@@ -177,6 +177,8 @@ definitions:
                     - type
                     - zone
                 additionalProperties: false
+            nat:
+                type: boolean
             healthcheck:
                 type: string
             image:

@@ -164,6 +164,10 @@ class YamlParser(BaseParser):
                                                 field)
             item = instance.get('scaling_policy', None)
             if item:
+                if instance.get('nat'):
+                    raise ParserFailure("instances with ElasticIPs and ",
+                                        "ScalingPolicies are not supported")
+
                 instance['scaling_policy'] = self._get_value_for_env(
                     item,
                     args['environment'],

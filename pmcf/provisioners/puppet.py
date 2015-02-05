@@ -184,6 +184,25 @@ class PuppetProvisioner(BaseProvisioner):
         :returns: dict.
         """
 
+        facts = [
+            "ec2_stack: ",
+            Ref("AWS::StackId"),
+            "\n",
+            "ec2_region: ",
+            Ref("AWS::Region"),
+            "\n",
+            "ec2_resource: %s\n" % args['resource'],
+            "app: %s\n" % args['name'],
+            "stack: %s\n" % args['stackname'],
+            "stage: %s\n" % args['environment'],
+        ]
+        if args.get('eip'):
+            facts.append("ec2_elastic_ips: ")
+            for ei in args['eip']:
+                facts.append(Ref(ei))
+                facts.append(",")
+            facts.pop()
+            facts.append("\n")
         init = {
             "configSets": {
                 "startup": ["bootstrap"],
@@ -197,18 +216,7 @@ class PuppetProvisioner(BaseProvisioner):
                 },
                 "files": {
                     "/etc/facter/facts.d/localfacts.yaml": {
-                        "content": Join("", [
-                            "ec2_stack: ",
-                            Ref("AWS::StackId"),
-                            "\n",
-                            "ec2_region: ",
-                            Ref("AWS::Region"),
-                            "\n",
-                            "ec2_resource: %s\n" % args['resource'],
-                            "app: %s\n" % args['name'],
-                            "stack: %s\n" % args['stackname'],
-                            "stage: %s\n" % args['environment'],
-                        ]),
+                        "content": Join("", facts),
                         "mode": "000644",
                         "owner": "root",
                         "group": "root"
