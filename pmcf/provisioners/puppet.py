@@ -103,6 +103,15 @@ class PuppetProvisioner(BaseProvisioner):
                 "Action": ["ec2:DescribeInstances"],
                 "Resource": "*",
             })
+        if args.get('eip'):
+            statement['Statement'].append({
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:AssociateAddress",
+                    "ec2:DescribeAddresses",
+                ],
+                "Resource": "*",
+            })
         if args.get('metrics'):
             statement['Statement'].append({
                 "Effect": "Allow",
