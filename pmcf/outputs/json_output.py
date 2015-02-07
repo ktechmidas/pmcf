@@ -116,20 +116,20 @@ class JSONOutput(BaseOutput):
                     InternetGatewayId=Ref("IG%s" % net['name'])
                 ))
 
-                data.add_resource(ec2.Route(
-                    "DefaultRoute%s" % net['name'],
-                    DependsOn="VPCIG%s" % net['name'],
-                    RouteTableId=Ref("RT%s" % net['name']),
-                    DestinationCidrBlock="0.0.0.0/0",
-                    GatewayId=Ref("IG%s" % net['name']),
-                ))
-
                 if len(subnet_types) > 1:
-
                     data.add_resource(ec2.Route(
                         "DefaultRoute%spublic" % net['name'],
                         DependsOn="VPCIG%s" % net['name'],
                         RouteTableId=Ref("RT%spublic" % net['name']),
+                        DestinationCidrBlock="0.0.0.0/0",
+                        GatewayId=Ref("IG%s" % net['name']),
+                    ))
+
+                else:
+                    data.add_resource(ec2.Route(
+                        "DefaultRoute%s" % net['name'],
+                        DependsOn="VPCIG%s" % net['name'],
+                        RouteTableId=Ref("RT%s" % net['name']),
                         DestinationCidrBlock="0.0.0.0/0",
                         GatewayId=Ref("IG%s" % net['name']),
                     ))
