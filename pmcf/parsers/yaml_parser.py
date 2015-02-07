@@ -147,7 +147,7 @@ class YamlParser(BaseParser):
 
         for instance in data['resources'].get('instance', []):
             if instance.get('public', None) is None:
-                instance['public'] = False
+                instance['public'] = True
 
             if instance.get('dns'):
                 if not instance['dns'].get('zone', '').endswith('.'):
