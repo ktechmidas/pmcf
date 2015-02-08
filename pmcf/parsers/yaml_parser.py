@@ -185,7 +185,7 @@ class YamlParser(BaseParser):
                                                     field)
 
         for lb in data['resources'].get('load_balancer', []):
-            for field in ['policy']:
+            for field in ['policy', 'subnets']:
                 item = lb.get(field, None)
                 if item:
                     lb[field] =\
