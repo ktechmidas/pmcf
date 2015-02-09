@@ -177,6 +177,8 @@ definitions:
                     - type
                     - zone
                 additionalProperties: false
+            dnszone:
+                type: string
             nat:
                 type: boolean
             healthcheck:

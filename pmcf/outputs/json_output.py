@@ -510,6 +510,24 @@ class JSONOutput(BaseOutput):
                     args['eip'].append(eip)
                     data.add_resource(eip)
 
+                    data.add_resource(route53.RecordSetType(
+                        "EIPDNS%s" % inst['name'],
+                        HostedZoneName="%s.%s" % (
+                            config['environment'],
+                            inst['dnszone']
+                        ),
+                        Comment="EIP for %s in %s" % (
+                            inst['name'], config['environment']),
+                        Name="%s.%s.%s" % (
+                            inst['name'],
+                            config['environment'],
+                            inst['dnszone']
+                        ),
+                        Type="A",
+                        TTL="300",
+                        ResourceRecords=[ Ref(eip) ],
+                    ))
+
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',
                                              provider)()
