@@ -525,7 +525,7 @@ class JSONOutput(BaseOutput):
                         ),
                         Type="A",
                         TTL="300",
-                        ResourceRecords=[ Ref(eip) ],
+                        ResourceRecords=[Ref(eip)],
                     ))
 
             provider = inst['provisioner']['provider']
