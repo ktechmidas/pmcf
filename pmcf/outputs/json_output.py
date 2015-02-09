@@ -502,24 +502,26 @@ class JSONOutput(BaseOutput):
 
             if inst.get('nat'):
                 args['eip'] = []
+                records = []
                 for ei in range(0, inst['count']):
                     eip = ec2.EIP(
                         "EIP%s%s" % (inst['name'], ei),
                         Domain='vpc',
                     )
                     args['eip'].append(eip)
+                    records.append(Ref(eip))
                     data.add_resource(eip)
 
                     data.add_resource(route53.RecordSetType(
-                        "EIPDNS%s" % inst['name'],
+                        "EIPDNS%s%s" % (inst['name'], ei),
                         HostedZoneName="%s.%s" % (
                             config['environment'],
                             inst['dnszone']
                         ),
                         Comment="EIP for %s in %s" % (
                             inst['name'], config['environment']),
-                        Name="%s.%s.%s" % (
-                            inst['name'],
+                        Name="%s%s.%s.%s" % (
+                            inst['name'], ei,
                             config['environment'],
                             inst['dnszone']
                         ),
@@ -527,6 +529,24 @@ class JSONOutput(BaseOutput):
                         TTL="300",
                         ResourceRecords=[Ref(eip)],
                     ))
+
+                data.add_resource(route53.RecordSetType(
+                    "EIPDNS%s" % inst['name'],
+                    HostedZoneName="%s.%s" % (
+                        config['environment'],
+                        inst['dnszone']
+                    ),
+                    Comment="EIP for %s in %s" % (
+                        inst['name'], config['environment']),
+                    Name="%s.%s.%s" % (
+                        inst['name'],
+                        config['environment'],
+                        inst['dnszone']
+                    ),
+                    Type="A",
+                    TTL="300",
+                    ResourceRecords=records,
+                ))
 
             provider = inst['provisioner']['provider']
             provisioner = import_from_string('pmcf.provisioners',
