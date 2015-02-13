@@ -513,15 +513,15 @@ class JSONOutput(BaseOutput):
                     data.add_resource(eip)
 
                     data.add_resource(route53.RecordSetType(
-                        "EIPDNS%s%s" % (inst['name'], ei),
+                        "EIPDNS%s%02d" % (inst['name'], ei + 1),
                         HostedZoneName="%s.%s" % (
                             config['environment'],
                             inst['dnszone']
                         ),
                         Comment="EIP for %s in %s" % (
                             inst['name'], config['environment']),
-                        Name="%s%s.%s.%s" % (
-                            inst['name'], ei,
+                        Name="%s%02d.%s.%s" % (
+                            inst['name'], ei + 1,
                             config['environment'],
                             inst['dnszone']
                         ),
