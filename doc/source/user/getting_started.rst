@@ -17,7 +17,7 @@ Getting Started
 ===============
 
 PMCF is a set of python libraries and an executable.  The source code can be found
-`here <https://https://gitlab.piksel.com/pmcf/python-pmcf>`_.  To install and get
+`here <https://gitlab.piksel.com/pmcf/python-pmcf>`_.  To install and get
 started, clone it, then use virtualenv to get started::
 
   mkvirtualenv pmcf
