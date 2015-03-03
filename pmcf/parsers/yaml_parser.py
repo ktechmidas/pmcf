@@ -254,6 +254,11 @@ class YamlParser(BaseParser):
                             args['environment'],
                             policy['policy']['s3prefix'],
                         )
+                    schema = 'external'
+                    if lb.get('internal'):
+                        schema = 'internal'
+                    if not prefix.endswith(schema):
+                        prefix = "%s/%s" % (prefix, schema)
                     lb['policy'][idx]['policy']['s3prefix'] = prefix
 
         for instance in self._stack['resources']['instance']:

@@ -379,7 +379,7 @@ class TestParserData(object):
     def test_parser_lb_has_valid_policy_prefix(self):
         elb = self.data['resources']['load_balancer'][0]
         p = elb['policy'][0]['policy']['s3prefix']
-        assert_equals('stage/test', p)
+        assert_equals('stage/test/external', p)
 
     def test_parser_sg_has_valid_rule_count_app(self):
         assert_equals(12, len(self.data['resources']['secgroup'][1]['rules']))
