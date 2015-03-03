@@ -128,6 +128,60 @@ resources:
         data = parser.parse(ds, args)
         assert_equals(len(data['resources']['secgroup'][0]['rules']), 5)
 
+    def test_elb_prefix_multiple_lbs(self):
+        ds = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  load_balancer:
+    - &PUBLICTEST
+      name: testelb
+      listener:
+        - instance_port: 80
+          instance_protocol: HTTP
+          protocol: HTTP
+          lb_port: 80
+      policy:
+        default:
+          - type: log_policy
+            policy:
+              emit_interval: 5
+              enabled: true
+              s3bucket: piksel-logging
+              s3prefix: ais/testelb
+      healthcheck:
+        protocol: HTTP
+        path: /
+        port: 80
+    - <<: *PUBLICTEST
+      name: internal.testelb
+      internal: true
+      listener:
+        - instance_port: 2003
+          instance_protocol: TCP
+          protocol: TCP
+          lb_port: 2003
+      healthcheck:
+        protocol: HTTP
+        port: 8080
+        path: /ping
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(ds, args)
+        lba = data['resources']['load_balancer'][0]
+        lbb = data['resources']['load_balancer'][1]
+        prfxa = lba['policy'][0]['policy']['s3prefix']
+        prfxb = lbb['policy'][0]['policy']['s3prefix']
+        assert_equals(prfxa, 'dev/ais/testelb/external')
+        assert_equals(prfxb, 'dev/ais/testelb/internal')
+
     def test_instance_defaultsg(self):
         args = {
             'environment': 'stage',

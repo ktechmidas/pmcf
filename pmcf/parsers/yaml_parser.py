@@ -240,26 +240,25 @@ class YamlParser(BaseParser):
         for drop in dropped:
             data['resources']['instance'].pop(drop)
 
-        self._stack['resources'].update(data['resources'])
-
-        for lb in self._stack['resources']['load_balancer']:
+        for lb in data['resources'].get('load_balancer', []):
             if data['config'].get('subnets'):
                 lb['subnets'] = lb.get('subnets', data['config']['subnets'])
-            lb['policy'] = lb.get('policy', [])
+            lb['policy'] = copy.deepcopy(lb.get('policy', []))
             for idx, policy in enumerate(lb['policy']):
                 if policy['type'] == 'log_policy':
-                    prefix = lb['policy'][idx]['policy']['s3prefix']
-                    if not prefix.startswith(args['environment']):
-                        prefix = "%s/%s" % (
-                            args['environment'],
-                            policy['policy']['s3prefix'],
-                        )
+                    prefix = policy['policy']['s3prefix']
+                    prefix = "%s/%s" % (
+                        args['environment'],
+                        policy['policy']['s3prefix'],
+                    )
                     schema = 'external'
                     if lb.get('internal'):
                         schema = 'internal'
-                    if not prefix.endswith(schema):
-                        prefix = "%s/%s" % (prefix, schema)
-                    lb['policy'][idx]['policy']['s3prefix'] = prefix
+                    prefix = "%s/%s" % (prefix, schema)
+                    policy['policy']['s3prefix'] = prefix
+                    lb['policy'][idx] = policy
+
+        self._stack['resources'].update(data['resources'])
 
         for instance in self._stack['resources']['instance']:
             if data['config'].get('subnets'):
