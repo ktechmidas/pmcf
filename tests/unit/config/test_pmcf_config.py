@@ -40,6 +40,7 @@ class TestPMCFConfig(object):
             'stackfile': None,
             'environment': None,
             'verbose': None,
+            'use_iam_profile': False,
             'accesskey': None,
         }
         assert_equals(cfg.options, opts)
@@ -70,6 +71,7 @@ class TestPMCFConfig(object):
             'stackfile': None,
             'environment': None,
             'verbose': None,
+            'use_iam_profile': False,
             'accesskey': None,
         }
         assert_equals(cfg.get_config(), opts)

@@ -147,10 +147,14 @@ class AWSCFNOutput(JSONOutput):
         LOG.info('uploading stack definition to s3://%s/%s' % (
             credentials['audit_output'], destination))
         try:
-            s3 = boto.connect_s3(
-                aws_access_key_id=credentials['access'],
-                aws_secret_access_key=credentials['secret']
-            )
+            s3 = None
+            if credentials.get('use_iam_profile'):
+                s3 = boto.connect_s3()
+            else:
+                s3 = boto.connect_s3(
+                    aws_access_key_id=credentials['access'],
+                    aws_secret_access_key=credentials['secret']
+                )
             bucket = s3.get_bucket(credentials['audit_output'])
             k = boto.s3.key.Key(bucket)
             k.key = destination
@@ -187,11 +191,14 @@ class AWSCFNOutput(JSONOutput):
         cfn = None
         for region in boto.regioninfo.get_regions('cloudformation'):
             if region.name == metadata['region']:
-                cfn = boto.connect_cloudformation(
-                    aws_access_key_id=metadata['access'],
-                    aws_secret_access_key=metadata['secret'],
-                    region=region
-                )
+                if metadata.get('use_iam_profile'):
+                    cfn = boto.connect_cloudformation(region=region)
+                else:
+                    cfn = boto.connect_cloudformation(
+                        aws_access_key_id=metadata['access'],
+                        aws_secret_access_key=metadata['secret'],
+                        region=region
+                    )
         if cfn is None:
             raise ProvisionerException("Can't find a valid region")
 

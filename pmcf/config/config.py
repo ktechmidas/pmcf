@@ -73,6 +73,7 @@ class PMCFConfig(object):
             'instance_accesskey': None,
             'instance_secretkey': None,
             'region': None,
+            'use_iam_profile': False,
             'environment': None,
         }
 

@@ -47,6 +47,7 @@ Valid keys for a section in the config file are and their defaults are::
     stackfile = None
     accesskey = None
     secretkey = None
+    use_iam_profile = False
     instance_accesskey = None
     instance_secretkey = None
     region = None
@@ -125,6 +126,11 @@ Config file values:
 :secretkey:
     AWS secret key.  Not needed for all Outputs or Audits.  Typically would be
     different in different profiles, and only stored at the profile level.
+
+:use_iam_profile:
+    Use instance profiles instead of an accesskey/secretkey pair.  Not needed
+    for all Outputs or Audits.  Typically would be different in different
+    profiles, and only stored at the profile level.
 
 :region:
     AWS region.  Not needed for all Outputs or Audits.  Typically would be
