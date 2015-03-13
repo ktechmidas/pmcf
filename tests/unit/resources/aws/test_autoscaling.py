@@ -309,26 +309,6 @@ class TestASGResource(TestResource):
         )
         assert_raises(PropertyException, sa.JSONrepr)
 
-    def test_scheduled_action_invalid_no_start_time(self):
-        sa = asg.ScheduledAction(
-            'test',
-            AutoScalingGroupName='testasg-123',
-            DesiredCapacity=9,
-            EndTime='2014-12-01T00:00:00Z',
-            Recurrence='0 10 * * *'
-        )
-        assert_raises(PropertyException, sa.JSONrepr)
-
-    def test_scheduled_action_invalid_no_end_time(self):
-        sa = asg.ScheduledAction(
-            'test',
-            AutoScalingGroupName='testasg-123',
-            DesiredCapacity=9,
-            StartTime='2014-06-01T00:00:00Z',
-            Recurrence='0 10 * * *'
-        )
-        assert_raises(PropertyException, sa.JSONrepr)
-
     def test_scheduled_action_invalid_no_recurrence(self):
         sa = asg.ScheduledAction(
             'test',

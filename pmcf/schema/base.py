@@ -180,7 +180,6 @@ definitions:
                     $ref: "#/definitions/block_storage"
             count:
                 type: integer
-                minimum: 1
             depends:
                 type: string
             dns:
@@ -214,7 +213,6 @@ definitions:
                 type: array
             min:
                 type: integer
-                minimum: 1
             max:
                 type: integer
                 minimum: 1

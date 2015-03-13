@@ -14,6 +14,7 @@
 
 import time
 from troposphere import autoscaling as asg
+from pmcf.resources.aws.helpers import autoscaling as autoscaling
 from troposphere import UpdatePolicy
 
 from pmcf.utils import error, init_error
@@ -173,7 +174,7 @@ class ScalingPolicy(asg.ScalingPolicy):
                   ', '.join(valid_adj_types))
 
 
-class ScheduledAction(asg.ScheduledAction):
+class ScheduledAction(autoscaling.ScheduledAction):
     def __init__(self, title, template=None, **kwargs):
         try:
             super(self.__class__, self).__init__(title, template, **kwargs)
@@ -205,10 +206,12 @@ class ScheduledAction(asg.ScheduledAction):
                       (item, cron_valid[idx][0], cron_valid[idx][-2]))
 
         for item in ['StartTime', 'EndTime']:
-            try:
-                time.strptime(self.properties[item], tm_fmt)
-            except ValueError:
-                error(self, '%s invalid date, must match %s' % (item, tm_fmt))
+            if self.properties.get(item):
+                try:
+                    time.strptime(self.properties[item], tm_fmt)
+                except ValueError:
+                    error(self, '%s invalid date, must match %s' %
+                          (item, tm_fmt))
 
 
 class Trigger(asg.Trigger):

@@ -557,11 +557,15 @@ class JSONOutput(BaseOutput):
                 )
                 args['WaitHandle'] = waithandle
                 data.add_resource(waithandle)
+                if inst['count'] > 0:
+                    cnt = 1
+                else:
+                    cnt = 0
                 data.add_resource(cfn.WaitCondition(
                     "Wait%s" % inst['name'],
                     DependsOn="ASG%s" % inst['name'],
                     Handle=Ref(waithandle),
-                    Count=1,
+                    Count=cnt,
                     Timeout=3600
                 ))
 
@@ -776,7 +780,7 @@ class JSONOutput(BaseOutput):
                 pol = inst['timed_scaling_policy']['up']
                 scaleuppolargs = {
                     "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
-                    "Recurrence": pol['recurrence']
+                    "Recurrence": pol['recurrence'],
                 }
                 if pol.get('count'):
                     scaleuppolargs['DesiredCapacity'] = pol['count']
