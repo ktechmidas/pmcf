@@ -399,6 +399,7 @@ class AWSCFNOutput(JSONOutput):
                     break
             if stack.stack_status.endswith('FAILED') or\
                     stack.stack_status.startswith('ROLLBACK') or\
+                    stack.stack_status.startswith('UPDATE_ROLLBACK') or\
                     stack.stack_status.startswith('DELETE'):
                 return False
             if len(stack.outputs) > 0:
