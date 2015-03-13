@@ -24,6 +24,20 @@
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
 definitions:
+    scaletime:
+        type: object
+        properties:
+            min:
+                type: integer
+            max:
+                type: integer
+            count:
+                type: integer
+            recurrence:
+                type: string
+        required:
+            - count
+            - recurrence
     scaledir:
         type: object
         properties:
@@ -42,6 +56,15 @@ definitions:
             - condition
             - change
         additionalProperties: false
+    timedscalingpolicy:
+        type: object
+        properties:
+            up:
+                $ref: "#/definitions/scaletime"
+            down:
+                $ref: "#/definitions/scaletime"
+        required:
+            - up
     scalingpolicy:
         type: object
         properties:
@@ -208,6 +231,8 @@ definitions:
                     - $ref: "#/definitions/blockprovisioner"
             public:
                 type: boolean
+            timed_scaling_policy:
+                $ref: "#/definitions/timedscalingpolicy"
             scaling_policy:
                 $ref: "#/definitions/scalingpolicy"
             sg:

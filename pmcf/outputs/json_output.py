@@ -772,6 +772,46 @@ class JSONOutput(BaseOutput):
             LOG.debug('Adding asg: %s' % asg.JSONrepr())
             data.add_resource(asg)
 
+            if inst.get('timed_scaling_policy'):
+                pol = inst['timed_scaling_policy']['up']
+                scaleuppolargs = {
+                    "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
+                    "Recurrence": pol['recurrence']
+                }
+                if pol.get('count'):
+                    scaleuppolargs['DesiredCapacity'] = pol['count']
+
+                if pol.get('min'):
+                    scaleuppolargs['MinSize'] = pol['min']
+
+                if pol.get('max'):
+                    scaleuppolargs['MaxSize'] = pol['max']
+
+                data.add_resource(autoscaling.ScheduledAction(
+                    "ASGTimedScaleUp%s" % inst['name'],
+                    **scaleuppolargs
+                ))
+
+                pol = inst['timed_scaling_policy'].get('down', None)
+                if pol:
+                    scaledownpolargs = {
+                        "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
+                        "Recurrence": pol['recurrence']
+                    }
+                    if pol.get('count'):
+                        scaledownpolargs['DesiredCapacity'] = pol['count']
+
+                    if pol.get('min'):
+                        scaledownpolargs['MinSize'] = pol['min']
+
+                    if pol.get('max'):
+                        scaledownpolargs['MaxSize'] = pol['max']
+
+                    data.add_resource(autoscaling.ScheduledAction(
+                        "ASGTimedScaleDown%s" % inst['name'],
+                        **scaledownpolargs
+                    ))
+
             if inst.get('scaling_policy'):
                 pol = inst['scaling_policy']
                 scaleuppolargs = {
