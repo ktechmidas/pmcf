@@ -782,13 +782,13 @@ class JSONOutput(BaseOutput):
                     "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
                     "Recurrence": pol['recurrence'],
                 }
-                if pol.get('count'):
+                if pol.get('count', None) is not None:
                     scaleuppolargs['DesiredCapacity'] = pol['count']
 
-                if pol.get('min'):
+                if pol.get('min', None) is not None:
                     scaleuppolargs['MinSize'] = pol['min']
 
-                if pol.get('max'):
+                if pol.get('max', None) is not None:
                     scaleuppolargs['MaxSize'] = pol['max']
 
                 data.add_resource(autoscaling.ScheduledAction(
@@ -802,13 +802,13 @@ class JSONOutput(BaseOutput):
                         "AutoScalingGroupName": Ref("ASG%s" % inst['name']),
                         "Recurrence": pol['recurrence']
                     }
-                    if pol.get('count'):
+                    if pol.get('count', None) is not None:
                         scaledownpolargs['DesiredCapacity'] = pol['count']
 
-                    if pol.get('min'):
+                    if pol.get('min', None) is not None:
                         scaledownpolargs['MinSize'] = pol['min']
 
-                    if pol.get('max'):
+                    if pol.get('max', None) is not None:
                         scaledownpolargs['MaxSize'] = pol['max']
 
                     data.add_resource(autoscaling.ScheduledAction(

@@ -189,6 +189,12 @@ class ScheduledAction(autoscaling.ScheduledAction):
 
     def validate(self):
         super(self.__class__, self).validate()
+
+        if len(set(self.properties.keys()).intersection(
+                set(['DesiredCapacity', 'MinSize', 'MaxSize']))) == 0:
+            error(self, "Need to specify one of `DesiredCapacity', `MinSize', "
+                        "`MaxSize'")
+
         tm_fmt = "%Y-%m-%dT%H:%M:%SZ"
         cron_valid = [
             range(0, 8),
