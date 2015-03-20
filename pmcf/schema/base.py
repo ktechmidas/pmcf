@@ -496,6 +496,16 @@ definitions:
             - name
             - rules
         additionalProperties: false
+    stream:
+        properties:
+            name:
+                type: string
+            shards:
+                type: integer
+        required:
+            - name
+            - shards
+        additionalProperties: false
 type: object
 properties:
     config:
@@ -523,6 +533,10 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/queue"
+            stream:
+                type: array
+                items:
+                    $ref: "#/definitions/stream"
             secgroup:
                 type: array
                 items:

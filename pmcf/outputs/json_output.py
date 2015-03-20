@@ -29,13 +29,32 @@ from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import autoscaling, ec2, iam, elasticloadbalancing
 from pmcf.resources.aws import cloudformation as cfn
-from pmcf.resources.aws import cloudwatch, route53, sqs
+from pmcf.resources.aws import cloudwatch, kinesis, route53, sqs
 from pmcf.utils import import_from_string
 
 LOG = logging.getLogger(__name__)
 
 
 class JSONOutput(BaseOutput):
+
+    def _add_streams(self, data, streams, config):
+        """
+        Iterates and creates AWS SQS queues
+
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param queues: list of queue definitions
+        :type queues: list.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
+        for stream in streams:
+            data.add_resource(kinesis.Stream(
+                "Stream%s" % stream['name'],
+                ShardCount=stream['shards'],
+            ))
 
     def _add_queues(self, data, queues, config):
         """
@@ -938,6 +957,7 @@ class JSONOutput(BaseOutput):
         data.add_description(desc)
         data.add_version()
 
+        self._add_streams(data, resources.get('stream', []), config)
         self._add_queues(data, resources.get('queue', []), config)
         self._add_nets(data, resources.get('network', []), config)
         sgs = self._add_secgroups(data, resources['secgroup'], config)

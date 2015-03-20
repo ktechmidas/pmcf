@@ -54,3 +54,4 @@ Schemas for individual resources
    network
    secgroup
    queue
+   stream

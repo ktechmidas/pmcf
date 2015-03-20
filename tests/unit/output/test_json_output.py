@@ -4223,6 +4223,37 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    def test_stream_valid(self):
+        out = JSONOutput()
+        ret = {
+            "AWSTemplateFormatVersion": "2010-09-09",
+            "Description": "test test stack",
+            "Resources": {
+                "Streamtest": {
+                    "Properties": {
+                        "ShardCount": 2,
+                    },
+                    "Type": "AWS::Kinesis::Stream"
+                }
+            }
+        }
+        cfg = {
+            'name': 'test',
+            'environment': 'test'
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'role': [],
+            'instance': [],
+            'stream': [{
+                'name': 'test',
+                'shards': 2,
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        assert_equals(json.loads(tmpl), ret)
+
     def test_run(self):
         sys.stdout = open('/dev/null', 'w')
         assert_equals(True, JSONOutput().run('{}', {}))

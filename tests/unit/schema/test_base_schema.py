@@ -30,6 +30,8 @@ class TestBaseSchema(object):
                 'load_balancer': [],
                 'db': [],
                 'cdn': [],
+                'stream': [],
+                'queue': [],
                 'instance': [
                     {
                         'count': 3,
@@ -86,6 +88,12 @@ class TestBaseSchema(object):
                 'port': 80
             },
             'name': 'test',
+        })
+
+    def _add_stream_data(self):
+        self.data['resources']['stream'].append({
+            'name': 'test',
+            'shards': 2,
         })
 
     def test_schema_loads(self):
@@ -299,4 +307,16 @@ class TestBaseSchema(object):
         schema = yaml.load(base_schema)
         self._add_sg_data()
         self.data['resources']['secgroup'][0]['rules'][1]['wobble'] = True
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_stream_no_shard(self):
+        schema = yaml.load(base_schema)
+        self._add_stream_data()
+        self.data['resources']['stream'][0].pop('shards')
+        assert_raises(ValidationError, jsonschema.validate, self.data, schema)
+
+    def test_schema_invalid_stream_extra_property(self):
+        schema = yaml.load(base_schema)
+        self._add_stream_data()
+        self.data['resources']['stream'][0]['wobble'] = True
         assert_raises(ValidationError, jsonschema.validate, self.data, schema)
