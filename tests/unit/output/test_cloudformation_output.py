@@ -216,9 +216,9 @@ _mock_describe_stack_returns_mock_stack_different_status.counter = 0
 
 def _mock_describe_stack_raises_different_exceptions(self, stack):
     _mock_describe_stack_raises_different_exceptions.counter += 1
-    if _mock_describe_stack_raises_different_exceptions.counter < 2:
-        _mock_describe_stack_raises_limit_exceeded(self, stack)
-    _mock_describe_stack_raises_does_not_exist(self, stack)
+    if _mock_describe_stack_raises_different_exceptions.counter % 2 == 0:
+        _mock_describe_stack_raises_does_not_exist(self, stack)
+    _mock_describe_stack_raises_limit_exceeded(self, stack)
 
 _mock_describe_stack_raises_different_exceptions.counter = 0
 
@@ -258,6 +258,25 @@ class TestAWSCFNOutput(object):
         cfno = AWSCFNOutput()
         assert_raises(ProvisionerException, cfno.run,
                       '{"a": "b"}', {'region': 'nah'})
+
+    @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
+    @mock.patch(
+        'boto.cloudformation.CloudFormationConnection.validate_template',
+        _mock_validate_template)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.create_stack',
+                _mock_create_stack)
+    @mock.patch('pmcf.outputs.cloudformation.AWSCFNOutput._stack_exists',
+                _mock_stack_exists_false)
+    def test_run_create_instance_profile_returns_true(self):
+        cfno = AWSCFNOutput()
+        metadata = {
+            'region': 'eu-west-1',
+            'use_iam_profile': True,
+            'name': 'test',
+            'environment': 'test',
+            'audit': 'NoopAudit',
+        }
+        assert_equals(cfno.run('{"a": "b"}', metadata), True)
 
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
@@ -814,6 +833,28 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(False, cfno._stack_updatable(cfn, 'test'))
 
+    @mock.patch('time.sleep', _mock_sleep)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_raises_different_exceptions)
+    def test__stack_updatable_limit_exceeded_does_not_exist(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno._stack_updatable(cfn, 'test'))
+
+    @mock.patch('time.sleep', _mock_sleep)
+    @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
+                _mock_describe_stack_raises_different_exceptions)
+    def test__stack_exists_limit_exceeded_does_not_exist(self):
+        cfno = AWSCFNOutput()
+        cfn = boto.connect_cloudformation(
+            aws_access_key_id='access',
+            aws_secret_access_key='secret'
+        )
+        assert_equals(False, cfno._stack_exists(cfn, 'test'))
+
     @mock.patch('boto.cloudformation.CloudFormationConnection.describe_stacks',
                 _mock_describe_stack)
     def test__stack_exists_exists(self):
@@ -958,6 +999,18 @@ class TestAWSCFNOutput(object):
             aws_secret_access_key='secret'
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
+
+    @mock.patch('boto.s3.connection.S3Connection.get_bucket',
+                _mock_s3_get_bucket)
+    @mock.patch('boto.s3.key.Key.set_contents_from_string',
+                _mock_key_set_contents)
+    def test__upload_stack_succeeds_iam_profile(self):
+        cfno = AWSCFNOutput()
+        creds = {
+            'audit_output': 'test',
+            'use_iam_profile': True,
+        }
+        assert_equals(None, cfno._upload_stack('{}', 'test', creds))
 
     @mock.patch('boto.s3.connection.S3Connection.get_bucket',
                 _mock_s3_get_bucket)

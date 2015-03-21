@@ -161,6 +161,14 @@ class TestEc2Resource(TestResource):
         )
         assert_raises(PropertyException, ebsbd.JSONrepr)
 
+    def test_ebs_block_device_invalid_bad_type(self):
+        ebsbd = ec2.EBSBlockDevice(
+            "test",
+            VolumeType="mumble",
+            Iops=1100,
+        )
+        assert_raises(PropertyException, ebsbd.JSONrepr)
+
     def test_ebs_block_device_valid_high_io(self):
         data = {'Iops': 1100, 'VolumeType': 'io1'}
         ebsbd = ec2.EBSBlockDevice(
@@ -1096,6 +1104,16 @@ class TestEc2Resource(TestResource):
         v = ec2.Volume(
             "test",
             Size='10'
+        )
+        assert_raises(PropertyException, v.JSONrepr)
+
+    def test_volume_invalid_iops_and_gp2(self):
+        v = ec2.Volume(
+            "test",
+            AvailabilityZone='eu-west1c',
+            Size='10',
+            VolumeType='gp2',
+            Iops=2000,
         )
         assert_raises(PropertyException, v.JSONrepr)
 

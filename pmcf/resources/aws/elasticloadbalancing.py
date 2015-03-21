@@ -36,7 +36,7 @@ class AccessLoggingPolicy(elb.AccessLoggingPolicy):
     def validate(self):
         super(self.__class__, self).validate()
 
-        if self.properties['Enabled'] == 'false':
+        if self.properties['Enabled'] is False:
             return True
 
         if len(set(self.properties.keys()).intersection(

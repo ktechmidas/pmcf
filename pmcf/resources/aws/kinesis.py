@@ -31,3 +31,7 @@ class Stream(kinesis.Stream):
             super(self.__class__, self).__init__(title, **kwargs)
         except ValueError, e:
             init_error(e.message, self.__class__.__name__, title)
+
+__all__ = [
+    Stream,
+]

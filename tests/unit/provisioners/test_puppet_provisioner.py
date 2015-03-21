@@ -95,6 +95,160 @@ class TestPuppetProvisioner(object):
         assert_equals(data, script)
 
     @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data_eip(self):
+        args = {
+            'infrastructure': 'zip.tgz',
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'eip': ['eip-1234', 'eip-2345']
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "roleName": "instance-blah",
+                    "buckets": [
+                        "testbucket"
+                    ],
+                    "type": "s3"
+                }
+            },
+            "AWS::CloudFormation::Init": {
+                "bootstrap": {
+                    "files": {
+                        "/etc/facter/facts.d/localfacts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: LCtest\n",
+                                        "app: test\n",
+                                        "stack: test\n",
+                                        "stage: dev\n",
+                                        "ec2_elastic_ips: ",
+                                        {
+                                            "Ref": "eip-1234"
+                                        },
+                                        ",",
+                                        {
+                                            "Ref": "eip-2345"
+                                        },
+                                        "\n",
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        }
+                    },
+                    "packages": {
+                        "apt": {
+                            "python-boto": [],
+                            "puppet": []
+                        }
+                    }
+                },
+                "infraLoad": {
+                    "sources": {
+                        "/var/tmp/puppet":
+                            "https://%s.%s/artifacts/%s/%s/%s/%s" % (
+                                args['bucket'],
+                                "s3.amazonaws.com",
+                                "infrastructure",
+                                "test",
+                                "dev",
+                                args['infrastructure'],
+                            ),
+                        "/etc/puppet":
+                            "https://%s.%s/artifacts/%s/%s" % (
+                                args['bucket'],
+                                "s3.amazonaws.com",
+                                "infrastructure",
+                                'hiera.tar.gz',
+                            ),
+                    }
+                },
+                "infraPuppetRun": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--environment first_run " +
+                                       "--logdest syslog " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                            "ignoreErrors": "true",
+                        },
+                    }
+                },
+                "infraPuppetFinal": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "puppet apply --modulepath "
+                                       "/var/tmp/puppet/modules "
+                                       "--logdest syslog " +
+                                       "--detailed-exitcodes " +
+                                       "/var/tmp/puppet/manifests/site.pp",
+                        },
+                        "02-clean_puppet": {
+                            "command": "rm -rf /var/tmp/puppet"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
+                        }
+                    }
+                },
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "infra"
+                        },
+                        {
+                            "ConfigSet": "puppetFinal"
+                        }
+                    ],
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ],
+                    "infraUpdate": [
+                        "infraLoad",
+                        "infraPuppetRun",
+                        "infraPuppetFinal"
+                    ],
+                    "infra": [
+                        "infraLoad",
+                        "infraPuppetRun"
+                    ]
+                }
+            }
+        }
+
+        data = PuppetProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
+    @mock.patch('time.time', _mock_time)
     def test_ci_contains_expected_data_find_nodes(self):
         args = {
             'infrastructure': 'zip.tgz',
@@ -512,3 +666,30 @@ class TestPuppetProvisioner(object):
         }
         data = PuppetProvisioner().provisioner_policy(args)
         assert_equals(data, None)
+
+    def test_provisioner_policy_contains_expected_data_eip(self):
+        pp_data = {
+            'Version': '2012-10-17',
+            'Statement': [
+                {
+                    'Resource': '*',
+                    'Action': [
+                        'ec2:AssociateAddress',
+                        'ec2:DescribeAddresses'
+                    ],
+                    'Effect': 'Allow'
+                }
+            ]
+        }
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'appname': 'test',
+            'stackname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'eip': ['a', 'b'],
+        }
+        data = PuppetProvisioner().provisioner_policy(args)
+        assert_equals(data, pp_data)

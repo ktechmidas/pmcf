@@ -144,6 +144,9 @@ class TestUtils(object):
         output = utils.valchange(a, b)
         assert_equals(True, len(output) == 1)
 
+    def test_split_subnets_one(self):
+        assert_equals(1, len(utils.split_subnets('10.0.0.0/8', 1)))
+
     def test_split_subnets_three(self):
         assert_equals(4, len(utils.split_subnets('10.0.0.0/8', 3)))
 

@@ -53,3 +53,9 @@ class QueuePolicy(sqs.QueuePolicy):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+__all__ = [
+    Queue,
+    QueuePolicy,
+    RedrivePolicy,
+]

@@ -123,3 +123,10 @@ class RecordSetGroup(route53.RecordSetGroup):
             error(self, 'Must set one of HostedZoneId or HostedZoneName')
 
         return True
+
+__all__ = [
+    AliasTarget,
+    RecordSet,
+    RecordSetGroup,
+    RecordSetType,
+]

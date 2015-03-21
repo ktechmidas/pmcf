@@ -12,15 +12,19 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from nose.tools import assert_equals
+from nose.tools import assert_equals, assert_raises
 
+from pmcf.exceptions import PropertyException
 from pmcf.resources.aws import kinesis
 
 from tests.unit.resources import TestResource
 
 
 class TestKinesisResource(TestResource):
-    def test_redrive_policy_valid(self):
+    def test_stream_invalid_no_shard_count(self):
+        assert_raises(PropertyException, kinesis.Stream, 'bad-name')
+
+    def test_stream_valid(self):
         data = {
             'Properties': {
                 'ShardCount': 1,

@@ -98,6 +98,37 @@ class TestParser(object):
         parser._stack['resources']['instance'].append({})
         assert_raises(ParserFailure, parser.validate)
 
+    def test_sg_other_env(self):
+        ds = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  secgroup:
+    - name: test
+      stages: [test]
+      rules:
+        - port: 8000
+          protocol: tcp
+          source_cidr:
+            - 54.76.250.234/32
+            - 83.98.0.0/17
+            - 93.57.15.30/32
+            - 80.113.0.0/17
+            - 83.97.8.0/20
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(ds, args)
+        assert_equals(len(data['resources']['secgroup']), 0)
+
     def test_sg_list(self):
         ds = """
 config:
@@ -222,6 +253,135 @@ resources:
         data = parser.parse_file(fname, args)
         assert_equals(len(data['resources']['instance']), 1)
 
+    def test_parser_instance_scaling_policy_invalid_raises(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  instance:
+    - name: app
+      count: 3
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      nat: True
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      sg: []
+      scaling_policy:
+        default:
+          metric: "Piksel/sequoiaidentity/nodejs_concurrents"
+          unit: Count
+          up:
+            stat: Average
+            condition: "> 50"
+            change: 50%
+          down:
+            stat: Average
+            condition: "> 35"
+            change: "-1"
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        assert_raises(ParserFailure, parser.parse, data, args)
+
+    def test_parser_instance_scaling_policy_valid_other_env(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  instance:
+    - name: app
+      count: 3
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      scaling_policy:
+        dev: []
+        default:
+          metric: "Piksel/sequoiaidentity/nodejs_concurrents"
+          unit: Count
+          up:
+            stat: Average
+            condition: "> 50"
+            change: 50%
+          down:
+            stat: Average
+            condition: "> 35"
+            change: "-1"
+      sg: []
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        p_data = parser.parse(data, args)
+        assert_equals(p_data['resources']['instance'][0].get(
+                      'scaling_policy', None), None)
+
+    def test_parser_instance_scaling_policy_valid(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  instance:
+    - name: app
+      count: 3
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      provisioner:
+        provider: NoopProvisioner
+        args: {}
+      monitoring: False
+      scaling_policy:
+        default:
+          metric: "Piksel/sequoiaidentity/nodejs_concurrents"
+          unit: Count
+          up:
+            stat: Average
+            condition: "> 50"
+            change: 50%
+          down:
+            stat: Average
+            condition: "> 35"
+            change: "-1"
+      sg: []
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        p_data = parser.parse(data, args)
+        assert_equals(type(p_data['resources']['instance'][0].get(
+                      'scaling_policy', None)), dict)
+
     def test_parser_instance_dns_invalid_raises(self):
         data = """
 config:
@@ -284,6 +444,101 @@ resources:
         parser = yaml_parser.YamlParser()
         data = parser.parse(data, args)
         assert_equals(len(data['resources']['instance']), 1)
+
+    def test_parser_public_net_valid(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  network:
+    - name: test
+      zones: [eu-west-1a, eu-west-1b, eu-west-1c]
+      netrange: 10.0.0.0/8
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(data, args)
+
+        assert_equals(len(data['resources']['network'][0]['subnets']), 3)
+        assert_equals(
+            data['resources']['network'][0]['subnets'][0]['public'], True)
+        assert_equals(
+            data['resources']['network'][0]['subnets'][1]['public'], True)
+        assert_equals(
+            data['resources']['network'][0]['subnets'][2]['public'], True)
+
+    def test_parser_private_net_valid(self):
+        data = """
+config:
+  name: ais
+  environments:
+      - dev
+resources:
+  network:
+    - name: test
+      zones: [eu-west-1a, eu-west-1b, eu-west-1c]
+      netrange: 10.0.0.0/8
+      public: False
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(data, args)
+
+        assert_equals(len(data['resources']['network'][0]['subnets']), 3)
+        assert_equals(
+            data['resources']['network'][0]['subnets'][0]['public'], False)
+        assert_equals(
+            data['resources']['network'][0]['subnets'][1]['public'], False)
+        assert_equals(
+            data['resources']['network'][0]['subnets'][2]['public'], False)
+
+    def test_parser_instance_auto_provisioner_valid(self):
+        data = """
+config:
+  name: ais
+  environments:
+    - dev
+  subnets:
+    - 1243
+  vpcid: 1123
+  provisioner: PuppetProvisioner
+  bucket: test-bucket
+  audit_output: test-bucket
+resources:
+  instance:
+    - name: app
+      count: 3
+      image: ami-0bceb93b
+      sshKey: bootstrap
+      monitoring: False
+      size: m1.large
+"""
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        data = parser.parse(data, args)
+        assert_equals(
+            data['resources']['instance'][0]['provisioner']['provider'],
+            'PuppetProvisioner')
 
     def test_parser_instance_subnets_valid(self):
         data = """

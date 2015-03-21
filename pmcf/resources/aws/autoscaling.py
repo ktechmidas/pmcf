@@ -104,11 +104,6 @@ class AutoScalingGroup(asg.AutoScalingGroup):
             if self.properties['HealthCheckType'] not in ['ELB', 'EC2']:
                 error(self, "HealthCheckType must be one of `ELB' or `EC2'")
 
-        if len(set(self.properties.keys()).intersection(
-                set(['InstanceId', 'LaunchConfigurationName']))) != 1:
-            error(self, "Need to specify one of `InstanceId', "
-                        "`LaunchConfigurationName'")
-
         valid_policies = set([
             'Default',
             'OldestInstance',
@@ -125,13 +120,6 @@ class AutoScalingGroup(asg.AutoScalingGroup):
                     "Invalid TerminationPolicy declaration: "
                     "%s not valid" % invalid_policies)
 
-        if 'UpdatePolicy' in self.resource:
-            update_policy = self.resource['UpdatePolicy']
-            if int(update_policy.MinInstancesInService) >= int(self.MaxSize):
-                raise ValueError(
-                    "The UpdatePolicy attribute "
-                    "MinInstancesInService must be less than the "
-                    "autoscaling group's MaxSize")
         return True
 
 

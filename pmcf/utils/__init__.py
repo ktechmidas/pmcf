@@ -237,6 +237,9 @@ def split_subnets(cidr, split):
     # Find the next closest power of two to a number
     # For 3, return 4, for 5 return 8
 
+    if split == 1:
+        return [cidr]
+
     power = 0
     while split > 0:
         split >>= 1

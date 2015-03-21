@@ -62,6 +62,18 @@ class TestS3Audit(object):
                 _mock_s3_get_bucket)
     @mock.patch('boto.s3.key.Key.set_contents_from_string',
                 _mock_key_set_contents)
+    def test_record_stack_use_instance_profile_succeeds(self):
+        sa = S3Audit()
+        creds = {
+            'audit_output': 'test',
+            'use_iam_profile': True,
+        }
+        assert_equals(True, sa.record_stack('{}', 'test', creds))
+
+    @mock.patch('boto.s3.connection.S3Connection.get_bucket',
+                _mock_s3_get_bucket)
+    @mock.patch('boto.s3.key.Key.set_contents_from_string',
+                _mock_key_set_contents)
     def test_record_stack_succeeds(self):
         sa = S3Audit()
         creds = {

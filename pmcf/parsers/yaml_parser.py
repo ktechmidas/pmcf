@@ -166,7 +166,7 @@ class YamlParser(BaseParser):
             item = instance.get('scaling_policy', None)
             if item:
                 if instance.get('nat'):
-                    raise ParserFailure("instances with ElasticIPs and ",
+                    raise ParserFailure("instances with ElasticIPs and "
                                         "ScalingPolicies are not supported")
 
                 instance['scaling_policy'] = self._get_value_for_env(
@@ -176,14 +176,15 @@ class YamlParser(BaseParser):
                 if instance['scaling_policy'] == []:
                     instance.pop('scaling_policy', None)
 
-            if instance['provisioner'].get('args'):
-                for field in ['bucket', 'metrics']:
-                    item = instance['provisioner']['args'].get(field, None)
-                    if item:
-                        instance['provisioner']['args'][field] =\
-                            self._get_value_for_env(item,
-                                                    args['environment'],
-                                                    field)
+            if instance.get('provisioner'):
+                if instance['provisioner'].get('args'):
+                    for field in ['bucket', 'metrics']:
+                        item = instance['provisioner']['args'].get(field, None)
+                        if item:
+                            instance['provisioner']['args'][field] =\
+                                self._get_value_for_env(item,
+                                                        args['environment'],
+                                                        field)
 
         for lb in data['resources'].get('load_balancer', []):
             for field in ['policy', 'subnets']:

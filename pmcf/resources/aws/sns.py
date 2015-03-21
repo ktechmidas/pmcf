@@ -76,3 +76,9 @@ class Topic(sns.Topic):
             return super(self.__class__, self).JSONrepr()
         except ValueError, e:
             error(self, e.message)
+
+__all__ = [
+    Subscription,
+    Topic,
+    TopicPolicy,
+]

@@ -420,11 +420,13 @@ class AWSCFNOutput(JSONOutput):
 
         try:
             audit = import_from_string('pmcf.audit', metadata['audit'])()
-            creds = {
-                'access': metadata['access'],
-                'secret': metadata['secret'],
-                'audit_output': metadata.get('audit_output', None)
-            }
+            creds = {}
+            if metadata.get('use_iam_profile'):
+                creds['use_iam_profile'] = metadata['use_iam_profile']
+            else:
+                creds['access'] = metadata['access']
+                creds['secret'] = metadata['secret']
+            creds['audit_output'] = metadata.get('audit_output', None)
             dest = 'audit/%s/%s/%s-%s' % (
                 metadata['name'],
                 metadata['environment'],

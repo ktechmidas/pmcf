@@ -341,6 +341,16 @@ class TestASGResource(TestResource):
         )
         assert_raises(PropertyException, sa.JSONrepr)
 
+    def test_scheduled_action_invalid_no_action(self):
+        sa = asg.ScheduledAction(
+            'test',
+            AutoScalingGroupName='testasg-123',
+            StartTime='2014-06-01T00:00:00Z',
+            EndTime='2014-12-01T00:00:00Z',
+            Recurrence='0 10 * * *'
+        )
+        assert_raises(PropertyException, sa.JSONrepr)
+
     def test_scheduled_action_valid(self):
         data = {
             'Properties': {
