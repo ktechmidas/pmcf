@@ -61,7 +61,8 @@ class JSONOutput(BaseOutput):
             cache_data = {
                 "CacheNodeType": cache['size'],
                 "ClusterName": cache['name'],
-                "CacheSubnetGroupName": Ref("CacheSubnetGroup%s" % config['name']),
+                "CacheSubnetGroupName":
+                    Ref("CacheSubnetGroup%s" % config['name']),
                 "Engine": cache['type'],
                 "NumCacheNodes": cache['count'],
                 "VpcSecurityGroupIds": cache['sg'],

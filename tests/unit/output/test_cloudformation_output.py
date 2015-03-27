@@ -235,6 +235,10 @@ def _mock_s3_get_bucket(self, bucket):
     return bucket
 
 
+def _mock_s3_connect():
+    return boto.s3.connection.S3Connection('a', 'b')
+
+
 def _mock_s3_connect_raises(aws_access_key_id, aws_secret_access_key):
     raise boto.exception.BotoServerError('nope', 'nope')
 
@@ -259,6 +263,7 @@ class TestAWSCFNOutput(object):
         assert_raises(ProvisionerException, cfno.run,
                       '{"a": "b"}', {'region': 'nah'})
 
+    @mock.patch('boto.connect_s3', _mock_s3_connect)
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
         'boto.cloudformation.CloudFormationConnection.validate_template',
@@ -1000,6 +1005,7 @@ class TestAWSCFNOutput(object):
         )
         assert_equals(True, cfno.do_poll(cfn, 'test', True, 'create'))
 
+    @mock.patch('boto.connect_s3', _mock_s3_connect)
     @mock.patch('boto.s3.connection.S3Connection.get_bucket',
                 _mock_s3_get_bucket)
     @mock.patch('boto.s3.key.Key.set_contents_from_string',

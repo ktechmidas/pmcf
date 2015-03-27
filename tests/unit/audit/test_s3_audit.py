@@ -20,6 +20,10 @@ from pmcf.audit import S3Audit
 from pmcf.exceptions import AuditException
 
 
+def _mock_s3_connect():
+    return boto.s3.connection.S3Connection('a', 'b')
+
+
 def _mock_s3_connect_raises_denied(aws_access_key_id, aws_secret_access_key):
     raise boto.exception.S3ResponseError('nope', 'nope')
 
@@ -58,6 +62,7 @@ class TestS3Audit(object):
         }
         assert_raises(AuditException, sa.record_stack, '{}', 'test', creds)
 
+    @mock.patch('boto.connect_s3', _mock_s3_connect)
     @mock.patch('boto.s3.connection.S3Connection.get_bucket',
                 _mock_s3_get_bucket)
     @mock.patch('boto.s3.key.Key.set_contents_from_string',
