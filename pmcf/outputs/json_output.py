@@ -38,7 +38,7 @@ LOG = logging.getLogger(__name__)
 
 class JSONOutput(BaseOutput):
 
-    def _add_caches(self, data, caches, config):
+    def _add_caches(self, data, caches, config, sgs):
         """
         Iterates and creates AWS Elasticache
 
@@ -54,6 +54,7 @@ class JSONOutput(BaseOutput):
         if len(caches) > 0:
             data.add_resource(elasticache.SubnetGroup(
                 "CacheSubnetGroup%s" % config['name'],
+                Description="Subnet Group for %s" % config['name'],
                 SubnetIds=config['subnets']
             ))
 
@@ -65,8 +66,15 @@ class JSONOutput(BaseOutput):
                     Ref("CacheSubnetGroup%s" % config['name']),
                 "Engine": cache['type'],
                 "NumCacheNodes": cache['count'],
-                "VpcSecurityGroupIds": cache['sg'],
             }
+            cache_sgs = []
+            for sg in cache['sg']:
+                if sgs.get(sg):
+                    cache_sgs.append(Ref(sgs[sg]))
+                else:
+                    cache_sgs.append(sg)
+            cache_data['VpcSecurityGroupIds'] = cache_sgs
+
             if cache['params'].get('params', {}) != {}:
                 data.add_resource(elasticache.ParameterGroup(
                     "CacheParams%s" % cache['name'],
@@ -1009,6 +1017,7 @@ class JSONOutput(BaseOutput):
         self._add_queues(data, resources.get('queue', []), config)
         self._add_nets(data, resources.get('network', []), config)
         sgs = self._add_secgroups(data, resources['secgroup'], config)
+        self._add_caches(data, resources.get('cache', []), config, sgs)
         lbs = self._add_lbs(data,
                             resources['load_balancer'],
                             config,

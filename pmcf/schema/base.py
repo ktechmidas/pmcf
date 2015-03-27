@@ -419,7 +419,6 @@ definitions:
                 type: object
         required:
             - name
-            - params
         additionalProperties: false
     cache:
         properties:
@@ -565,6 +564,10 @@ properties:
                 type: array
                 items:
                     $ref: "#/definitions/queue"
+            cache:
+                type: array
+                items:
+                    $ref: "#/definitions/cache"
             stream:
                 type: array
                 items:
