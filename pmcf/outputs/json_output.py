@@ -28,6 +28,7 @@ from troposphere import Base64, GetAtt, GetAZs, Output, Ref, Template
 
 from pmcf.outputs.base_output import BaseOutput
 from pmcf.resources.aws import autoscaling, ec2, iam, elasticloadbalancing
+from pmcf.resources.aws import elasticache
 from pmcf.resources.aws import cloudformation as cfn
 from pmcf.resources.aws import cloudwatch, kinesis, route53, sqs
 from pmcf.utils import import_from_string
@@ -36,6 +37,52 @@ LOG = logging.getLogger(__name__)
 
 
 class JSONOutput(BaseOutput):
+
+    def _add_caches(self, data, caches, config):
+        """
+        Iterates and creates AWS Elasticache
+
+        :param data: Template object
+        :type data: :class:`troposphere.Template`
+        :param caches: list of cache definitions
+        :type caches: list.
+        :param config: Config key/value pairs
+        :type config: dict.
+        :raises: :class:`pmcf.exceptions.ProvisionerException`
+        """
+
+        if len(caches) > 0:
+            data.add_resource(elasticache.SubnetGroup(
+                "CacheSubnetGroup%s" % config['name'],
+                SubnetIds=config['subnets']
+            ))
+
+        for cache in caches:
+            cache_data = {
+                "CacheNodeType": cache['size'],
+                "ClusterName": cache['name'],
+                "CacheSubnetGroupName": Ref("CacheSubnetGroup%s" % config['name']),
+                "Engine": cache['type'],
+                "NumCacheNodes": cache['count'],
+                "VpcSecurityGroupIds": cache['sg'],
+            }
+            if cache['params'].get('params', {}) != {}:
+                data.add_resource(elasticache.ParameterGroup(
+                    "CacheParams%s" % cache['name'],
+                    Description='Cache ParameterGroup for %s' % cache['name'],
+                    Properties=cache['params']['params'],
+                    CacheParameterGroupFamily=cache['params']['name'],
+                ))
+                cache_data['CacheParameterGroupName'] =\
+                    Ref("CacheParams%s" % cache['name'])
+            else:
+                cache_data['CacheParameterGroupName'] =\
+                    cache['params']['name']
+
+            data.add_resource(elasticache.CacheCluster(
+                "Cache%s" % cache['name'],
+                **cache_data
+            ))
 
     def _add_streams(self, data, streams, config):
         """

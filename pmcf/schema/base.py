@@ -411,6 +411,38 @@ definitions:
             - netrange
             - subnets
         additionalProperties: false
+    cache_params:
+        properties:
+            name:
+                type: string
+            params:
+                type: object
+        required:
+            - name
+            - params
+        additionalProperties: false
+    cache:
+        properties:
+            name:
+                type: string
+            size:
+                type: string
+            type:
+                type: string
+            count:
+                type: integer
+            sg:
+                type: array
+                minItems: 1
+            params:
+                $ref: "#/definitions/cache_params"
+        required:
+            - count
+            - name
+            - params
+            - size
+            - type
+        additionalProperties: false
     queue:
         properties:
             name:
