@@ -235,6 +235,10 @@ def _mock_s3_get_bucket(self, bucket):
     return bucket
 
 
+def _mock_cfn_connect(region):
+    return boto.cloudformation.connection.CloudFormationConnection('a', 'b')
+
+
 def _mock_s3_connect():
     return boto.s3.connection.S3Connection('a', 'b')
 
@@ -263,6 +267,7 @@ class TestAWSCFNOutput(object):
         assert_raises(ProvisionerException, cfno.run,
                       '{"a": "b"}', {'region': 'nah'})
 
+    @mock.patch('boto.connect_cloudformation', _mock_cfn_connect)
     @mock.patch('boto.connect_s3', _mock_s3_connect)
     @mock.patch('boto.regioninfo.get_regions', _mock_search_regions)
     @mock.patch(
