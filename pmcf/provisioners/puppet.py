@@ -215,6 +215,10 @@ class PuppetProvisioner(BaseProvisioner):
                 facts.append(",")
             facts.pop()
             facts.append("\n")
+
+        for k in sorted(args.get('custom_facts', {}).keys()):
+            facts.append("ec2_%s: %s\n" % (k, args['custom_facts'][k]))
+
         init = {
             "configSets": {
                 "startup": ["bootstrap"],

@@ -130,6 +130,8 @@ definitions:
                         type: boolean
                     custom_profile:
                         type: array
+                    custom_facts:
+                        type: object
                 required:
                     - bucket
                 additionalProperties: false

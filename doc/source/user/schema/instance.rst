@@ -113,6 +113,9 @@ Optional parameters are:
 :custom_profile:
         Arbitrary JSON document describing custom IAM profile.
 
+:custom_facts:
+        Arbitrary key value pairs to pass to the instance as puppet facts.  Will be prefixed with 'ec2_' in the resulting fact name.
+
 :infrastructure:
         Name of the infrastructure artifact to download from S3
 
