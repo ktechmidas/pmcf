@@ -217,7 +217,12 @@ class PuppetProvisioner(BaseProvisioner):
             facts.append("\n")
 
         for k in sorted(args.get('custom_facts', {}).keys()):
-            facts.append("ec2_%s: %s\n" % (k, args['custom_facts'][k]))
+            if args['custom_facts'][k].startswith('='):
+                facts.append("ec2_%s: " % k)
+                facts.append(Ref("%s" % args['custom_facts'][k][1:]))
+                facts.append("\n")
+            else:
+                facts.append("ec2_%s: %s\n" % (k, args['custom_facts'][k]))
 
         init = {
             "configSets": {
