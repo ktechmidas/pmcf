@@ -108,3 +108,18 @@ metadata endpoint suitable for consumption by
     :members:
     :undoc-members:
     :show-inheritance:
+
+
+:mod:`pmcf.provisioners.winpuppet`
+===============================
+
+.. automodule:: pmcf.provisioners.winpuppet
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: WindowsPuppetProvisioner
+    :members:
+    :undoc-members:
+    :show-inheritance:

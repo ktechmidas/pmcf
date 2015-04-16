@@ -26,6 +26,7 @@ from pmcf.provisioners.block import BlockingProvisioner
 from pmcf.provisioners.chef import ChefProvisioner
 from pmcf.provisioners.noop import NoopProvisioner
 from pmcf.provisioners.puppet import PuppetProvisioner
+from pmcf.provisioners.winpuppet import WindowsPuppetProvisioner
 
 __all__ = [
     AWSFWProvisioner,
@@ -34,4 +35,5 @@ __all__ = [
     ChefProvisioner,
     NoopProvisioner,
     PuppetProvisioner,
+    WindowsPuppetProvisioner,
 ]
