@@ -106,6 +106,39 @@ definitions:
         required:
             - provider
         additionalProperties: false
+    winpuppetprovisioner:
+        type: object
+        properties:
+            provider:
+                enum:
+                    - WindowsPuppetProvisioner
+            args:
+                type:
+                    object
+                properties:
+                    infrastructure:
+                        type: string
+                    application:
+                        type: string
+                    appname:
+                        type: string
+                    bucket:
+                        type: string
+                    find_nodes:
+                        type: boolean
+                    metrics:
+                        type: boolean
+                    custom_profile:
+                        type: array
+                    custom_facts:
+                        type: object
+                required:
+                    - bucket
+                additionalProperties: false
+        required:
+            - provider
+            - args
+        additionalProperties: false
     puppetprovisioner:
         type: object
         properties:
@@ -225,6 +258,7 @@ definitions:
             provisioner:
                 type: object
                 oneOf:
+                    - $ref: "#/definitions/winpuppetprovisioner"
                     - $ref: "#/definitions/puppetprovisioner"
                     - $ref: "#/definitions/awsfwprovisioner"
                     - $ref: "#/definitions/noopprovisioner"
