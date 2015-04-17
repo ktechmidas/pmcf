@@ -88,15 +88,19 @@ class TestWindowsPuppetProvisioner(object):
                 }
             }, 
             "AWS::CloudFormation::Init": {
-                "trigger": {
-                    "commands": {
-                        "01-echo": {
-                            "ignoreErrors": "true", 
-                            "command": "echo 1000"
-                        }
-                    }
-                }, 
                 "configSets": {
+                    "infra": [
+                        "infraLoad", 
+                        "infraPuppetRun"
+                    ], 
+                    "infraUpdate": [
+                        "infraLoad", 
+                        "infraPuppetRun", 
+                        "infraPuppetFinal"
+                    ], 
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ], 
                     "startup": [
                         "bootstrap", 
                         {
@@ -105,25 +109,33 @@ class TestWindowsPuppetProvisioner(object):
                         {
                             "ConfigSet": "puppetFinal"
                         }
-                    ], 
-                    "infraUpdate": [
-                        "infraLoad", 
-                        "infraPuppetRun", 
-                        "infraPuppetFinal"
-                    ], 
-                    "infra": [
-                        "infraLoad", 
-                        "infraPuppetRun"
-                    ], 
-                    "puppetFinal": [
-                        "infraPuppetFinal"
                     ]
+                }, 
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "waitAfterCompletion": 0, 
+                            "command": "echo 1000", 
+                            "ignoreErrors": "true"
+                        }
+                    }
                 }, 
                 "infraPuppetRun": {
                     "commands": {
                         "01-run_puppet": {
-                            "ignoreErrors": "true", 
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "ignoreErrors": "true"
+                        }
+                    }
+                }, 
+                "infraPuppetFinal": {
+                    "commands": {
+                        "02-clean_puppet": {
+                            "waitAfterCompletion": 0, 
+                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
+                        }, 
+                        "01-run_puppet": {
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
                 }, 
@@ -133,18 +145,30 @@ class TestWindowsPuppetProvisioner(object):
                         "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
                     }
                 }, 
-                "infraPuppetFinal": {
-                    "commands": {
-                        "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
-                        }, 
-                        "02-clean_puppet": {
-                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
-                        }
-                    }
-                }, 
                 "bootstrap": {
                     "files": {
+                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "", 
+                                    [
+                                        "[cfn-auto-reloader-hook]\n", 
+                                        "triggers=post.update\n", 
+                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n", 
+                                        "action=cfn-init.exe -v -s ", 
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        }, 
+                                        " -r LCtest -c infraUpdate", 
+                                        " --region ", 
+                                        {
+                                            "Ref": "AWS::Region"
+                                        }, 
+                                        "\n"
+                                    ]
+                                ]
+                            }
+                        }, 
                         "c:\\ProgramData\\PuppetLabs\\facter\\facts.d\\localfacts.yaml": {
                             "content": {
                                 "Fn::Join": [
@@ -193,28 +217,6 @@ class TestWindowsPuppetProvisioner(object):
                                     ]
                                 ]
                             }
-                        }, 
-                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
-                            "content": {
-                                "Fn::Join": [
-                                    "", 
-                                    [
-                                        "[cfn-auto-reloader-hook]\n", 
-                                        "triggers=post.update\n", 
-                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n", 
-                                        "action=cfn-init.exe -v -s ", 
-                                        {
-                                            "Ref": "AWS::StackId"
-                                        }, 
-                                        " -r LCtest -c infraUpdate", 
-                                        " --region ", 
-                                        {
-                                            "Ref": "AWS::Region"
-                                        }, 
-                                        "\n"
-                                    ]
-                                ]
-                            }
                         }
                     }, 
                     "packages": {
@@ -222,24 +224,26 @@ class TestWindowsPuppetProvisioner(object):
                             "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
                         }
                     }, 
-                    "services": {
-                        "windows": {
-                            "cfn-hup": {
-                                "files": [
-                                    "c:\\cfn\\cfn-hup.conf", 
-                                    "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
-                                ], 
-                                "ensureRunning": "true", 
-                                "enabled": "true"
-                            }
-                        }
-                    }, 
                     "commands": {
                         "1-stop-puppet-service": {
+                            "waitAfterCompletion": 0, 
                             "command": "sc stop puppet"
                         }, 
                         "2-disable-puppet-service": {
+                            "waitAfterCompletion": 0, 
                             "command": "sc config puppet start= disabled"
+                        }
+                    }, 
+                    "services": {
+                        "windows": {
+                            "cfn-hup": {
+                                "enabled": "true", 
+                                "ensureRunning": "true", 
+                                "files": [
+                                    "c:\\cfn\\cfn-hup.conf", 
+                                    "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
+                                ]
+                            }
                         }
                     }
                 }
@@ -270,20 +274,64 @@ class TestWindowsPuppetProvisioner(object):
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
-                    "type": "s3", 
                     "buckets": [
                         "testbucket"
                     ], 
-                    "roleName": "instance-blah"
+                    "roleName": "instance-blah", 
+                    "type": "s3"
                 }
             }, 
             "AWS::CloudFormation::Init": {
+                "configSets": {
+                    "infraUpdate": [
+                        "infraLoad", 
+                        "infraPuppetRun", 
+                        "infraPuppetFinal"
+                    ], 
+                    "infra": [
+                        "infraLoad", 
+                        "infraPuppetRun"
+                    ], 
+                    "startup": [
+                        "bootstrap", 
+                        {
+                            "ConfigSet": "infra"
+                        }, 
+                        {
+                            "ConfigSet": "puppetFinal"
+                        }
+                    ], 
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ]
+                }, 
+                "infraPuppetFinal": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                        }, 
+                        "02-clean_puppet": {
+                            "waitAfterCompletion": 0, 
+                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
+                        }
+                    }
+                }, 
+                "infraPuppetRun": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "ignoreErrors": "true", 
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                        }
+                    }
+                }, 
                 "bootstrap": {
                     "commands": {
                         "1-stop-puppet-service": {
+                            "waitAfterCompletion": 0, 
                             "command": "sc stop puppet"
                         }, 
                         "2-disable-puppet-service": {
+                            "waitAfterCompletion": 0, 
                             "command": "sc config puppet start= disabled"
                         }
                     }, 
@@ -292,44 +340,7 @@ class TestWindowsPuppetProvisioner(object):
                             "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
                         }
                     }, 
-                    "services": {
-                        "windows": {
-                            "cfn-hup": {
-                                "ensureRunning": "true", 
-                                "enabled": "true", 
-                                "files": [
-                                    "c:\\cfn\\cfn-hup.conf", 
-                                    "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
-                                ]
-                            }
-                        }
-                    }, 
                     "files": {
-                        "c:\\ProgramData\\PuppetLabs\\facter\\facts.d\\localfacts.yaml": {
-                            "content": {
-                                "Fn::Join": [
-                                    "", 
-                                    [
-                                        "ec2_stack: ", 
-                                        {
-                                            "Ref": "AWS::StackId"
-                                        }, 
-                                        "\n", 
-                                        "ec2_region: ", 
-                                        {
-                                            "Ref": "AWS::Region"
-                                        }, 
-                                        "\n", 
-                                        "ec2_resource: LCtest\n", 
-                                        "app: test\n", 
-                                        "stack: test\n", 
-                                        "stage: dev\n", 
-                                        "ec2_a: b\n", 
-                                        "ec2_c: d\n"
-                                    ]
-                                ]
-                            }
-                        }, 
                         "c:\\cfn\\cfn-hup.conf": {
                             "content": {
                                 "Fn::Join": [
@@ -371,62 +382,59 @@ class TestWindowsPuppetProvisioner(object):
                                     ]
                                 ]
                             }
-                        }
-                    }
-                }, 
-                "infraPuppetFinal": {
-                    "commands": {
-                        "02-clean_puppet": {
-                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
                         }, 
-                        "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                        "c:\\ProgramData\\PuppetLabs\\facter\\facts.d\\localfacts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "", 
+                                    [
+                                        "ec2_stack: ", 
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        }, 
+                                        "\n", 
+                                        "ec2_region: ", 
+                                        {
+                                            "Ref": "AWS::Region"
+                                        }, 
+                                        "\n", 
+                                        "ec2_resource: LCtest\n", 
+                                        "app: test\n", 
+                                        "stack: test\n", 
+                                        "stage: dev\n", 
+                                        "ec2_a: b\n", 
+                                        "ec2_c: d\n"
+                                    ]
+                                ]
+                            }
+                        }
+                    }, 
+                    "services": {
+                        "windows": {
+                            "cfn-hup": {
+                                "ensureRunning": "true", 
+                                "files": [
+                                    "c:\\cfn\\cfn-hup.conf", 
+                                    "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
+                                ], 
+                                "enabled": "true"
+                            }
                         }
                     }
                 }, 
-                "infraPuppetRun": {
-                    "commands": {
-                        "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
-                            "ignoreErrors": "true"
-                        }
+                "infraLoad": {
+                    "sources": {
+                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz", 
+                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
                     }
                 }, 
                 "trigger": {
                     "commands": {
                         "01-echo": {
-                            "command": "echo 1000", 
-                            "ignoreErrors": "true"
+                            "ignoreErrors": "true", 
+                            "waitAfterCompletion": 0, 
+                            "command": "echo 1000"
                         }
-                    }
-                }, 
-                "configSets": {
-                    "infra": [
-                        "infraLoad", 
-                        "infraPuppetRun"
-                    ], 
-                    "startup": [
-                        "bootstrap", 
-                        {
-                            "ConfigSet": "infra"
-                        }, 
-                        {
-                            "ConfigSet": "puppetFinal"
-                        }
-                    ], 
-                    "infraUpdate": [
-                        "infraLoad", 
-                        "infraPuppetRun", 
-                        "infraPuppetFinal"
-                    ], 
-                    "puppetFinal": [
-                        "infraPuppetFinal"
-                    ]
-                }, 
-                "infraLoad": {
-                    "sources": {
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
-                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
                     }
                 }
             }
@@ -453,28 +461,74 @@ class TestWindowsPuppetProvisioner(object):
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
-                    "roleName": "instance-blah", 
+                    "type": "s3", 
                     "buckets": [
                         "testbucket"
                     ], 
-                    "type": "s3"
+                    "roleName": "instance-blah"
                 }
             }, 
             "AWS::CloudFormation::Init": {
+                "infraLoad": {
+                    "sources": {
+                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz", 
+                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
+                    }
+                }, 
+                "configSets": {
+                    "startup": [
+                        "bootstrap", 
+                        {
+                            "ConfigSet": "infra"
+                        }, 
+                        {
+                            "ConfigSet": "puppetFinal"
+                        }
+                    ], 
+                    "infra": [
+                        "infraLoad", 
+                        "infraPuppetRun"
+                    ], 
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ], 
+                    "infraUpdate": [
+                        "infraLoad", 
+                        "infraPuppetRun", 
+                        "infraPuppetFinal"
+                    ]
+                }, 
                 "bootstrap": {
+                    "commands": {
+                        "2-disable-puppet-service": {
+                            "command": "sc config puppet start= disabled", 
+                            "waitAfterCompletion": 0
+                        }, 
+                        "1-stop-puppet-service": {
+                            "command": "sc stop puppet", 
+                            "waitAfterCompletion": 0
+                        }
+                    }, 
+                    "packages": {
+                        "msi": {
+                            "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
+                        }
+                    }, 
                     "files": {
-                        "c:\\cfn\\cfn-hup.conf": {
+                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
                             "content": {
                                 "Fn::Join": [
                                     "", 
                                     [
-                                        "[main]\n", 
-                                        "stack=", 
+                                        "[cfn-auto-reloader-hook]\n", 
+                                        "triggers=post.update\n", 
+                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n", 
+                                        "action=cfn-init.exe -v -s ", 
                                         {
                                             "Ref": "AWS::StackId"
                                         }, 
-                                        "\n", 
-                                        "region=", 
+                                        " -r LCtest -c infraUpdate", 
+                                        " --region ", 
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
@@ -515,20 +569,18 @@ class TestWindowsPuppetProvisioner(object):
                                 ]
                             }
                         }, 
-                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                        "c:\\cfn\\cfn-hup.conf": {
                             "content": {
                                 "Fn::Join": [
                                     "", 
                                     [
-                                        "[cfn-auto-reloader-hook]\n", 
-                                        "triggers=post.update\n", 
-                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n", 
-                                        "action=cfn-init.exe -v -s ", 
+                                        "[main]\n", 
+                                        "stack=", 
                                         {
                                             "Ref": "AWS::StackId"
                                         }, 
-                                        " -r LCtest -c infraUpdate", 
-                                        " --region ", 
+                                        "\n", 
+                                        "region=", 
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
@@ -541,82 +593,42 @@ class TestWindowsPuppetProvisioner(object):
                     "services": {
                         "windows": {
                             "cfn-hup": {
+                                "enabled": "true", 
                                 "files": [
                                     "c:\\cfn\\cfn-hup.conf", 
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ], 
-                                "ensureRunning": "true", 
-                                "enabled": "true"
+                                "ensureRunning": "true"
                             }
-                        }
-                    }, 
-                    "commands": {
-                        "1-stop-puppet-service": {
-                            "command": "sc stop puppet"
-                        }, 
-                        "2-disable-puppet-service": {
-                            "command": "sc config puppet start= disabled"
-                        }
-                    }, 
-                    "packages": {
-                        "msi": {
-                            "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
                         }
                     }
                 }, 
-                "infraPuppetRun": {
+                "infraPuppetFinal": {
                     "commands": {
+                        "02-clean_puppet": {
+                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet", 
+                            "waitAfterCompletion": 0
+                        }, 
                         "01-run_puppet": {
-                            "ignoreErrors": "true", 
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
                 }, 
                 "trigger": {
                     "commands": {
                         "01-echo": {
-                            "ignoreErrors": "true", 
-                            "command": "echo 1000"
+                            "command": "echo 1000", 
+                            "waitAfterCompletion": 0, 
+                            "ignoreErrors": "true"
                         }
                     }
                 }, 
-                "infraPuppetFinal": {
+                "infraPuppetRun": {
                     "commands": {
                         "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
-                        }, 
-                        "02-clean_puppet": {
-                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "ignoreErrors": "true"
                         }
-                    }
-                }, 
-                "configSets": {
-                    "startup": [
-                        "bootstrap", 
-                        {
-                            "ConfigSet": "infra"
-                        }, 
-                        {
-                            "ConfigSet": "puppetFinal"
-                        }
-                    ], 
-                    "puppetFinal": [
-                        "infraPuppetFinal"
-                    ], 
-                    "infraUpdate": [
-                        "infraLoad", 
-                        "infraPuppetRun", 
-                        "infraPuppetFinal"
-                    ], 
-                    "infra": [
-                        "infraLoad", 
-                        "infraPuppetRun"
-                    ]
-                }, 
-                "infraLoad": {
-                    "sources": {
-                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz", 
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
                     }
                 }
             }
@@ -643,14 +655,269 @@ class TestWindowsPuppetProvisioner(object):
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
-                    "roleName": "instance-blah", 
                     "type": "s3", 
+                    "roleName": "instance-blah", 
                     "buckets": [
                         "testbucket"
                     ]
                 }
             }, 
             "AWS::CloudFormation::Init": {
+                "infraPuppetRun": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "ignoreErrors": "true"
+                        }
+                    }
+                }, 
+                "bootstrap": {
+                    "commands": {
+                        "1-stop-puppet-service": {
+                            "command": "sc stop puppet", 
+                            "waitAfterCompletion": 0
+                        }, 
+                        "2-disable-puppet-service": {
+                            "command": "sc config puppet start= disabled", 
+                            "waitAfterCompletion": 0
+                        }
+                    }, 
+                    "services": {
+                        "windows": {
+                            "cfn-hup": {
+                                "enabled": "true", 
+                                "files": [
+                                    "c:\\cfn\\cfn-hup.conf", 
+                                    "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
+                                ], 
+                                "ensureRunning": "true"
+                            }
+                        }
+                    }, 
+                    "packages": {
+                        "msi": {
+                            "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
+                        }
+                    }, 
+                    "files": {
+                        "c:\\ProgramData\\PuppetLabs\\facter\\facts.d\\localfacts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "", 
+                                    [
+                                        "ec2_stack: ", 
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        }, 
+                                        "\n", 
+                                        "ec2_region: ", 
+                                        {
+                                            "Ref": "AWS::Region"
+                                        }, 
+                                        "\n", 
+                                        "ec2_resource: LCtest\n", 
+                                        "app: test\n", 
+                                        "stack: test\n", 
+                                        "stage: dev\n"
+                                    ]
+                                ]
+                            }
+                        }, 
+                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "", 
+                                    [
+                                        "[cfn-auto-reloader-hook]\n", 
+                                        "triggers=post.update\n", 
+                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n", 
+                                        "action=cfn-init.exe -v -s ", 
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        }, 
+                                        " -r LCtest -c infraUpdate", 
+                                        " --region ", 
+                                        {
+                                            "Ref": "AWS::Region"
+                                        }, 
+                                        "\n"
+                                    ]
+                                ]
+                            }
+                        }, 
+                        "c:\\cfn\\cfn-hup.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "", 
+                                    [
+                                        "[main]\n", 
+                                        "stack=", 
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        }, 
+                                        "\n", 
+                                        "region=", 
+                                        {
+                                            "Ref": "AWS::Region"
+                                        }, 
+                                        "\n"
+                                    ]
+                                ]
+                            }
+                        }
+                    }
+                }, 
+                "infraLoad": {
+                    "sources": {
+                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
+                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
+                    }
+                }, 
+                "infraPuppetFinal": {
+                    "commands": {
+                        "02-clean_puppet": {
+                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet", 
+                            "waitAfterCompletion": 0
+                        }, 
+                        "01-run_puppet": {
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                        }
+                    }
+                }, 
+                "configSets": {
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ], 
+                    "startup": [
+                        "bootstrap", 
+                        {
+                            "ConfigSet": "infra"
+                        }, 
+                        {
+                            "ConfigSet": "puppetFinal"
+                        }
+                    ], 
+                    "infra": [
+                        "infraLoad", 
+                        "infraPuppetRun"
+                    ], 
+                    "infraUpdate": [
+                        "infraLoad", 
+                        "infraPuppetRun", 
+                        "infraPuppetFinal"
+                    ]
+                }, 
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "command": "echo 1000", 
+                            "waitAfterCompletion": 0, 
+                            "ignoreErrors": "true"
+                        }
+                    }
+                }
+            }
+        }
+
+        data = WindowsPuppetProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
+    @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data(self):
+        args = {
+            'infrastructure': 'zip.tgz',
+            'application': 'bar.zip',
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3", 
+                    "buckets": [
+                        "testbucket"
+                    ], 
+                    "roleName": "instance-blah"
+                }
+            }, 
+            "AWS::CloudFormation::Init": {
+                "configSets": {
+                    "infraUpdate": [
+                        "infraLoad", 
+                        "infraPuppetRun", 
+                        "infraPuppetFinal"
+                    ], 
+                    "infra": [
+                        "infraLoad", 
+                        "infraPuppetRun"
+                    ], 
+                    "startup": [
+                        "bootstrap", 
+                        {
+                            "ConfigSet": "infra"
+                        }, 
+                        {
+                            "ConfigSet": "app"
+                        }, 
+                        {
+                            "ConfigSet": "puppetFinal"
+                        }
+                    ], 
+                    "puppetFinal": [
+                        "infraPuppetFinal"
+                    ], 
+                    "app": [
+                        "deployRun"
+                    ]
+                }, 
+                "infraPuppetRun": {
+                    "commands": {
+                        "01-run_puppet": {
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "ignoreErrors": "true"
+                        }
+                    }
+                }, 
+                "deployRun": {
+                    "commands": {
+                        "01-run_deploy": {
+                            "command": "/srv/apps/bin/deploy deploy test bar.zip dev"
+                        }
+                    }
+                }, 
+                "infraLoad": {
+                    "sources": {
+                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
+                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
+                    }
+                }, 
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "waitAfterCompletion": 0, 
+                            "command": "echo 1000", 
+                            "ignoreErrors": "true"
+                        }
+                    }
+                }, 
+                "infraPuppetFinal": {
+                    "commands": {
+                        "02-clean_puppet": {
+                            "waitAfterCompletion": 0, 
+                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
+                        }, 
+                        "01-run_puppet": {
+                            "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
+                        }
+                    }
+                }, 
                 "bootstrap": {
                     "files": {
                         "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
@@ -719,17 +986,19 @@ class TestWindowsPuppetProvisioner(object):
                             }
                         }
                     }, 
-                    "packages": {
-                        "msi": {
-                            "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
-                        }
-                    }, 
                     "commands": {
                         "1-stop-puppet-service": {
+                            "waitAfterCompletion": 0, 
                             "command": "sc stop puppet"
                         }, 
                         "2-disable-puppet-service": {
+                            "waitAfterCompletion": 0, 
                             "command": "sc config puppet start= disabled"
+                        }
+                    }, 
+                    "packages": {
+                        "msi": {
+                            "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
                         }
                     }, 
                     "services": {
@@ -743,255 +1012,6 @@ class TestWindowsPuppetProvisioner(object):
                                 ]
                             }
                         }
-                    }
-                }, 
-                "infraLoad": {
-                    "sources": {
-                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz", 
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
-                    }
-                }, 
-                "infraPuppetRun": {
-                    "commands": {
-                        "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
-                            "ignoreErrors": "true"
-                        }
-                    }
-                }, 
-                "trigger": {
-                    "commands": {
-                        "01-echo": {
-                            "command": "echo 1000", 
-                            "ignoreErrors": "true"
-                        }
-                    }
-                }, 
-                "infraPuppetFinal": {
-                    "commands": {
-                        "02-clean_puppet": {
-                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
-                        }, 
-                        "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
-                        }
-                    }
-                }, 
-                "configSets": {
-                    "puppetFinal": [
-                        "infraPuppetFinal"
-                    ], 
-                    "startup": [
-                        "bootstrap", 
-                        {
-                            "ConfigSet": "infra"
-                        }, 
-                        {
-                            "ConfigSet": "puppetFinal"
-                        }
-                    ], 
-                    "infraUpdate": [
-                        "infraLoad", 
-                        "infraPuppetRun", 
-                        "infraPuppetFinal"
-                    ], 
-                    "infra": [
-                        "infraLoad", 
-                        "infraPuppetRun"
-                    ]
-                }
-            }
-        }
-
-        data = WindowsPuppetProvisioner().cfn_init(args)
-        data = json.loads(json.dumps(data, cls=awsencode))
-        assert_equals(data, ci_data)
-
-    @mock.patch('time.time', _mock_time)
-    def test_ci_contains_expected_data(self):
-        args = {
-            'infrastructure': 'zip.tgz',
-            'application': 'bar.zip',
-            'bucket': 'testbucket',
-            'role': 'instance-blah',
-            'name': 'test',
-            'stackname': 'test',
-            'appname': 'test',
-            'resource': 'LCtest',
-            'environment': 'dev',
-        }
-
-        ci_data = {
-            "AWS::CloudFormation::Authentication": {
-                "rolebased": {
-                    "roleName": "instance-blah",
-                    "type": "s3",
-                    "buckets": [
-                        "testbucket"
-                    ]
-                }
-            },
-            "AWS::CloudFormation::Init": {
-                "infraPuppetRun": {
-                    "commands": {
-                        "01-run_puppet": {
-                            "ignoreErrors": "true",
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
-                        }
-                    }
-                },
-                "bootstrap": {
-                    "services": {
-                        "windows": {
-                            "cfn-hup": {
-                                "ensureRunning": "true",
-                                "files": [
-                                    "c:\\cfn\\cfn-hup.conf",
-                                    "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
-                                ],
-                                "enabled": "true"
-                            }
-                        }
-                    },
-                    "files": {
-                        "c:\\ProgramData\\PuppetLabs\\facter\\facts.d\\localfacts.yaml": {
-                            "content": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "ec2_stack: ",
-                                        {
-                                            "Ref": "AWS::StackId"
-                                        },
-                                        "\n",
-                                        "ec2_region: ",
-                                        {
-                                            "Ref": "AWS::Region"
-                                        },
-                                        "\n",
-                                        "ec2_resource: LCtest\n",
-                                        "app: test\n",
-                                        "stack: test\n",
-                                        "stage: dev\n"
-                                    ]
-                                ]
-                            }
-                        },
-                        "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {
-                            "content": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "[cfn-auto-reloader-hook]\n",
-                                        "triggers=post.update\n",
-                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n",
-                                        "action=cfn-init.exe -v -s ",
-                                        {
-                                            "Ref": "AWS::StackId"
-                                        },
-                                        " -r LCtest -c infraUpdate",
-                                        " --region ",
-                                        {
-                                            "Ref": "AWS::Region"
-                                        },
-                                        "\n"
-                                    ]
-                                ]
-                            }
-                        },
-                        "c:\\cfn\\cfn-hup.conf": {
-                            "content": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "[main]\n",
-                                        "stack=",
-                                        {
-                                            "Ref": "AWS::StackId"
-                                        },
-                                        "\n",
-                                        "region=",
-                                        {
-                                            "Ref": "AWS::Region"
-                                        },
-                                        "\n"
-                                    ]
-                                ]
-                            }
-                        }
-                    },
-                    "packages": {
-                        "msi": {
-                            "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
-                        }
-                    },
-                    "commands": {
-                        "1-stop-puppet-service": {
-                            "command": "sc stop puppet"
-                        },
-                        "2-disable-puppet-service": {
-                            "command": "sc config puppet start= disabled"
-                        }
-                    }
-                },
-                "trigger": {
-                    "commands": {
-                        "01-echo": {
-                            "ignoreErrors": "true",
-                            "command": "echo 1000"
-                        }
-                    }
-                },
-                "configSets": {
-                    "infraUpdate": [
-                        "infraLoad",
-                        "infraPuppetRun",
-                        "infraPuppetFinal"
-                    ],
-                    "puppetFinal": [
-                        "infraPuppetFinal"
-                    ],
-                    "startup": [
-                        "bootstrap",
-                        {
-                            "ConfigSet": "infra"
-                        },
-                        {
-                            "ConfigSet": "app"
-                        },
-                        {
-                            "ConfigSet": "puppetFinal"
-                        }
-                    ],
-                    "infra": [
-                        "infraLoad",
-                        "infraPuppetRun"
-                    ],
-                    "app": [
-                        "deployRun"
-                    ]
-                },
-                "infraPuppetFinal": {
-                    "commands": {
-                        "01-run_puppet": {
-                            "command": "puppet apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
-                        },
-                        "02-clean_puppet": {
-                            "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
-                        }
-                    }
-                },
-                "deployRun": {
-                    "commands": {
-                        "01-run_deploy": {
-                            "command": "/srv/apps/bin/deploy deploy test bar.zip dev"
-                        }
-                    }
-                },
-                "infraLoad": {
-                    "sources": {
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz",
-                        "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
                     }
                 }
             }

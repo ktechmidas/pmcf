@@ -238,10 +238,12 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                 },
                 "commands": {
                     "1-stop-puppet-service": {
-                        "command": "sc stop puppet"
+                        "command": "sc stop puppet",
+                        "waitAfterCompletion": 0,
                     },
                     "2-disable-puppet-service": {
-                        "command": "sc config puppet start= disabled"
+                        "command": "sc config puppet start= disabled",
+                        "waitAfterCompletion": 0,
                     },
                 },
                 "services": {
@@ -269,6 +271,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
         }
 
         if args.get('infrastructure'):
+            pup = "c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat"
             init['configSets']['infra'] = [
                 'infraLoad',
                 'infraPuppetRun',
@@ -306,6 +309,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                     "01-echo": {
                         "command": "echo %d" % time.time(),
                         "ignoreErrors": "true",
+                        "waitAfterCompletion": 0,
                     }
                 }
             }
@@ -313,7 +317,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                 "commands": {
                     "01-run_puppet": {
                         "command":
-                            "puppet apply --modulepath " +
+                            "\"%s\" apply --modulepath " % pup +
                             "c:\\Windows\\Temp\\puppet\\modules " +
                             "--environment first_run " +
                             "c:\\Windows\\Temp\\puppet\\manifests\\site.pp",
@@ -328,13 +332,14 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                 "commands": {
                     "01-run_puppet": {
                         "command":
-                            "puppet apply --modulepath " +
+                            "\"%s\" apply --modulepath " % pup +
                             "c:\\Windows\\Temp\\puppet\\modules " +
                             "--detailed-exitcodes " +
                             "c:\\Windows\\Temp\\puppet\\manifests\\site.pp",
                     },
                     "02-clean_puppet": {
-                        "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
+                        "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet",
+                        "waitAfterCompletion": 0,
                     }
                 }
             }
