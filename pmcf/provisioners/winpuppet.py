@@ -22,7 +22,7 @@
 
 import logging
 import time
-from troposphere import Join, Ref
+from troposphere import Join, Ref, Base64
 
 from pmcf.provisioners.base_provisioner import BaseProvisioner
 
@@ -141,6 +141,9 @@ class WindowsPuppetProvisioner(BaseProvisioner):
             " -r %s -c startup" % args['resource'],
             " --region ",
             Ref("AWS::Region"),
+            "\n",
+            "cfn-signal.exe -e %ERRORLEVEL% ",
+            Base64(Ref(args['WaitHandle'])),
             "\n",
             "</script>"
         ]

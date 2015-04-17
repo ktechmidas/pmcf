@@ -46,6 +46,13 @@ class TestWindowsPuppetProvisioner(object):
                     'Ref': 'AWS::Region'
                 },
                 '\n',
+                'cfn-signal.exe -e %ERRORLEVEL% ', 
+                {
+                    'Fn::Base64': {
+                        'Ref': 'blah'
+                    }
+                }, 
+                '\n', 
                 '</script>'
             ]]
         }
