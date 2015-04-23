@@ -242,7 +242,7 @@ class YamlParser(BaseParser):
             data['resources']['instance'].pop(drop)
 
         dropped = []
-        for lb in data['resources'].get('load_balancer', []):
+        for idx, lb in enumerate(data['resources'].get('load_balancer', [])):
             stages = lb.pop('stages', [])
             if stages:
                 if args['environment'] not in stages:
@@ -250,7 +250,10 @@ class YamlParser(BaseParser):
                         args['environment'],
                         lb['name']))
                     dropped.insert(0, idx)
+        for drop in dropped:
+            data['resources']['load_balancer'].pop(drop)
 
+        for lb in data['resources'].get('load_balancer', []):
             if data['config'].get('subnets'):
                 lb['subnets'] = lb.get('subnets', data['config']['subnets'])
             lb['policy'] = copy.deepcopy(lb.get('policy', []))
@@ -268,8 +271,6 @@ class YamlParser(BaseParser):
                     policy['policy']['s3prefix'] = prefix
                     lb['policy'][idx] = policy
 
-        for drop in dropped:
-            data['resources']['load_balancer'].pop(drop)
         self._stack['resources'].update(data['resources'])
 
         for instance in self._stack['resources']['instance']:
