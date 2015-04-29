@@ -145,6 +145,42 @@ class YamlParser(BaseParser):
 
                 data['resources']['network'][idx]['subnets'] = subnets
 
+        dropped = []
+        for idx, sg in enumerate(data['resources'].get('secgroup', [])):
+            stages = sg.pop('stages', [])
+            if stages:
+                if args['environment'] not in stages:
+                    LOG.debug('Found secgroup not present in %s: %s' % (
+                        args['environment'],
+                        sg['name']))
+                    dropped.insert(0, idx)
+        for drop in dropped:
+            data['resources']['secgroup'].pop(drop)
+
+        dropped = []
+        for idx, instance in enumerate(data['resources'].get('instance', [])):
+            stages = instance.pop('stages', [])
+            if stages:
+                if args['environment'] not in stages:
+                    LOG.debug('Found instance not present in %s: %s' % (
+                        args['environment'],
+                        instance['name']))
+                    dropped.insert(0, idx)
+        for drop in dropped:
+            data['resources']['instance'].pop(drop)
+
+        dropped = []
+        for idx, lb in enumerate(data['resources'].get('load_balancer', [])):
+            stages = lb.pop('stages', [])
+            if stages:
+                if args['environment'] not in stages:
+                    LOG.debug('Found lb not present in %s: %s' % (
+                        args['environment'],
+                        lb['name']))
+                    dropped.insert(0, idx)
+        for drop in dropped:
+            data['resources']['load_balancer'].pop(drop)
+
         for instance in data['resources'].get('instance', []):
             if instance.get('public', None) is None:
                 instance['public'] = False
@@ -216,42 +252,6 @@ class YamlParser(BaseParser):
                                 new_rule.update({field: source})
                                 new_rules.append(new_rule)
             sg['rules'].extend(new_rules)
-
-        dropped = []
-        for idx, sg in enumerate(data['resources'].get('secgroup', [])):
-            stages = sg.pop('stages', [])
-            if stages:
-                if args['environment'] not in stages:
-                    LOG.debug('Found secgroup not present in %s: %s' % (
-                        args['environment'],
-                        sg['name']))
-                    dropped.insert(0, idx)
-        for drop in dropped:
-            data['resources']['secgroup'].pop(drop)
-
-        dropped = []
-        for idx, instance in enumerate(data['resources'].get('instance', [])):
-            stages = instance.pop('stages', [])
-            if stages:
-                if args['environment'] not in stages:
-                    LOG.debug('Found instance not present in %s: %s' % (
-                        args['environment'],
-                        instance['name']))
-                    dropped.insert(0, idx)
-        for drop in dropped:
-            data['resources']['instance'].pop(drop)
-
-        dropped = []
-        for idx, lb in enumerate(data['resources'].get('load_balancer', [])):
-            stages = lb.pop('stages', [])
-            if stages:
-                if args['environment'] not in stages:
-                    LOG.debug('Found lb not present in %s: %s' % (
-                        args['environment'],
-                        lb['name']))
-                    dropped.insert(0, idx)
-        for drop in dropped:
-            data['resources']['load_balancer'].pop(drop)
 
         for lb in data['resources'].get('load_balancer', []):
             if data['config'].get('subnets'):
