@@ -322,6 +322,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                             "--environment first_run " +
                             "c:\\Windows\\Temp\\puppet\\manifests\\site.pp",
                         "ignoreErrors": "true",
+                        "waitAfterCompletion": 0,
                     }
                 }
             }
@@ -336,6 +337,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                             "c:\\Windows\\Temp\\puppet\\modules " +
                             "--detailed-exitcodes " +
                             "c:\\Windows\\Temp\\puppet\\manifests\\site.pp",
+                        "waitAfterCompletion": 0,
                     },
                     "02-clean_puppet": {
                         "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet",
@@ -351,6 +353,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
             init['deployRun'] = {
                 "commands": {
                     "01-run_deploy": {
+                        "waitAfterCompletion": 0,
                         "command": "/srv/apps/bin/deploy deploy %s %s %s" % (
                             args['appname'],
                             args['application'],

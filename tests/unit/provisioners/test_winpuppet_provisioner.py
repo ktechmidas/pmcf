@@ -124,6 +124,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_puppet": {
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "waitAfterCompletion": 0, 
                             "ignoreErrors": "true"
                         }
                     }
@@ -135,6 +136,7 @@ class TestWindowsPuppetProvisioner(object):
                             "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
                         }, 
                         "01-run_puppet": {
+                            "waitAfterCompletion": 0, 
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
@@ -308,6 +310,7 @@ class TestWindowsPuppetProvisioner(object):
                 "infraPuppetFinal": {
                     "commands": {
                         "01-run_puppet": {
+                            "waitAfterCompletion": 0, 
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }, 
                         "02-clean_puppet": {
@@ -320,6 +323,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_puppet": {
                             "ignoreErrors": "true", 
+                            "waitAfterCompletion": 0, 
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
@@ -610,6 +614,7 @@ class TestWindowsPuppetProvisioner(object):
                             "waitAfterCompletion": 0
                         }, 
                         "01-run_puppet": {
+                            "waitAfterCompletion": 0, 
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
@@ -627,6 +632,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_puppet": {
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "waitAfterCompletion": 0, 
                             "ignoreErrors": "true"
                         }
                     }
@@ -667,6 +673,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_puppet": {
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "waitAfterCompletion": 0, 
                             "ignoreErrors": "true"
                         }
                     }
@@ -780,6 +787,7 @@ class TestWindowsPuppetProvisioner(object):
                             "waitAfterCompletion": 0
                         }, 
                         "01-run_puppet": {
+                            "waitAfterCompletion": 0, 
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
@@ -881,6 +889,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_puppet": {
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --environment first_run c:\\Windows\\Temp\\puppet\\manifests\\site.pp", 
+                            "waitAfterCompletion": 0, 
                             "ignoreErrors": "true"
                         }
                     }
@@ -888,6 +897,7 @@ class TestWindowsPuppetProvisioner(object):
                 "deployRun": {
                     "commands": {
                         "01-run_deploy": {
+                            "waitAfterCompletion": 0, 
                             "command": "/srv/apps/bin/deploy deploy test bar.zip dev"
                         }
                     }
@@ -914,6 +924,7 @@ class TestWindowsPuppetProvisioner(object):
                             "command": "rmdir /S /Q c:\\Windows\\Temp\\puppet"
                         }, 
                         "01-run_puppet": {
+                            "waitAfterCompletion": 0, 
                             "command": "\"c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat\" apply --modulepath c:\\Windows\\Temp\\puppet\\modules --detailed-exitcodes c:\\Windows\\Temp\\puppet\\manifests\\site.pp"
                         }
                     }
