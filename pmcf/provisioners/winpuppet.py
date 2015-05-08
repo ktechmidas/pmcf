@@ -354,11 +354,14 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                 "commands": {
                     "01-run_deploy": {
                         "waitAfterCompletion": 0,
-                        "command": "/srv/apps/bin/deploy deploy %s %s %s" % (
-                            args['appname'],
-                            args['application'],
-                            args['environment'],
-                        )
+                        "command":
+                            "powershell -Command " +
+                            "c:\Piksel\msdeploy.ps1" +
+                            " -service %s -stage %s -artifact %s" % (
+                                args['appname'],
+                                args['environment'],
+                                args['application'],
+                            )
                     }
                 }
             }

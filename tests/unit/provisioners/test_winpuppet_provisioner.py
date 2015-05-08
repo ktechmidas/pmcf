@@ -898,7 +898,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_deploy": {
                             "waitAfterCompletion": 0, 
-                            "command": "/srv/apps/bin/deploy deploy test bar.zip dev"
+                            "command": "powershell -Command c:\Piksel\msdeploy.ps1 -service test -stage dev -artifact bar.zip"
                         }
                     }
                 }, 
