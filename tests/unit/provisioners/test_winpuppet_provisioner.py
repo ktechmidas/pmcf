@@ -898,7 +898,7 @@ class TestWindowsPuppetProvisioner(object):
                     "commands": {
                         "01-run_deploy": {
                             "waitAfterCompletion": 0, 
-                            "command": "powershell -Command c:\Piksel\msdeploy.ps1 -service test -stage dev -artifact bar.zip"
+                            "command": "powershell -NoProfile -NonInteractive -NoLogo -ExecutionPolicy Bypass -Command c:\Piksel\msdeploy.ps1 -service test -stage dev -artifact bar.zip"
                         }
                     }
                 }, 

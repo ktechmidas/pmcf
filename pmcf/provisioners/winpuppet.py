@@ -355,8 +355,9 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                     "01-run_deploy": {
                         "waitAfterCompletion": 0,
                         "command":
-                            "powershell -Command " +
-                            "c:\Piksel\msdeploy.ps1" +
+                            "powershell -NoProfile -NonInteractive" +
+                            " -NoLogo -ExecutionPolicy Bypass " +
+                            "-Command c:\Piksel\msdeploy.ps1" +
                             " -service %s -stage %s -artifact %s" % (
                                 args['appname'],
                                 args['environment'],
