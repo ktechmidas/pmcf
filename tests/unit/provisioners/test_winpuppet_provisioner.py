@@ -141,7 +141,7 @@ class TestWindowsPuppetProvisioner(object):
                 }, 
                 "infraLoad": {
                     "sources": {
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
+                        "c:\\ProgramData\\PuppetLabs\\puppet\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
                         "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
                     }
                 }, 
@@ -425,7 +425,7 @@ class TestWindowsPuppetProvisioner(object):
                 "infraLoad": {
                     "sources": {
                         "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz", 
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
+                        "c:\\ProgramData\\PuppetLabs\\puppet\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
                     }
                 }, 
                 "trigger": {
@@ -472,7 +472,7 @@ class TestWindowsPuppetProvisioner(object):
                 "infraLoad": {
                     "sources": {
                         "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz", 
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
+                        "c:\\ProgramData\\PuppetLabs\\puppet\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz"
                     }
                 }, 
                 "configSets": {
@@ -769,7 +769,7 @@ class TestWindowsPuppetProvisioner(object):
                 }, 
                 "infraLoad": {
                     "sources": {
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
+                        "c:\\ProgramData\\PuppetLabs\\puppet\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
                         "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
                     }
                 }, 
@@ -894,7 +894,7 @@ class TestWindowsPuppetProvisioner(object):
                 }, 
                 "infraLoad": {
                     "sources": {
-                        "c:\\ProgramData\\PuppetLabs\\hiera\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
+                        "c:\\ProgramData\\PuppetLabs\\puppet\\etc": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/winhiera.tar.gz", 
                         "c:\\Windows\\Temp\\puppet": "https://testbucket.s3.amazonaws.com/artifacts/infrastructure/test/dev/zip.tgz"
                     }
                 }, 
