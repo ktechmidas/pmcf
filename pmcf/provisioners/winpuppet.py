@@ -285,7 +285,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
             init['configSets']['startup'].append({"ConfigSet": "infra"})
             init['infraLoad'] = {
                 "sources": {
-                    "c:\\ProgramData\\PuppetLabs\\hiera\\etc":
+                    "c:\\ProgramData\\PuppetLabs\\puppet\\etc":
                         "https://%s.%s/%s/%s/winhiera.tar.gz" % (
                             args['bucket'],
                             "s3.amazonaws.com",
