@@ -139,6 +139,35 @@ definitions:
             - provider
             - args
         additionalProperties: false
+    ansibleprovisioner:
+        type: object
+        properties:
+            provider:
+                enum:
+                    - AnsibleProvisioner
+            args:
+                type:
+                    object
+                properties:
+                    playbook:
+                        type: string
+                    application:
+                        type: string
+                    bucket:
+                        type: string
+                    metrics:
+                        type: boolean
+                    custom_profile:
+                        type: array
+                    custom_facts:
+                        type: object
+                required:
+                    - bucket
+                additionalProperties: false
+        required:
+            - provider
+            - args
+        additionalProperties: false
     puppetprovisioner:
         type: object
         properties:
@@ -260,6 +289,7 @@ definitions:
                 oneOf:
                     - $ref: "#/definitions/winpuppetprovisioner"
                     - $ref: "#/definitions/puppetprovisioner"
+                    - $ref: "#/definitions/ansibleprovisioner"
                     - $ref: "#/definitions/awsfwprovisioner"
                     - $ref: "#/definitions/noopprovisioner"
                     - $ref: "#/definitions/blockprovisioner"

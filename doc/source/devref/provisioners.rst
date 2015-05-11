@@ -65,6 +65,21 @@ metadata endpoint suitable for consumption by
     :show-inheritance:
 
 
+:mod:`pmcf.provisioners.ansible`
+===============================
+
+.. automodule:: pmcf.provisioners.ansible
+    :noindex:
+    :members: __all__
+    :undoc-members:
+
+
+.. autoclass:: AnsbileProvisioner
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 :mod:`pmcf.provisioners.awsfw`
 ==============================
 
