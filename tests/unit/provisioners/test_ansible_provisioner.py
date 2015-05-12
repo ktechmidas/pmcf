@@ -282,8 +282,7 @@ class TestAnsibleProvisioner(object):
                                         "stage: dev\n",
                                         "ansible_playbook: test.yml\n",
                                         "ec2_a: b\n",
-                                        "ec2_c: d",
-                                        "\n",
+                                        "ec2_c: d\n",
                                     ]
                                 ]
                             },
@@ -550,7 +549,6 @@ class TestAnsibleProvisioner(object):
                                         "stack: test\n",
                                         "stage: dev\n",
                                         "ansible_playbook: test.yml\n",
-                                        "\n",
                                     ]
                                 ]
                             },
@@ -738,109 +736,99 @@ class TestAnsibleProvisioner(object):
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
-                    "type": "s3",
-                    "buckets": [args['bucket']],
-                    "roleName": args['role']
+                    "roleName": "instance-blah",
+                    "buckets": [
+                        "testbucket"
+                    ],
+                    "type": "s3"
                 }
             },
             "AWS::CloudFormation::Init": {
+                "bootstrap": {
+                    "files": {
+                        "/etc/ec2_facts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: LCtest\n",
+                                        "app: test\n",
+                                        "stack: test\n",
+                                        "stage: dev\n",
+                                        "ansible_playbook: custom.yml\n"
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        },
+                        "/etc/ansible/hosts": {
+                            "content": "localhost\n",
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        }
+                    },
+                    "packages": {
+                        "apt": {
+                            "python-boto": [],
+                            "ansible": []
+                        }
+                    }
+                },
                 "configSets": {
+                    "ansible": [
+                        "ansibleLoad",
+                        "ansiblePre",
+                        "ansibleRun"
+                    ],
                     "startup": [
                         "bootstrap",
                         {
                             "ConfigSet": "ansible"
                         }
-                    ],
-                    "ansible": [
-                        "ansibleLoad",
-                        "ansiblePre",
-                        "ansibleRun"
                     ]
-                }
-            },
-            "bootstrap": {
-                "packages": {
-                    "apt": {
-                        "ansible": [],
-                        "python-boto": [],
-                    }
-                }
-            },
-            "files": {
-                "/etc/ec2_facts.yaml": {
-                    "content": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "ec2_stack: ",
-                                {
-                                    "Ref": "AWS::StackId"
-                                },
-                                "\n",
-                                "ec2_region: ",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "\n",
-                                "ec2_resource: LCtest\n",
-                                "app: test\n",
-                                "stack: test\n",
-                                "stage: dev\n",
-                                "ansible_playbook: custom.yml\n",
-                                "\n",
-                            ]
-                        ]
-                    },
-                    "mode": "000644",
-                    "owner": "root",
-                    "group": "root"
                 },
-                "/etc/ansible/hosts": {
-                    "content": "localhost\n",
-                    "mode": "000644",
-                    "owner": "root",
-                    "group": "root"
-                }
-            },
-            "ansibleLoad": {
-                "sources": {
-                    "/var/tmp/ansible-run": "https://%s.%s/%s/%s.tar.gz" % (
-                        args['bucket'],
-                        "s3.amazonaws.com",
-                        args['environment'],
-                        args['stackname']
-                    )
-                }
-            },
-            "ansiblePre": {
-                "commands": {
-                    "01-run_ansible": {
-                        "command": "ansible-playbook --syntax-check " +
-                                   "/var/tmp/ansible-run/%s" % (
-                                       args['playbook']
-                                   ),
-                        "ignoreErrors": "false",
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
+                        }
                     }
-                }
-            },
-            "ansibleRun": {
-                "commands": {
-                    "01-run_ansible": {
-                        "command": "ansible-playbook " +
-                                   "/var/tmp/ansible-run/%s" % (
-                                       args['playbook']
-                                   ),
-                    },
-                    "02-clean_ansible": {
-                        "command": "rm -rf /var/tmp/ansible-run"
+                },
+                "ansibleRun": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook /var/tmp/ansible-run/custom.yml"
+                        },
+                        "02-clean_ansible": {
+                            "command": "rm -rf /var/tmp/ansible-run"
+                        }
                     }
-                }
-            },
-            "trigger": {
-                "commands": {
-                    "01-echo": {
-                        "ignoreErrors": "true",
-                        "command": "echo 1000"
+                },
+                "ansibleLoad": {
+                    "sources": {
+                        "/var/tmp/ansible-run": "https://testbucket.s3.amazonaws.com/dev/test.tar.gz"
+                    }
+                },
+                "ansiblePre": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "ignoreErrors": "false",
+                            "command": "ansible-playbook --syntax-check /var/tmp/ansible-run/custom.yml"
+                        }
                     }
                 }
             }
