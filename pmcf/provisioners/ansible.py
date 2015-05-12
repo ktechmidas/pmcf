@@ -34,7 +34,7 @@ class AnsibleProvisioner(BaseProvisioner):
     Ansible Provisioner class
 
     This class assembles userdata suitable for use by cloud-init, and provides
-    methods to boot strap an ansible-playbook run.  
+    methods to boot strap an ansible-playbook run.
     """
 
     def wants_profile(self):
@@ -208,7 +208,6 @@ class AnsibleProvisioner(BaseProvisioner):
             else:
                 facts.append("ec2_%s: %s\n" % (k, args['custom_facts'][k]))
 
-
         init = {
             "configSets": {
                 "startup": ["bootstrap", {"ConfigSet": "ansible"}],
@@ -263,10 +262,18 @@ class AnsibleProvisioner(BaseProvisioner):
                         "command": "ansible-playbook " +
                                    "/var/tmp/ansible-run/%s" % (
                                        ansibletarget
-                                    ),
+                                   ),
                     },
                     "02-clean_ansible": {
                         "command": "rm -rf /var/tmp/ansible-run"
+                    }
+                }
+            },
+            "trigger": {
+                "commands": {
+                    "01-echo": {
+                        "command": "echo %d" % time.time(),
+                        "ignoreErrors": "true",
                     }
                 }
             }

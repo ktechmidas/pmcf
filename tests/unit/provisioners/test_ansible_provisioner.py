@@ -65,7 +65,7 @@ class TestAnsibleProvisioner(object):
             '    fi\n',
             '    return $ret\n',
             '}\n\n',
-            'setup_disks || error_exit "failed to setup disks"\n',
+            'setup_disks || error_exit "Failed to setup disks"\n',
             "apt-get -y install python-setuptools python-pbr python-daemon ",
             "python-pystache\n",
             "easy_install %s" % uri,
@@ -109,8 +109,6 @@ class TestAnsibleProvisioner(object):
             }
         }
 
-        ansibletarget = args['name']
-
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
@@ -143,7 +141,7 @@ class TestAnsibleProvisioner(object):
                                         "app: test\n",
                                         "stack: test\n",
                                         "stage: dev\n",
-                                        "ansible_playbook: test\n",
+                                        "ansible_playbook: test.yml\n",
                                         "ec2_a: b\n",
                                         "ec2_c: ",
                                         {
@@ -166,8 +164,8 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
-                            "ansible": []
-                            "python-boto": [],
+                            "ansible": [],
+                            "python-boto": []
                         }
                     }
                 },
@@ -186,7 +184,7 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook --syntax-check " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                        ),
                             "ignoreErrors": "false",
                         }
@@ -197,11 +195,19 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                         ),
                         },
                         "02-clean_ansible": {
                             "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
                         }
                     }
                 },
@@ -242,8 +248,6 @@ class TestAnsibleProvisioner(object):
             }
         }
 
-        ansibletarget = args['name']
-
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
@@ -276,12 +280,9 @@ class TestAnsibleProvisioner(object):
                                         "app: test\n",
                                         "stack: test\n",
                                         "stage: dev\n",
-                                        "ansible_playbook: test\n",
+                                        "ansible_playbook: test.yml\n",
                                         "ec2_a: b\n",
-                                        "ec2_c: ",
-                                        {
-                                            "Ref": "d"
-                                        },
+                                        "ec2_c: d",
                                         "\n",
                                     ]
                                 ]
@@ -299,8 +300,8 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
-                            "ansible": []
-                            "python-boto": [],
+                            "ansible": [],
+                            "python-boto": []
                         }
                     }
                 },
@@ -319,7 +320,7 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook --syntax-check " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                        ),
                             "ignoreErrors": "false",
                         }
@@ -330,11 +331,19 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                         ),
                         },
                         "02-clean_ansible": {
                             "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
                         }
                     }
                 },
@@ -371,8 +380,6 @@ class TestAnsibleProvisioner(object):
             'eip': ['eip-1234', 'eip-2345']
         }
 
-        ansibletarget = args['name']
-
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
@@ -405,7 +412,7 @@ class TestAnsibleProvisioner(object):
                                         "app: test\n",
                                         "stack: test\n",
                                         "stage: dev\n",
-                                        "ansible_playbook: test\n",
+                                        "ansible_playbook: test.yml\n",
                                         "ec2_elastic_ips: ",
                                         {
                                             "Ref": "eip-1234"
@@ -431,8 +438,8 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
-                            "ansible": []
-                            "python-boto": [],
+                            "ansible": [],
+                            "python-boto": []
                         }
                     }
                 },
@@ -451,7 +458,7 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook --syntax-check " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                        ),
                             "ignoreErrors": "false",
                         }
@@ -462,11 +469,19 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                         ),
                         },
                         "02-clean_ansible": {
                             "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
                         }
                     }
                 },
@@ -502,16 +517,14 @@ class TestAnsibleProvisioner(object):
             'environment': 'dev',
         }
 
-        ansibletarget = args['name']
-
         ci_data = {
             "AWS::CloudFormation::Authentication": {
                 "rolebased": {
-                    "roleName": "instance-blah",
+                    "type": "s3",
                     "buckets": [
                         "testbucket"
                     ],
-                    "type": "s3"
+                    "roleName": "instance-blah"
                 }
             },
             "AWS::CloudFormation::Init": {
@@ -536,7 +549,7 @@ class TestAnsibleProvisioner(object):
                                         "app: test\n",
                                         "stack: test\n",
                                         "stage: dev\n",
-                                        "ansible_playbook: test\n",
+                                        "ansible_playbook: test.yml\n",
                                         "\n",
                                     ]
                                 ]
@@ -554,8 +567,8 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
-                            "ansible": []
-                            "python-boto": [],
+                            "ansible": [],
+                            "python-boto": []
                         }
                     }
                 },
@@ -574,7 +587,7 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook --syntax-check " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                        ),
                             "ignoreErrors": "false",
                         }
@@ -585,11 +598,19 @@ class TestAnsibleProvisioner(object):
                         "01-run_ansible": {
                             "command": "ansible-playbook " +
                                        "/var/tmp/ansible-run/%s" % (
-                                           ansibletarget
+                                           args['name'] + ".yml"
                                         ),
                         },
                         "02-clean_ansible": {
                             "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
                         }
                     }
                 },
@@ -612,8 +633,6 @@ class TestAnsibleProvisioner(object):
         data = AnsibleProvisioner().cfn_init(args)
         data = json.loads(json.dumps(data, cls=awsencode))
         assert_equals(data, ci_data)
-
--==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     def test_provisioner_policy_contains_expected_data(self):
         args = {
@@ -645,7 +664,6 @@ class TestAnsibleProvisioner(object):
 
     def test_provisioner_policy_contains_expected_data_metrics(self):
         args = {
-            'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
             'stackname': 'test',
@@ -669,7 +687,6 @@ class TestAnsibleProvisioner(object):
 
     def test_provisioner_policy_contains_expected_data_no_artifacts(self):
         args = {
-            'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
             'stackname': 'test',
@@ -694,7 +711,6 @@ class TestAnsibleProvisioner(object):
             ]
         }
         args = {
-            'bucket': 'testbucket',
             'role': 'instance-blah',
             'name': 'test',
             'appname': 'test',
@@ -705,3 +721,132 @@ class TestAnsibleProvisioner(object):
         }
         data = AnsibleProvisioner().provisioner_policy(args)
         assert_equals(data, pp_data)
+
+    @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data_playbook(self):
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'playbook': 'custom.yml'
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3",
+                    "buckets": [args['bucket']],
+                    "roleName": args['role']
+                }
+            },
+            "AWS::CloudFormation::Init": {
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "ansible"
+                        }
+                    ],
+                    "ansible": [
+                        "ansibleLoad",
+                        "ansiblePre",
+                        "ansibleRun"
+                    ]
+                }
+            },
+            "bootstrap": {
+                "packages": {
+                    "apt": {
+                        "ansible": [],
+                        "python-boto": [],
+                    }
+                }
+            },
+            "files": {
+                "/etc/ec2_facts.yaml": {
+                    "content": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "ec2_stack: ",
+                                {
+                                    "Ref": "AWS::StackId"
+                                },
+                                "\n",
+                                "ec2_region: ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
+                                "ec2_resource: LCtest\n",
+                                "app: test\n",
+                                "stack: test\n",
+                                "stage: dev\n",
+                                "ansible_playbook: custom.yml\n",
+                                "\n",
+                            ]
+                        ]
+                    },
+                    "mode": "000644",
+                    "owner": "root",
+                    "group": "root"
+                },
+                "/etc/ansible/hosts": {
+                    "content": "localhost\n",
+                    "mode": "000644",
+                    "owner": "root",
+                    "group": "root"
+                }
+            },
+            "ansibleLoad": {
+                "sources": {
+                    "/var/tmp/ansible-run": "https://%s.%s/%s/%s.tar.gz" % (
+                        args['bucket'],
+                        "s3.amazonaws.com",
+                        args['environment'],
+                        args['stackname']
+                    )
+                }
+            },
+            "ansiblePre": {
+                "commands": {
+                    "01-run_ansible": {
+                        "command": "ansible-playbook --syntax-check " +
+                                   "/var/tmp/ansible-run/%s" % (
+                                       args['playbook']
+                                   ),
+                        "ignoreErrors": "false",
+                    }
+                }
+            },
+            "ansibleRun": {
+                "commands": {
+                    "01-run_ansible": {
+                        "command": "ansible-playbook " +
+                                   "/var/tmp/ansible-run/%s" % (
+                                       args['playbook']
+                                   ),
+                    },
+                    "02-clean_ansible": {
+                        "command": "rm -rf /var/tmp/ansible-run"
+                    }
+                }
+            },
+            "trigger": {
+                "commands": {
+                    "01-echo": {
+                        "ignoreErrors": "true",
+                        "command": "echo 1000"
+                    }
+                }
+            }
+        }
+
+        data = AnsibleProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
