@@ -74,7 +74,7 @@ metadata endpoint suitable for consumption by
     :undoc-members:
 
 
-.. autoclass:: AnsbileProvisioner
+.. autoclass:: AnsibleProvisioner
     :members:
     :undoc-members:
     :show-inheritance:
