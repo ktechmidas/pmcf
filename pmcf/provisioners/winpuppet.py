@@ -216,7 +216,8 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                             "\n",
                             "region=",
                             Ref("AWS::Region"),
-                            "\n"
+                            "\n",
+                            "interval=5\n",
                         ]),
                     },
                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf": {

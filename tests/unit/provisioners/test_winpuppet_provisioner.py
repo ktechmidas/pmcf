@@ -215,7 +215,8 @@ class TestWindowsPuppetProvisioner(object):
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
-                                        "\n"
+                                        "\n",
+                                        "interval=5\n"
                                     ]
                                 ]
                             }
@@ -360,7 +361,8 @@ class TestWindowsPuppetProvisioner(object):
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
-                                        "\n"
+                                        "\n",
+                                        "interval=5\n"
                                     ]
                                 ]
                             }
@@ -588,7 +590,8 @@ class TestWindowsPuppetProvisioner(object):
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
-                                        "\n"
+                                        "\n",
+                                        "interval=5\n"
                                     ]
                                 ]
                             }
@@ -767,7 +770,8 @@ class TestWindowsPuppetProvisioner(object):
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
-                                        "\n"
+                                        "\n",
+                                        "interval=5\n"
                                     ]
                                 ]
                             }
@@ -991,7 +995,8 @@ class TestWindowsPuppetProvisioner(object):
                                         {
                                             "Ref": "AWS::Region"
                                         }, 
-                                        "\n"
+                                        "\n",
+                                        "interval=5\n"
                                     ]
                                 ]
                             }
