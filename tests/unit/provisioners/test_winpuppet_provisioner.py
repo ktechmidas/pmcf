@@ -35,6 +35,17 @@ class TestWindowsPuppetProvisioner(object):
         }
         script = {
             'Fn::Join': ['', [
+                "<powershell>\n",
+                "Invoke-WebRequest ",
+                "http://%s/windows/Windows6.1-KB2842230-x64.msu" % (
+                    "repo.sequoia.piksel.com",
+                ),
+                " -OutFile C:\Windows\Temp\Windows6.1-KB2842230-x64.msu\n",
+                "Start-Process -NoNewWindow -FilePath ",
+                "C:\Windows\System32\wusa.exe -ArgumentList ",
+                "C:\Windows\Temp\Windows6.1-KB2842230-x64.msu ",
+                "/quiet /restart | Wait-Process\n",
+                "</powershell>\n",
                 '<script>\n',
                 'cfn-init.exe -v -s ',
                 {
