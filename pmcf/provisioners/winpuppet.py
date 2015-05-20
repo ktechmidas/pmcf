@@ -274,16 +274,27 @@ class WindowsPuppetProvisioner(BaseProvisioner):
         if args.get('infrastructure'):
             pup = "c:\\Program Files\\Puppet Labs\\Puppet\\bin\\puppet.bat"
             init['configSets']['infra'] = [
+                'infraPre',
                 'infraLoad',
                 'infraPuppetRun',
             ]
 
             init['configSets']['infraUpdate'] = [
+                'infraPre',
                 'infraLoad',
                 'infraPuppetRun',
                 'infraPuppetFinal',
             ]
             init['configSets']['startup'].append({"ConfigSet": "infra"})
+            init['infraPre'] = {
+                "commands": {
+                    "01-preclean": {
+                        "command": "rmdir /Q /S C:\\Windows\\Temp\\puppet",
+                        "ignoreErrors": "true",
+                        "waitAfterCompletion": 0,
+                    }
+                }
+            }
             init['infraLoad'] = {
                 "sources": {
                     "c:\\ProgramData\\PuppetLabs\\puppet\\etc":

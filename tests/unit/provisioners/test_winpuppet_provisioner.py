@@ -90,10 +90,12 @@ class TestWindowsPuppetProvisioner(object):
             "AWS::CloudFormation::Init": {
                 "configSets": {
                     "infra": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun"
                     ], 
                     "infraUpdate": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun", 
                         "infraPuppetFinal"
@@ -111,6 +113,15 @@ class TestWindowsPuppetProvisioner(object):
                         }
                     ]
                 }, 
+                'infraPre': {
+                    "commands": {
+                        "01-preclean": {
+                            "command": "rmdir /Q /S C:\\Windows\\Temp\\puppet",
+                            "ignoreErrors": "true",
+                            "waitAfterCompletion": 0,
+                        }
+                    }
+                },
                 "trigger": {
                     "commands": {
                         "01-echo": {
@@ -287,11 +298,13 @@ class TestWindowsPuppetProvisioner(object):
             "AWS::CloudFormation::Init": {
                 "configSets": {
                     "infraUpdate": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun", 
                         "infraPuppetFinal"
                     ], 
                     "infra": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun"
                     ], 
@@ -308,6 +321,15 @@ class TestWindowsPuppetProvisioner(object):
                         "infraPuppetFinal"
                     ]
                 }, 
+                'infraPre': {
+                    "commands": {
+                        "01-preclean": {
+                            "command": "rmdir /Q /S C:\\Windows\\Temp\\puppet",
+                            "ignoreErrors": "true",
+                            "waitAfterCompletion": 0,
+                        }
+                    }
+                },
                 "infraPuppetFinal": {
                     "commands": {
                         "01-run_puppet": {
@@ -492,6 +514,7 @@ class TestWindowsPuppetProvisioner(object):
                         }
                     ], 
                     "infra": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun"
                     ], 
@@ -499,11 +522,21 @@ class TestWindowsPuppetProvisioner(object):
                         "infraPuppetFinal"
                     ], 
                     "infraUpdate": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun", 
                         "infraPuppetFinal"
                     ]
                 }, 
+                'infraPre': {
+                    "commands": {
+                        "01-preclean": {
+                            "command": "rmdir /Q /S C:\\Windows\\Temp\\puppet",
+                            "ignoreErrors": "true",
+                            "waitAfterCompletion": 0,
+                        }
+                    }
+                },
                 "bootstrap": {
                     "commands": {
                         "2-disable-puppet-service": {
@@ -810,15 +843,26 @@ class TestWindowsPuppetProvisioner(object):
                         }
                     ], 
                     "infra": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun"
                     ], 
                     "infraUpdate": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun", 
                         "infraPuppetFinal"
                     ]
                 }, 
+                'infraPre': {
+                    "commands": {
+                        "01-preclean": {
+                            "command": "rmdir /Q /S C:\\Windows\\Temp\\puppet",
+                            "ignoreErrors": "true",
+                            "waitAfterCompletion": 0,
+                        }
+                    }
+                },
                 "trigger": {
                     "commands": {
                         "01-echo": {
@@ -862,11 +906,13 @@ class TestWindowsPuppetProvisioner(object):
             "AWS::CloudFormation::Init": {
                 "configSets": {
                     "infraUpdate": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun", 
                         "infraPuppetFinal"
                     ], 
                     "infra": [
+                        "infraPre", 
                         "infraLoad", 
                         "infraPuppetRun"
                     ], 
@@ -889,6 +935,15 @@ class TestWindowsPuppetProvisioner(object):
                         "deployRun"
                     ]
                 }, 
+                'infraPre': {
+                    "commands": {
+                        "01-preclean": {
+                            "command": "rmdir /Q /S C:\\Windows\\Temp\\puppet",
+                            "ignoreErrors": "true",
+                            "waitAfterCompletion": 0,
+                        }
+                    }
+                },
                 "infraPuppetRun": {
                     "commands": {
                         "01-run_puppet": {
