@@ -151,14 +151,21 @@ definitions:
                 properties:
                     playbook:
                         type: string
-                    application:
-                        type: string
                     bucket:
                         type: string
                     metrics:
                         type: boolean
-                    custom_profile:
-                        type: array
+                    cfn_hup:
+                        type:
+                            object
+                        properties:
+                            interval:
+                                type: integer
+                            enabled:
+                                type: boolean
+                        required:
+                            - enabled
+                        additionalProperties: false
                     custom_facts:
                         type: object
                 required:

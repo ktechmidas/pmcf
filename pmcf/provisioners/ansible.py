@@ -143,10 +143,20 @@ class AnsibleProvisioner(BaseProvisioner):
             '    return $ret\n',
             '}\n\n',
             'setup_disks || error_exit "Failed to setup disks"\n',
+            'apt-get update\n',
             'apt-get -y install python-setuptools python-pbr python-daemon ',
             'python-pystache\n',
-            'easy_install https://s3.amazonaws.com/cloudformation-examples/',
+            'pushd /var/tmp; curl -qsSk -O ',
+            'https://s3.amazonaws.com/cloudformation-examples/',
             'aws-cfn-bootstrap-latest.tar.gz\n',
+            'popd\n'
+            'easy_install /var/tmp/',
+            'aws-cfn-bootstrap-latest.tar.gz\n',
+            'if test -f /lib/lsb/init-functions; then\n',
+            'tar --no-anchored -xf /var/tmp/aws-cfn-bootstrap-latest.tar.gz',
+            ' init/ubuntu/cfn-hup -O > /etc/init.d/cfn-hup && chmod 0755 ',
+            '/etc/init.d/cfn-hup; fi\n'
+            'rm -f /var/tmp/aws-cfn-bootstrap-latest.tar.gz\n'
             'if cfn-init --region ',
             Ref("AWS::Region"),
             ' -c startup -s ',
@@ -216,8 +226,12 @@ class AnsibleProvisioner(BaseProvisioner):
             "bootstrap": {
                 "packages": {
                     "apt": {
-                        "ansible": [],
                         "python-boto": [],
+                        "python-pip": [],
+                        "python-dev": [],
+                    },
+                    "python": {
+                        "ansible": [],
                     }
                 },
                 "files": {
@@ -286,10 +300,75 @@ class AnsibleProvisioner(BaseProvisioner):
                     "buckets": [args['bucket']],
                     "roleName": args['role']
                 }
-            },
-            "AWS::CloudFormation::Init": init
+            }
         }
 
+        if args.get('cfn_hup'):
+            if args['cfn_hup'].get('interval'):
+                cfnhup_interval = args['cfn_hup']['interval']
+            else:
+                cfnhup_interval = 5
+            if args['cfn_hup'].get('enabled'):
+                cfnhup_enabled = 'true'
+            else:
+                cfnhup_enabled = 'false'
+
+            init['cfnHup'] = {
+                "files": {
+                    "/etc/cfn/cfn-hup.conf": {
+                        "content": Join("", [
+                            "[main]\n",
+                            "stack=",
+                            Ref("AWS::StackId"),
+                            "\n",
+                            "region=",
+                            Ref("AWS::Region"),
+                            "\n",
+                            "interval=%d\n" % cfnhup_interval,
+                        ]),
+                        "mode": "000644",
+                        "owner": "root",
+                        "group": "root"
+                    },
+                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                        "content": Join("", [
+                            "[cfn-auto-reloader-hook]\n",
+                            "triggers=post.update\n",
+                            "path=%s.%s.%s.AWS::CloudFormation::Init\n" % (
+                                "Resources",
+                                args['resource'],
+                                "Metadata",
+                            ),
+                            "action=cfn-init -v -s ",
+                            Ref("AWS::StackId"),
+                            " -r %s -c ansible" % args['resource'],
+                            " --region ",
+                            Ref("AWS::Region"),
+                            "\n",
+                            "runas=root\n",
+                        ]),
+                        "mode": "000644",
+                        "owner": "root",
+                        "group": "root"
+                    }
+                },
+                "services": {
+                    "sysvinit": {
+                        "cfn-hup": {
+                            "enabled": "%s" % cfnhup_enabled,
+                            "ensureRunning": "true",
+                            "files": [
+                                "/etc/cfn/cfn-hup.conf",
+                                "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                            ]
+                        }
+                    }
+                }
+            }
+
+            init['configSets']['startup'].append("cfnHup")
+
+        ret["AWS::CloudFormation::Init"] = init
         return ret
 
 

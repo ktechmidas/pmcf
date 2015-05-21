@@ -88,8 +88,8 @@ A block device entry is composed of the following fields:
 :device:
         The device name in the instance
 
-Provisioners are one of PuppetProvisioner, AWSFWProvisioner, or NoopProvisioner
-and they each take different arguments.
+Provisioners are one of PuppetProvisioner, AWSFWProvisioner, AnsibleProvisioner
+or NoopProvisioner and they each take different arguments.
 
 PuppetProvisioner takes:
 
@@ -132,7 +132,7 @@ AWSFWProvisioner takes:
         Must be set to AWSFWProvisioner
 
 :args:
-        A dictionary of arguments to be passed to the provisioner.  The
+        A dictionary of arguments to be passed to the provisioner.
 
 The args dict for AWSFWProvisioner has the following mandatory fields:
 
@@ -168,6 +168,43 @@ NoopProvisioner takes:
 
 :args:
         An empty dictionary of arguments that will have no effect
+
+
+AnsibleProvisioner takes:
+
+:provider:
+        Must be set to AnsibleProvisioner
+
+:args:
+        A dictionary of arguments to be passed to the provisioner.
+
+The args dict for AnsibleProvisioner has the following mandatory fields:
+
+:bucket:
+        S3 bucket to download the playbooks tarball from. The tarball is
+        expected to be in an environment directory in the root of the bucket
+        and have the same basename as the stack name.
+
+Optional parameters are:
+
+:playbook:
+        The playbook file to run from the root of the tarball.  The default is
+        <instance-name>.yml
+
+:cfn_hup:
+        Whether to set up and start cfn-hup. This parameter takes a dictionary
+        of arguments.
+
+The args dict for cfn_hup has the following mandatory fields:
+
+:enabled:
+        A boolean parameter as to whether cfn-hup is enabled on reboots
+
+Optional parameters for cfn_hup are:
+
+:interval:
+        A integer value for poll time in minutes for cfn-hup
+
 
 **Example**
 

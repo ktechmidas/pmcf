@@ -66,10 +66,20 @@ class TestAnsibleProvisioner(object):
             '    return $ret\n',
             '}\n\n',
             'setup_disks || error_exit "Failed to setup disks"\n',
-            "apt-get -y install python-setuptools python-pbr python-daemon ",
-            "python-pystache\n",
-            "easy_install %s" % uri,
-            "aws-cfn-bootstrap-latest.tar.gz\n",
+            'apt-get update\n',
+            'apt-get -y install python-setuptools python-pbr python-daemon ',
+            'python-pystache\n',
+            'pushd /var/tmp; curl -qsSk -O ',
+            'https://s3.amazonaws.com/cloudformation-examples/',
+            'aws-cfn-bootstrap-latest.tar.gz\n',
+            'popd\n'
+            'easy_install /var/tmp/',
+            'aws-cfn-bootstrap-latest.tar.gz\n',
+            'if test -f /lib/lsb/init-functions; then\n',
+            'tar --no-anchored -xf /var/tmp/aws-cfn-bootstrap-latest.tar.gz',
+            ' init/ubuntu/cfn-hup -O > /etc/init.d/cfn-hup && chmod 0755 ',
+            '/etc/init.d/cfn-hup; fi\n'
+            'rm -f /var/tmp/aws-cfn-bootstrap-latest.tar.gz\n'
             "if cfn-init --region ",
             {
                 "Ref": "AWS::Region"
@@ -164,8 +174,12 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
                             "ansible": [],
-                            "python-boto": []
                         }
                     }
                 },
@@ -299,8 +313,12 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
                             "ansible": [],
-                            "python-boto": []
                         }
                     }
                 },
@@ -437,8 +455,12 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
                             "ansible": [],
-                            "python-boto": []
                         }
                     }
                 },
@@ -565,8 +587,12 @@ class TestAnsibleProvisioner(object):
                     },
                     "packages": {
                         "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
                             "ansible": [],
-                            "python-boto": []
                         }
                     }
                 },
@@ -783,7 +809,11 @@ class TestAnsibleProvisioner(object):
                     "packages": {
                         "apt": {
                             "python-boto": [],
-                            "ansible": []
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
+                            "ansible": [],
                         }
                     }
                 },
@@ -830,6 +860,612 @@ class TestAnsibleProvisioner(object):
                             "command": "ansible-playbook --syntax-check /var/tmp/ansible-run/custom.yml"
                         }
                     }
+                }
+            }
+        }
+        data = AnsibleProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
+    @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data_cfnhup_with_interval(self):
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'cfn_hup': {
+                'enabled': True,
+                'interval': 3,
+            }
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3",
+                    "buckets": [
+                        "testbucket"
+                    ],
+                    "roleName": "instance-blah"
+                }
+            },
+            "AWS::CloudFormation::Init": {
+                "bootstrap": {
+                    "files": {
+                        "/etc/ec2_facts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: LCtest\n",
+                                        "app: test\n",
+                                        "stack: test\n",
+                                        "stage: dev\n",
+                                        "ansible_playbook: test.yml\n",
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        },
+                        "/etc/ansible/hosts": {
+                            "content": "localhost\n",
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        }
+                    },
+                    "packages": {
+                        "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
+                            "ansible": [],
+                        }
+                    }
+                },
+                "ansibleLoad": {
+                    "sources": {
+                        "/var/tmp/ansible-run": "https://%s.%s/%s/%s.tar.gz" % (
+                            args['bucket'],
+                            "s3.amazonaws.com",
+                            args['environment'],
+                            args['stackname']
+                        )
+                    }
+                },
+                "ansiblePre": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook --syntax-check " +
+                                       "/var/tmp/ansible-run/%s" % (
+                                           args['name'] + ".yml"
+                                       ),
+                            "ignoreErrors": "false",
+                        }
+                    }
+                },
+                "ansibleRun": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook " +
+                                       "/var/tmp/ansible-run/%s" % (
+                                           args['name'] + ".yml"
+                                        ),
+                        },
+                        "02-clean_ansible": {
+                            "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
+                        }
+                    }
+                },
+                "cfnHup": {
+                    "files": {
+                        "/etc/cfn/cfn-hup.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "[main]\n",
+                                        "stack=",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "region=",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "interval=3\n"
+                                    ]
+                                ]
+                            },
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        },
+                        "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "[cfn-auto-reloader-hook]\n",
+                                        "triggers=post.update\n",
+                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n",
+                                        "action=cfn-init -v -s ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        " -r LCtest -c ansible",
+                                        " --region ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "runas=root\n"
+                                    ]
+                                ]
+                            },
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        }
+                    },
+                    "services": {
+                        "sysvinit": {
+                            "cfn-hup": {
+                                "enabled": "true",
+                                "ensureRunning": "true",
+                                "files": [
+                                    "/etc/cfn/cfn-hup.conf",
+                                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "ansible"
+                        },
+                        "cfnHup"
+                    ],
+                    "ansible": [
+                        "ansibleLoad",
+                        "ansiblePre",
+                        "ansibleRun"
+                    ]
+                }
+            }
+        }
+
+        data = AnsibleProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
+    @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data_cfnhup(self):
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'cfn_hup': {
+                'enabled': True,
+            }
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3",
+                    "buckets": [
+                        "testbucket"
+                    ],
+                    "roleName": "instance-blah"
+                }
+            },
+            "AWS::CloudFormation::Init": {
+                "bootstrap": {
+                    "files": {
+                        "/etc/ec2_facts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: LCtest\n",
+                                        "app: test\n",
+                                        "stack: test\n",
+                                        "stage: dev\n",
+                                        "ansible_playbook: test.yml\n",
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        },
+                        "/etc/ansible/hosts": {
+                            "content": "localhost\n",
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        }
+                    },
+                    "packages": {
+                        "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
+                            "ansible": [],
+                        }
+                    }
+                },
+                "ansibleLoad": {
+                    "sources": {
+                        "/var/tmp/ansible-run": "https://%s.%s/%s/%s.tar.gz" % (
+                            args['bucket'],
+                            "s3.amazonaws.com",
+                            args['environment'],
+                            args['stackname']
+                        )
+                    }
+                },
+                "ansiblePre": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook --syntax-check " +
+                                       "/var/tmp/ansible-run/%s" % (
+                                           args['name'] + ".yml"
+                                       ),
+                            "ignoreErrors": "false",
+                        }
+                    }
+                },
+                "ansibleRun": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook " +
+                                       "/var/tmp/ansible-run/%s" % (
+                                           args['name'] + ".yml"
+                                        ),
+                        },
+                        "02-clean_ansible": {
+                            "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
+                        }
+                    }
+                },
+                "cfnHup": {
+                    "files": {
+                        "/etc/cfn/cfn-hup.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "[main]\n",
+                                        "stack=",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "region=",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "interval=5\n"
+                                    ]
+                                ]
+                            },
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        },
+                        "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "[cfn-auto-reloader-hook]\n",
+                                        "triggers=post.update\n",
+                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n",
+                                        "action=cfn-init -v -s ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        " -r LCtest -c ansible",
+                                        " --region ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "runas=root\n"
+                                    ]
+                                ]
+                            },
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        }
+                    },
+                    "services": {
+                        "sysvinit": {
+                            "cfn-hup": {
+                                "enabled": "true",
+                                "ensureRunning": "true",
+                                "files": [
+                                    "/etc/cfn/cfn-hup.conf",
+                                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "ansible"
+                        },
+                        "cfnHup"
+                    ],
+                    "ansible": [
+                        "ansibleLoad",
+                        "ansiblePre",
+                        "ansibleRun"
+                    ]
+                }
+            }
+        }
+
+        data = AnsibleProvisioner().cfn_init(args)
+        data = json.loads(json.dumps(data, cls=awsencode))
+        assert_equals(data, ci_data)
+
+    @mock.patch('time.time', _mock_time)
+    def test_ci_contains_expected_data_cfnhup_disabled_on_boot(self):
+        args = {
+            'bucket': 'testbucket',
+            'role': 'instance-blah',
+            'name': 'test',
+            'stackname': 'test',
+            'appname': 'test',
+            'resource': 'LCtest',
+            'environment': 'dev',
+            'cfn_hup': {
+                'enabled': False,
+            }
+        }
+
+        ci_data = {
+            "AWS::CloudFormation::Authentication": {
+                "rolebased": {
+                    "type": "s3",
+                    "buckets": [
+                        "testbucket"
+                    ],
+                    "roleName": "instance-blah"
+                }
+            },
+            "AWS::CloudFormation::Init": {
+                "bootstrap": {
+                    "files": {
+                        "/etc/ec2_facts.yaml": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "ec2_stack: ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "ec2_region: ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "ec2_resource: LCtest\n",
+                                        "app: test\n",
+                                        "stack: test\n",
+                                        "stage: dev\n",
+                                        "ansible_playbook: test.yml\n",
+                                    ]
+                                ]
+                            },
+                            "owner": "root",
+                            "group": "root",
+                            "mode": "000644"
+                        },
+                        "/etc/ansible/hosts": {
+                            "content": "localhost\n",
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        }
+                    },
+                    "packages": {
+                        "apt": {
+                            "python-boto": [],
+                            "python-pip": [],
+                            "python-dev": [],
+                        },
+                        "python": {
+                            "ansible": [],
+                        }
+                    }
+                },
+                "ansibleLoad": {
+                    "sources": {
+                        "/var/tmp/ansible-run": "https://%s.%s/%s/%s.tar.gz" % (
+                            args['bucket'],
+                            "s3.amazonaws.com",
+                            args['environment'],
+                            args['stackname']
+                        )
+                    }
+                },
+                "ansiblePre": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook --syntax-check " +
+                                       "/var/tmp/ansible-run/%s" % (
+                                           args['name'] + ".yml"
+                                       ),
+                            "ignoreErrors": "false",
+                        }
+                    }
+                },
+                "ansibleRun": {
+                    "commands": {
+                        "01-run_ansible": {
+                            "command": "ansible-playbook " +
+                                       "/var/tmp/ansible-run/%s" % (
+                                           args['name'] + ".yml"
+                                        ),
+                        },
+                        "02-clean_ansible": {
+                            "command": "rm -rf /var/tmp/ansible-run"
+                        }
+                    }
+                },
+                "trigger": {
+                    "commands": {
+                        "01-echo": {
+                            "ignoreErrors": "true",
+                            "command": "echo 1000"
+                        }
+                    }
+                },
+                "cfnHup": {
+                    "files": {
+                        "/etc/cfn/cfn-hup.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "[main]\n",
+                                        "stack=",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        "\n",
+                                        "region=",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "interval=5\n"
+                                    ]
+                                ]
+                            },
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        },
+                        "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                            "content": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "[cfn-auto-reloader-hook]\n",
+                                        "triggers=post.update\n",
+                                        "path=Resources.LCtest.Metadata.AWS::CloudFormation::Init\n",
+                                        "action=cfn-init -v -s ",
+                                        {
+                                            "Ref": "AWS::StackId"
+                                        },
+                                        " -r LCtest -c ansible",
+                                        " --region ",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        "\n",
+                                        "runas=root\n"
+                                    ]
+                                ]
+                            },
+                            "mode": "000644",
+                            "owner": "root",
+                            "group": "root"
+                        }
+                    },
+                    "services": {
+                        "sysvinit": {
+                            "cfn-hup": {
+                                "enabled": "false",
+                                "ensureRunning": "true",
+                                "files": [
+                                    "/etc/cfn/cfn-hup.conf",
+                                    "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "configSets": {
+                    "startup": [
+                        "bootstrap",
+                        {
+                            "ConfigSet": "ansible"
+                        },
+                        "cfnHup"
+                    ],
+                    "ansible": [
+                        "ansibleLoad",
+                        "ansiblePre",
+                        "ansibleRun"
+                    ]
                 }
             }
         }
