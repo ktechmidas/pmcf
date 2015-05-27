@@ -25,6 +25,12 @@ def _mock_time():
 
 
 class TestWindowsPuppetProvisioner(object):
+    def test_wants_wait(self):
+        assert_equals(WindowsPuppetProvisioner().wants_wait(), True)
+
+    def test_wants_profile(self):
+        assert_equals(WindowsPuppetProvisioner().wants_profile(), True)
+
     def test_userdata_contains_expected_data(self):
         args = {
             'name': 'test',

@@ -1,0 +1,31 @@
+config:
+  name: ais
+  environments:
+      - dev
+      - stage
+      - qa
+      - prod
+resources:
+  load_balancer:
+    - name: test
+      listener:
+        port: 80
+        instance_port: 8080
+        protocol: HTTP
+        instance_protocol: HTTP
+      healthcheck:
+        protocol: TCP
+        port: 8080
+    - name: test2
+      listener:
+        port: 80
+        instance_port: 8080
+        protocol: HTTP
+        instance_protocol: HTTP
+      healthcheck:
+        protocol: TCP
+        port: 8080
+      stages:
+        - stage
+        - prod
+  instance: []

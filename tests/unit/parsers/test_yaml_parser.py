@@ -602,6 +602,32 @@ resources:
         parser = yaml_parser.YamlParser()
         assert_raises(ParserFailure, parser.parse, data, args)
 
+    def test_lb_missing_dev(self):
+        args = {
+            'environment': 'dev',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/test-stack-lb-stage.yaml'
+        data = parser.parse_file(fname, args)
+        assert_equals(len(data['resources']['load_balancer']), 1)
+
+    def test_lb_present_prod(self):
+        args = {
+            'environment': 'prod',
+            'accesskey': '1234',
+            'secretkey': '2345',
+            'instance_accesskey': '12345',
+            'instance_secretkey': '23456'
+        }
+        parser = yaml_parser.YamlParser()
+        fname = 'tests/data/yaml/test-stack-lb-stage.yaml'
+        data = parser.parse_file(fname, args)
+        assert_equals(len(data['resources']['load_balancer']), 2)
+
 
 class TestParserData(object):
 
