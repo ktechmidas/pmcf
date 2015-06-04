@@ -23,3 +23,6 @@ started, clone it, then use virtualenv to get started::
   mkvirtualenv pmcf
   workon pmcf
   python setup.py install
+  
+See `here <https://virtualenvwrapper.readthedocs.org/en/latest/install.html>`_ for 
+details on virtualenvwrapper.
