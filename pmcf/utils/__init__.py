@@ -49,8 +49,8 @@ def import_from_string(module, klass):
     try:
         mod = __import__(module, fromlist=[klass])
         return getattr(mod, klass)
-    except AttributeError, e:
-        raise PropertyException(e.message)
+    except AttributeError, exc:
+        raise PropertyException(exc.message)
 
 
 def init_error(msg, res_type, res_title):
@@ -68,6 +68,43 @@ def init_error(msg, res_type, res_title):
     if res_title:
         msg += ' (%s)' % res_title
     raise PropertyException(msg)
+
+
+def do_init(obj, title, prop=False, template=None, **kwargs):
+    """
+    Wrapper for common init methods in helper classes
+
+    :param obj: Object calling init method
+    :type obj: object.
+    :param title: Name of object resource
+    :type title: string.
+    :param kwargs: Arguments to pass to obj's init
+    :type title: parameters.
+    :raises: :class:`pmcf.exceptions.PropertyException`
+    """
+
+    try:
+        if prop:
+            super(obj.__class__, obj).__init__(title, **kwargs)
+        else:
+            super(obj.__class__, obj).__init__(title, template, **kwargs)
+    except (TypeError, ValueError, AttributeError), exc:
+        init_error(exc.message, obj.__class__.__name__, title)
+
+
+def do_json(obj):
+    """
+    Wrapper for common calls to JSONrepr()
+
+    :param obj: Object calling init method
+    :type resource: object.
+    :raises: :class:`pmcf.exceptions.PropertyException`
+    """
+
+    try:
+        return super(obj.__class__, obj).JSONrepr()
+    except ValueError, exc:
+        error(obj, exc.message)
 
 
 def error(resource, msg):
@@ -119,7 +156,7 @@ def colourise_output(start, line, end='reset'):
         curses.setupterm()
         colourise_output.init = 1
 
-    COLOURS = {
+    colours = {
         'reset': curses.tparm(curses.tigetstr('op')),
         'red': curses.tparm(curses.tigetstr('setaf'),
                             curses.COLOR_RED),
@@ -131,7 +168,7 @@ def colourise_output(start, line, end='reset'):
                              curses.COLOR_CYAN),
     }
 
-    return COLOURS[start] + line + COLOURS[end]
+    return colours[start] + line + colours[end]
 colourise_output.init = 0
 
 
@@ -156,7 +193,7 @@ def get_changed_keys_from_templates(old, new):
     return list(set(ret))
 
 
-def valchange(d1, d2, parent=''):
+def valchange(old, new, parent=''):
     """
     Returns a list of changed keys in two dictionaries
 
@@ -168,19 +205,19 @@ def valchange(d1, d2, parent=''):
     """
 
     changes = []
-    for k in d1.keys():
+    for k in old.keys():
         if parent == '':
             display_key = k
         else:
             display_key = '%s.%s' % (parent, k)
 
-        if k not in d2.keys():
+        if k not in new.keys():
             changes.append(display_key)
             continue
-        if isinstance(d1[k], dict):
-            changes.extend(valchange(d1[k], d2[k], display_key))
+        if isinstance(old[k], dict):
+            changes.extend(valchange(old[k], new[k], display_key))
         else:
-            if d1[k] != d2[k]:
+            if old[k] != new[k]:
                 changes.append(display_key)
 
     return changes
@@ -246,22 +283,22 @@ def split_subnets(cidr, split):
         power += 1
 
     try:
-        ip = IPNetwork(cidr)
-        prefix = ip.prefixlen
+        ipaddr = IPNetwork(cidr)
+        prefix = ipaddr.prefixlen
         newprefix = prefix + power
-        return list(ip.subnet(newprefix))
-    except Exception, e:
-        raise PropertyException(str(e))
+        return list(ipaddr.subnet(newprefix))
+    except Exception, exc:
+        raise PropertyException(str(exc))
 
 
 __all__ = [
-    colourise_output,
-    error,
-    get_changed_keys_from_templates,
-    import_from_string,
-    init_error,
-    is_term,
-    make_diff,
-    split_subnets,
-    valchange,
+    'colourise_output',
+    'error',
+    'get_changed_keys_from_templates',
+    'import_from_string',
+    'init_error',
+    'is_term',
+    'make_diff',
+    'split_subnets',
+    'valchange',
 ]

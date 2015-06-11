@@ -63,7 +63,7 @@ class PromptInPlace(BaseStrategy):
         return True
 
     def allowed_update(self):
-        return re.compile('^%s\.LC.*\.%s\.%s\.%s\.%s\.%s$' % (
+        return re.compile(r'^%s\.LC.*\.%s\.%s\.%s\.%s\.%s$' % (
             'Resources',
             'Metadata',
             'AWS::CloudFormation::Init',
@@ -83,5 +83,5 @@ class PromptInPlace(BaseStrategy):
 
 
 __all__ = [
-    PromptInPlace,
+    'PromptInPlace',
 ]

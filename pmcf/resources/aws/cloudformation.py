@@ -12,50 +12,68 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.resources.aws.cloudformation
+    :platform: Unix
+    :synopsis: wrapper classes for troposphere cloudformation classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from troposphere import cloudformation as cfn
 
 from pmcf.resources.aws.helpers import cloudformation as cf
-from pmcf.utils import error
+from pmcf.utils import do_init, do_json
+
+# pylint: disable=super-init-not-called
 
 
 class Stack(cf.Stack):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            error(self, e.message)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class WaitCondition(cfn.WaitCondition):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            error(self, e.message)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class WaitConditionHandle(cfn.WaitConditionHandle):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            error(self, e.message)
+        do_init(self, title, template=template, **kwargs)
 
 
 __all__ = [
-    Stack,
-    WaitCondition,
-    WaitConditionHandle,
+    'Stack',
+    'WaitCondition',
+    'WaitConditionHandle',
 ]

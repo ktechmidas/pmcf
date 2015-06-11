@@ -12,40 +12,61 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-# This is the model layer, with a light validation layer over what troposphere
-# provides
+"""
+..  module:: pmcf.resources.aws.ec2
+    :platform: Unix
+    :synopsis: wrapper classes for troposphere ec2 classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
 
 from troposphere import ec2
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json, error
+
+# pylint: disable=super-init-not-called
 
 
 class Tag(ec2.Tag):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     pass
 
 
 class CustomerGateway(ec2.CustomerGateway):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class DHCPOptions(ec2.DHCPOptions):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.propnames).intersection(self.properties.keys())) > 0:
@@ -54,21 +75,29 @@ class DHCPOptions(ec2.DHCPOptions):
 
 
 class EIP(ec2.EIP):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
 
 class EIPAssociation(ec2.EIPAssociation):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         net_props = ['InstanceId', 'PrivateIpAddress']
@@ -86,13 +115,19 @@ class EIPAssociation(ec2.EIPAssociation):
 
 
 class EBSBlockDevice(ec2.EBSBlockDevice):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if self.properties.get('VolumeType'):
@@ -113,19 +148,26 @@ class EBSBlockDevice(ec2.EBSBlockDevice):
 
 
 class BlockDeviceMapping(ec2.BlockDeviceMapping):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -136,47 +178,60 @@ class BlockDeviceMapping(ec2.BlockDeviceMapping):
 
 
 class MountPoint(ec2.MountPoint):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class PrivateIpAddressSpecification(ec2.PrivateIpAddressSpecification):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -187,19 +242,26 @@ class NetworkInterfaceProperty(ec2.NetworkInterfaceProperty):
 
 
 class Instance(ec2.Instance):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if self.properties.get('NetworkInterfaces'):
@@ -210,42 +272,53 @@ class Instance(ec2.Instance):
                 error(self, 'Can not specify both NetworkInterfaces and '
                             'SubnetId')
 
-        it = self.properties.get('Tenancy')
-        if it:
-            if it not in ['default', 'dedicated']:
+        inst_ten = self.properties.get('Tenancy')
+        if inst_ten:
+            if inst_ten not in ['default', 'dedicated']:
                 error(self, 'Tenancy must be one of "default", "dedicated"')
 
 
 class InternetGateway(ec2.InternetGateway):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
 
 class NetworkAcl(ec2.NetworkAcl):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class ICMP(ec2.ICMP):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -256,13 +329,19 @@ class ICMP(ec2.ICMP):
 
 
 class PortRange(ec2.PortRange):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -273,19 +352,26 @@ class PortRange(ec2.PortRange):
 
 
 class NetworkAclEntry(ec2.NetworkAclEntry):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if self.properties['Protocol'] == 1:
@@ -297,48 +383,67 @@ class NetworkAclEntry(ec2.NetworkAclEntry):
                             'protocol is 6 or 17')
 
 
+# pylint: disable=interface-not-implemented
+
+
 class NetworkInterface(ec2.NetworkInterface):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
+
+
+# pylint: enable=interface-not-implemented
 
 
 class NetworkInterfaceAttachment(ec2.NetworkInterfaceAttachment):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class Route(ec2.Route):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if len(set(self.properties.keys()).intersection(
                 set(['GatewayId', 'InstanceId',
@@ -350,33 +455,43 @@ class Route(ec2.Route):
 
 
 class RouteTable(ec2.RouteTable):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class SecurityGroupEgress(ec2.SecurityGroupEgress):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -387,19 +502,26 @@ class SecurityGroupEgress(ec2.SecurityGroupEgress):
 
 
 class SecurityGroupIngress(ec2.SecurityGroupIngress):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -424,19 +546,26 @@ class SecurityGroupIngress(ec2.SecurityGroupIngress):
 
 
 class SecurityGroupRule(ec2.SecurityGroupRule):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if self.properties.get('CidrIp'):
@@ -457,75 +586,94 @@ class SecurityGroupRule(ec2.SecurityGroupRule):
 
 
 class SecurityGroup(ec2.SecurityGroup):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class Subnet(ec2.Subnet):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class SubnetNetworkAclAssociation(ec2.SubnetNetworkAclAssociation):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class SubnetRouteTableAssociation(ec2.SubnetRouteTableAssociation):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class Volume(ec2.Volume):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         iops = int(self.properties.get('Iops', 0))
@@ -554,33 +702,43 @@ class Volume(ec2.Volume):
 
 
 class VolumeAttachment(ec2.VolumeAttachment):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class VPC(ec2.VPC):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if self.properties.get('EnableDnsHostnames'):
@@ -588,41 +746,51 @@ class VPC(ec2.VPC):
                 error(self, 'EnableDnsSupport must be true if '
                             'EnableDnsHostnames is true')
 
-        it = self.properties.get('InstanceTenancy')
-        if it:
-            if it not in ['default', 'dedicated']:
+        inst_ten = self.properties.get('InstanceTenancy')
+        if inst_ten:
+            if inst_ten not in ['default', 'dedicated']:
                 error(self, 'InstanceTenancy must be one of "default", '
                             '"dedicated"')
 
 
 class VPCDHCPOptionsAssociation(ec2.VPCDHCPOptionsAssociation):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -631,121 +799,144 @@ class VPCGatewayAttachment(ec2.VPCGatewayAttachment):
 
 
 class VPCPeeringConnection(ec2.VPCPeeringConnection):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class VPNConnection(ec2.VPNConnection):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class VPNConnectionRoute(ec2.VPNConnectionRoute):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class VPNGateway(ec2.VPNGateway):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if self.properties.get('Type') != 'ipsec.1':
             error(self, 'Type must be ipsec.1')
 
 
 class VPNGatewayRoutePropagation(ec2.VPNGatewayRoutePropagation):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if not self.properties.get('RouteTableIds'):
             error(self, 'Resource RouteTableIds required')
 
 
 __all__ = [
-    BlockDeviceMapping,
-    CustomerGateway,
-    DHCPOptions,
-    EBSBlockDevice,
-    EIP,
-    EIPAssociation,
-    ICMP,
-    Instance,
-    InternetGateway,
-    MountPoint,
-    NetworkAcl,
-    NetworkAclEntry,
-    NetworkInterface,
-    NetworkInterfaceAttachment,
-    NetworkInterfaceProperty,
-    PortRange,
-    PrivateIpAddressSpecification,
-    Route,
-    RouteTable,
-    SecurityGroup,
-    SecurityGroupEgress,
-    SecurityGroupIngress,
-    SecurityGroupRule,
-    Subnet,
-    SubnetNetworkAclAssociation,
-    SubnetRouteTableAssociation,
-    Tag,
-    Volume,
-    VolumeAttachment,
-    VPC,
-    VPCDHCPOptionsAssociation,
-    VPCGatewayAttachment,
-    VPCPeeringConnection,
-    VPNConnection,
-    VPNConnectionRoute,
-    VPNGateway,
-    VPNGatewayRoutePropagation,
+    'BlockDeviceMapping',
+    'CustomerGateway',
+    'DHCPOptions',
+    'EBSBlockDevice',
+    'EIP',
+    'EIPAssociation',
+    'ICMP',
+    'Instance',
+    'InternetGateway',
+    'MountPoint',
+    'NetworkAcl',
+    'NetworkAclEntry',
+    'NetworkInterface',
+    'NetworkInterfaceAttachment',
+    'NetworkInterfaceProperty',
+    'PortRange',
+    'PrivateIpAddressSpecification',
+    'Route',
+    'RouteTable',
+    'SecurityGroup',
+    'SecurityGroupEgress',
+    'SecurityGroupIngress',
+    'SecurityGroupRule',
+    'Subnet',
+    'SubnetNetworkAclAssociation',
+    'SubnetRouteTableAssociation',
+    'Tag',
+    'Volume',
+    'VolumeAttachment',
+    'VPC',
+    'VPCDHCPOptionsAssociation',
+    'VPCGatewayAttachment',
+    'VPCPeeringConnection',
+    'VPNConnection',
+    'VPNConnectionRoute',
+    'VPNGateway',
+    'VPNGatewayRoutePropagation',
 ]

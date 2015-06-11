@@ -38,11 +38,11 @@ class JSONPolicy(BasePolicy):
 
     def __init__(self, json_file='/etc/pmcf/policy.json'):
         try:
-            with open(json_file) as fd:
-                self.json_policy = json.loads(fd.read())
-        except (IOError, ValueError), e:
+            with open(json_file) as fld:
+                self.json_policy = json.loads(fld.read())
+        except (IOError, ValueError), exc:
             raise PolicyException("Can't load policy file %s: %s" %
-                                  (json_file, e))
+                                  (json_file, exc))
 
     def validate_resource(self, resource_type, resource_data):
         """
@@ -72,5 +72,5 @@ class JSONPolicy(BasePolicy):
 
 
 __all__ = [
-    JSONPolicy,
+    'JSONPolicy',
 ]

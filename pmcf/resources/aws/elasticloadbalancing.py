@@ -12,28 +12,42 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-# This is the model layer, with a light validation layer over what troposphere
-# provides
+"""
+..  module:: pmcf.resources.aws.elasticloadbalancing
+    :platform: Unix
+    :synopsis: wrapper classes for troposphere ec2 classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
 
 from troposphere import elasticloadbalancing as elb
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json, error
+
+# pylint: disable=super-init-not-called
 
 
 class AccessLoggingPolicy(elb.AccessLoggingPolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if self.properties['Enabled'] is False:
@@ -50,41 +64,53 @@ class AccessLoggingPolicy(elb.AccessLoggingPolicy):
 
 
 class AppCookieStickinessPolicy(elb.AppCookieStickinessPolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class HealthCheck(elb.HealthCheck):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class LBCookieStickinessPolicy(elb.LBCookieStickinessPolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if 'PolicyName' not in self.properties.keys():
@@ -92,33 +118,43 @@ class LBCookieStickinessPolicy(elb.LBCookieStickinessPolicy):
 
 
 class Listener(elb.Listener):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class Policy(elb.Policy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         policy_types = [
@@ -135,33 +171,43 @@ class Policy(elb.Policy):
 
 
 class ConnectionDrainingPolicy(elb.ConnectionDrainingPolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class LoadBalancer(elb.LoadBalancer):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
 
         if len(set(self.properties.keys()).intersection(
@@ -170,12 +216,12 @@ class LoadBalancer(elb.LoadBalancer):
 
 
 __all__ = [
-    AccessLoggingPolicy,
-    AppCookieStickinessPolicy,
-    ConnectionDrainingPolicy,
-    HealthCheck,
-    LBCookieStickinessPolicy,
-    Listener,
-    LoadBalancer,
-    Policy,
+    'AccessLoggingPolicy',
+    'AppCookieStickinessPolicy',
+    'ConnectionDrainingPolicy',
+    'HealthCheck',
+    'LBCookieStickinessPolicy',
+    'Listener',
+    'LoadBalancer',
+    'Policy',
 ]

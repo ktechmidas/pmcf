@@ -175,8 +175,8 @@ class WindowsPuppetProvisioner(BaseProvisioner):
         ]
         if args.get('eip'):
             facts.append("ec2_elastic_ips: ")
-            for ei in args['eip']:
-                facts.append(Ref(ei))
+            for ipaddr in args['eip']:
+                facts.append(Ref(ipaddr))
                 facts.append(",")
             facts.pop()
             facts.append("\n")
@@ -362,6 +362,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                 'deployRun',
             ]
             init['configSets']['startup'].append({"ConfigSet": "app"})
+# pylint: disable=anomalous-backslash-in-string
             init['deployRun'] = {
                 "commands": {
                     "01-run_deploy": {
@@ -378,6 +379,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                     }
                 }
             }
+# pylint: enable=anomalous-backslash-in-string
         if args.get('infrastructure'):
             init['configSets']['startup'].append({"ConfigSet": "puppetFinal"})
 
@@ -386,5 +388,5 @@ class WindowsPuppetProvisioner(BaseProvisioner):
 
 
 __all__ = [
-    WindowsPuppetProvisioner,
+    'WindowsPuppetProvisioner',
 ]

@@ -210,8 +210,8 @@ class PuppetProvisioner(BaseProvisioner):
         ]
         if args.get('eip'):
             facts.append("ec2_elastic_ips: ")
-            for ei in args['eip']:
-                facts.append(Ref(ei))
+            for ipaddr in args['eip']:
+                facts.append(Ref(ipaddr))
                 facts.append(",")
             facts.pop()
             facts.append("\n")
@@ -370,5 +370,5 @@ class PuppetProvisioner(BaseProvisioner):
 
 
 __all__ = [
-    PuppetProvisioner,
+    'PuppetProvisioner',
 ]

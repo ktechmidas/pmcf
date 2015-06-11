@@ -12,11 +12,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.resources.aws.helpers.autoscaling
+    :platform: Unix
+    :synopsis: helper class to extend troposphere
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from troposphere import AWSObject
 from troposphere.validators import integer
 
 
 class ScheduledAction(AWSObject):
+    """
+    Override of troposphere class to provide extra functionality now present
+    cloudformation
+    """
+
     type = "AWS::AutoScaling::ScheduledAction"
 
     props = {
@@ -29,6 +42,7 @@ class ScheduledAction(AWSObject):
         'StartTime': (basestring, False),
     }
 
+
 __all__ = [
-    ScheduledAction,
+    'ScheduledAction',
 ]

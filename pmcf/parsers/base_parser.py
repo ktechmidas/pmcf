@@ -57,7 +57,7 @@ class BaseParser(object):
         }
 
     @abc.abstractmethod
-    def parse(self, config, args={}):
+    def parse(self, config, args=None):
         """
         Method signature for parsing file contents into internal
         representation of data.
@@ -81,7 +81,7 @@ class BaseParser(object):
 
         return self._stack
 
-    def parse_file(self, fname, args={}):
+    def parse_file(self, fname, args=None):
         """
         Wrapper method for :py:meth:`parse` to pass in file contents
 
@@ -93,11 +93,12 @@ class BaseParser(object):
         :returns: dict.
         """
 
+        args = args or {}
         try:
-            with open(fname) as fd:
-                return self.parse(fd.read(), args)
-        except IOError, e:
-            raise ParserFailure(str(e))
+            with open(fname) as fld:
+                return self.parse(fld.read(), args)
+        except IOError, exc:
+            raise ParserFailure(str(exc))
 
     def validate(self):
         """
@@ -109,11 +110,11 @@ class BaseParser(object):
         LOG.info('Start validation of stack')
         try:
             jsonschema.validate(self._stack, yaml.load(base_schema))
-        except jsonschema.exceptions.ValidationError, e:
-            raise ParserFailure(str(e))
+        except jsonschema.exceptions.ValidationError, exc:
+            raise ParserFailure(str(exc))
         LOG.info('Finished validation of stack')
 
 
 __all__ = [
-    BaseParser,
+    'BaseParser',
 ]

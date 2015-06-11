@@ -79,10 +79,10 @@ class AuditException(PMCFException):
 
 
 __all__ = [
-    AuditException,
-    ParserFailure,
-    PMCFException,
-    PolicyException,
-    PropertyException,
-    ProvisionerException
+    'AuditException',
+    'ParserFailure',
+    'PMCFException',
+    'PolicyException',
+    'PropertyException',
+    'ProvisionerException',
 ]

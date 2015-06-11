@@ -11,3 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+"""
+..  module:: pmcf.resources
+    :platform: Unix
+    :synopsis: wrapper classes for implementation-specific classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""

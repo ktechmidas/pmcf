@@ -25,7 +25,7 @@ from pmcf.parsers.base_parser import BaseParser
 from pmcf.parsers.yaml_parser import YamlParser
 
 __all__ = [
-    BaseParser,
-    AWSFWParser,
-    YamlParser,
+    'BaseParser',
+    'AWSFWParser',
+    'YamlParser',
 ]

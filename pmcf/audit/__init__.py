@@ -25,7 +25,7 @@ from pmcf.audit.noop_audit import NoopAudit
 from pmcf.audit.s3_audit import S3Audit
 
 __all__ = [
-    BaseAudit,
-    NoopAudit,
-    S3Audit,
+    'BaseAudit',
+    'NoopAudit',
+    'S3Audit',
 ]

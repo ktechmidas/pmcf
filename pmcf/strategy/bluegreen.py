@@ -81,5 +81,5 @@ class BlueGreen(BaseStrategy):
 
 
 __all__ = [
-    BlueGreen,
+    'BlueGreen',
 ]

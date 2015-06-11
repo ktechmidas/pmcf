@@ -85,5 +85,5 @@ class BaseStrategy(object):
 
 
 __all__ = [
-    BaseStrategy,
+    'BaseStrategy',
 ]

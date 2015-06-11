@@ -69,5 +69,5 @@ class BlockingProvisioner(BaseProvisioner):
 
 
 __all__ = [
-    BlockingProvisioner,
+    'BlockingProvisioner',
 ]

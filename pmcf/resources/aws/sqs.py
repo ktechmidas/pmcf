@@ -22,40 +22,50 @@
 
 from troposphere import sqs
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json
+
+# pylint: disable=super-init-not-called
 
 
 class RedrivePolicy(sqs.RedrivePolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
 
 class Queue(sqs.Queue):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
 
 class QueuePolicy(sqs.QueuePolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
+
 
 __all__ = [
-    Queue,
-    QueuePolicy,
-    RedrivePolicy,
+    'Queue',
+    'QueuePolicy',
+    'RedrivePolicy',
 ]

@@ -60,5 +60,5 @@ class BaseAudit(object):
 
 
 __all__ = [
-    BaseAudit,
+    'BaseAudit',
 ]

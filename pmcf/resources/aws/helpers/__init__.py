@@ -11,3 +11,11 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+
+"""
+..  module:: pmcf.resources.aws.helpers
+    :platform: Unix
+    :synopsis: helper classes to extend troposphere
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""

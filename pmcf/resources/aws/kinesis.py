@@ -22,16 +22,21 @@
 
 from troposphere import kinesis
 
-from pmcf.utils import init_error
+from pmcf.utils import do_init
+
+# pylint: disable=super-init-not-called
 
 
 class Stream(kinesis.Stream):
-    def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
+    def __init__(self, title, template=None, **kwargs):
+        do_init(self, title, template=template, **kwargs)
+
 
 __all__ = [
-    Stream,
+    'Stream',
 ]

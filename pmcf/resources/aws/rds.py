@@ -12,25 +12,42 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.resources.aws.rds
+    :platform: Unix
+    :synopsis: Piksel Managed Cloud Framework
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from troposphere import rds
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json, error
+
+# pylint: disable=super-init-not-called
 
 
 class DBInstance(rds.DBInstance):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if self.properties.get('Iops'):
             if (self.properties['Iops'] % 1000) != 0:
@@ -51,43 +68,62 @@ class DBInstance(rds.DBInstance):
 
 
 class DBParameterGroup(rds.DBParameterGroup):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except (AttributeError, ValueError), e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        return super(self.__class__, self).JSONrepr()
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if not self.properties.get('Family'):
             error(self, "Must specify `Family'")
 
 
 class DBSubnetGroup(rds.DBSubnetGroup):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class RDSSecurityGroup(rds.RDSSecurityGroup):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if self.properties.get('CIDRIP'):
             if len(set(self.properties.keys()).intersection(
@@ -102,33 +138,43 @@ class RDSSecurityGroup(rds.RDSSecurityGroup):
 
 
 class DBSecurityGroup(rds.DBSecurityGroup):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class DBSecurityGroupIngress(rds.DBSecurityGroupIngress):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if self.properties.get('CIDRIP'):
             if len(set(self.properties.keys()).intersection(
@@ -143,10 +189,10 @@ class DBSecurityGroupIngress(rds.DBSecurityGroupIngress):
 
 
 __all__ = [
-    DBInstance,
-    DBParameterGroup,
-    DBSecurityGroup,
-    DBSecurityGroupIngress,
-    DBSubnetGroup,
-    RDSSecurityGroup,
+    'DBInstance',
+    'DBParameterGroup',
+    'DBSecurityGroup',
+    'DBSecurityGroupIngress',
+    'DBSubnetGroup',
+    'RDSSecurityGroup',
 ]

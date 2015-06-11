@@ -45,31 +45,31 @@ class AWSFWProvisioner(BaseProvisioner):
         :returns: str.
         """
 
-        ud = self.make_skeleton()
+        userdata = self.make_skeleton()
 
-        ud = self.add_file(ud, 'scripts/awsfw/part-handler',
-                           'part-handler', compress=False)
-        ud = self.add_file(ud, 'scripts/awsfw/cloud-config',
-                           'cloud-config', compress=False)
-        ud = self.add_file(ud, 'scripts/awsfw/s3curl.pl',
-                           'x-s3curl', compress=False)
+        userdata = self.add_file(userdata, 'scripts/awsfw/part-handler',
+                                 'part-handler', compress=False)
+        userdata = self.add_file(userdata, 'scripts/awsfw/cloud-config',
+                                 'cloud-config', compress=False)
+        userdata = self.add_file(userdata, 'scripts/awsfw/s3curl.pl',
+                                 'x-s3curl', compress=False)
 
         args['roles'] = ','.join(args['roles'])
         args['apps'] = ','.join(args['apps'])
         args['instantiatedby'] = 'create-farm'
 
         awsfw_data = ''
-        for k, v in args.iteritems():
-            awsfw_data += 'export %s=%s\n' % (k, v)
+        for key, val in args.iteritems():
+            awsfw_data += 'export %s=%s\n' % (key, val)
 
-        ud = self.add_data(ud, awsfw_data, 'vars',
-                           'awsfw-data', compress=False)
-        ud = self.add_file(ud, 'scripts/awsfw/bootstrap.sh',
-                           'x-shellscript', compress=False)
+        userdata = self.add_data(userdata, awsfw_data, 'vars',
+                                 'awsfw-data', compress=False)
+        userdata = self.add_file(userdata, 'scripts/awsfw/bootstrap.sh',
+                                 'x-shellscript', compress=False)
 
-        return self.resize(ud)
+        return self.resize(userdata)
 
 
 __all__ = [
-    AWSFWProvisioner,
+    'AWSFWProvisioner',
 ]

@@ -36,7 +36,7 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
     tagging policy.
     """
 
-    def run(self, data, metadata={}, poll=False,
+    def run(self, data, metadata=None, poll=False,
             action='create', upload=True):
         """
         Interfaces with public and private cloud providers.
@@ -58,13 +58,14 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
         :returns: boolean
         """
 
+        metadata = metadata or {}
         try:
             metadata['tags'] = {
                 'Stack': metadata['name'],
                 'Stage': metadata['environment'],
             }
-        except KeyError, e:
-            raise ProvisionerException(str(e))
+        except KeyError, exc:
+            raise ProvisionerException(str(exc))
 
         metadata['name'] = "%s-%s" % (metadata['name'],
                                       metadata['environment'])
@@ -74,5 +75,5 @@ class SequoiaAWSCFNOutput(AWSCFNOutput):
 
 
 __all__ = [
-    SequoiaAWSCFNOutput,
+    'SequoiaAWSCFNOutput',
 ]

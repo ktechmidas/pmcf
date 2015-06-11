@@ -24,5 +24,5 @@ from pmcf.config.config import PMCFConfig
 
 
 __all__ = [
-    PMCFConfig,
+    'PMCFConfig',
 ]

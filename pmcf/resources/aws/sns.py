@@ -22,23 +22,32 @@
 
 from troposphere import sns
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json, error
+
+# pylint: disable=super-init-not-called
 
 
 class Subscription(sns.Subscription):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         valid_protos = ["https", "http", "email", "email-json", "sqs"]
         super(self.__class__, self).validate()
         if self.properties['Protocol'] not in valid_protos:
@@ -51,34 +60,41 @@ class Subscription(sns.Subscription):
 
 
 class TopicPolicy(sns.TopicPolicy):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class Topic(sns.Topic):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
+
 
 __all__ = [
-    Subscription,
-    Topic,
-    TopicPolicy,
+    'Subscription',
+    'Topic',
+    'TopicPolicy',
 ]

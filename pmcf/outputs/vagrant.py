@@ -77,8 +77,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                         'vagrant_net': net
                     }
                 })
-            except KeyError, e:
-                raise ProvisionerException("Missing field %s" % str(e))
+            except KeyError, exc:
+                raise ProvisionerException("Missing field %s" % str(exc))
         vagrantfile += "  instances = '%s'" % json.dumps(inst_block,
                                                          sort_keys=True)
         vagrantfile += """
@@ -103,7 +103,7 @@ end
         LOG.info('Finished building Vagrantfile')
         return vagrantfile
 
-    def run(self, data, metadata={}, poll=False,
+    def run(self, data, metadata=None, poll=False,
             action='create', upload=False):
         """
         Outputs a vagrantfile of the stack definition
@@ -121,13 +121,14 @@ end
         :returns: boolean
         """
 
+        metadata = metadata or {}
         LOG.info('Start running data')
         print data
         LOG.info('Finished running data')
         self.do_audit(data, metadata)
         return True
 
-    def do_audit(self, data, metadata={}):
+    def do_audit(self, data, metadata=None):
         """
         Records audit logs for current transaction
 
@@ -141,5 +142,5 @@ end
 
 
 __all__ = [
-    VagrantOutput,
+    'VagrantOutput',
 ]

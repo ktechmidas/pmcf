@@ -51,5 +51,5 @@ class ChefProvisioner(BaseProvisioner):
 
 
 __all__ = [
-    ChefProvisioner,
+    'ChefProvisioner',
 ]

@@ -25,6 +25,8 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+# pylint: disable=abstract-class-little-used
+
 
 class BasePolicy(object):
     """
@@ -55,5 +57,5 @@ class BasePolicy(object):
 
 
 __all__ = [
-    BasePolicy,
+    'BasePolicy',
 ]

@@ -25,6 +25,6 @@ from pmcf.policy.json_policy import JSONPolicy
 
 
 __all__ = [
-    BasePolicy,
-    JSONPolicy,
+    'BasePolicy',
+    'JSONPolicy',
 ]

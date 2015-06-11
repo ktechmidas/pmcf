@@ -22,27 +22,41 @@
 
 from troposphere import route53
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json, error
+
+# pylint: disable=super-init-not-called
 
 
 class AliasTarget(route53.AliasTarget):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     pass
 
 
 class RecordSetType(route53.RecordSetType):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         rr_props = ['TTL', 'SetIdentifier']
         if self.properties.get('AliasTarget'):
@@ -70,19 +84,26 @@ class RecordSetType(route53.RecordSetType):
 
 
 class RecordSet(route53.RecordSet):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, prop=True, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         rr_props = ['TTL', 'SetIdentifier']
         if self.properties.get('AliasTarget'):
@@ -110,13 +131,19 @@ class RecordSet(route53.RecordSet):
 
 
 class RecordSetGroup(route53.RecordSetGroup):
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
     def __init__(self, title, template=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, template, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+        do_init(self, title, template=template, **kwargs)
 
     def validate(self):
+        """
+        Validate properties of troposphere resource with additional checks
+        """
+
         super(self.__class__, self).validate()
         if len(set(['HostedZoneId', 'HostedZoneName']).intersection(
                 set(self.properties.keys()))) != 1:
@@ -125,8 +152,8 @@ class RecordSetGroup(route53.RecordSetGroup):
         return True
 
 __all__ = [
-    AliasTarget,
-    RecordSet,
-    RecordSetGroup,
-    RecordSetType,
+    'AliasTarget',
+    'RecordSet',
+    'RecordSetGroup',
+    'RecordSetType',
 ]

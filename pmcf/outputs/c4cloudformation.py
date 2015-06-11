@@ -37,7 +37,7 @@ class C4AWSCFNOutput(AWSCFNOutput):
     tagging policy.
     """
 
-    def run(self, data, metadata={}, poll=False,
+    def run(self, data, metadata=None, poll=False,
             action='create', upload=False):
         """
         Interfaces with public and private cloud providers.
@@ -59,6 +59,7 @@ class C4AWSCFNOutput(AWSCFNOutput):
         :returns: boolean
         """
 
+        metadata = metadata or {}
         try:
             if metadata['environment'].lower() == 'prod':
                 review_date = (datetime.date.today() +
@@ -88,13 +89,13 @@ class C4AWSCFNOutput(AWSCFNOutput):
             if generation:
                 metadata['tags']['FarmGeneration'] = metadata['generation']
 
-        except KeyError, e:
-            raise ProvisionerException(str(e))
+        except KeyError, exc:
+            raise ProvisionerException(str(exc))
 
         return super(self.__class__, self).run(data, metadata, poll,
                                                action, upload)
 
 
 __all__ = [
-    C4AWSCFNOutput,
+    'C4AWSCFNOutput',
 ]

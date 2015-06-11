@@ -21,6 +21,8 @@
 ..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
 """
 
+# pylint: disable=invalid-name
+
 schema = """
 $schema: http://json-schema.org/draft-04/schema#
 definitions:
@@ -664,6 +666,7 @@ required:
 additionalProperties: false
 """
 
+
 __all__ = [
-    schema
+    'schema',
 ]

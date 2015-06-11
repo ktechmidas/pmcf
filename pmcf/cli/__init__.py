@@ -22,6 +22,7 @@
 
 from pmcf.cli.cmd import PMCFCLI
 
+
 __all__ = [
-    PMCFCLI,
+    'PMCFCLI',
 ]

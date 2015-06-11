@@ -42,16 +42,25 @@ class AWSCFNOutput(JSONOutput):
     """
 
     def _get_input(self, prompt):
+        """
+        Helper method to take input if input is a tty
+        """
         if is_term():
             return raw_input(prompt)
         return 'y'
 
     def _get_difference(self, cfn, stack, data):
+        """
+        Helper method to find differences between two JSON documents
+        """
         resp = cfn.get_template(stack)['GetTemplateResponse']
         old_body = resp['GetTemplateResult']['TemplateBody']
         return get_changed_keys_from_templates(old_body, data)
 
     def _show_prompt(self, cfn, stack, data):
+        """
+        Helper method to create colourised diff outut and prompt for update
+        """
         resp = cfn.get_template(stack)['GetTemplateResponse']
         old_body = resp['GetTemplateResult']['TemplateBody']
         diff = make_diff(old_body, data)
@@ -77,15 +86,15 @@ class AWSCFNOutput(JSONOutput):
         :returns: boolean
         """
 
-        LOG.info('Checking whether stack %s is able to be updated' % stack)
+        LOG.info('Checking whether stack %s is able to be updated', stack)
         try:
             ret = cfn.describe_stacks(stack)
             if len(ret) == 1:
                 stack = ret[0]
                 if stack.stack_status.endswith('COMPLETE'):
                     return True
-        except boto.exception.BotoServerError, e:
-            if e.message.endswith('Rate exceeded'):
+        except boto.exception.BotoServerError, exc:
+            if exc.message.endswith('Rate exceeded'):
                 time.sleep(1)
                 return self._stack_updatable(cfn, stack)
         return False
@@ -101,12 +110,12 @@ class AWSCFNOutput(JSONOutput):
         :returns: boolean
         """
 
-        LOG.info('Checking for existance of stack %s' % stack)
+        LOG.info('Checking for existance of stack %s', stack)
         try:
             cfn.describe_stacks(stack)
             return True
-        except boto.exception.BotoServerError, e:
-            if e.message.endswith('Rate exceeded'):
+        except boto.exception.BotoServerError, exc:
+            if exc.message.endswith('Rate exceeded'):
                 time.sleep(1)
                 return self._stack_exists(cfn, stack)
         return False
@@ -144,26 +153,26 @@ class AWSCFNOutput(JSONOutput):
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         """
 
-        LOG.info('uploading stack definition to s3://%s/%s' % (
-            credentials['audit_output'], destination))
+        LOG.info('uploading stack definition to s3://%s/%s',
+                 credentials['audit_output'], destination)
         try:
-            s3 = None
+            s3conn = None
             if credentials.get('use_iam_profile'):
-                s3 = boto.connect_s3()
+                s3conn = boto.connect_s3()
             else:
-                s3 = boto.connect_s3(
+                s3conn = boto.connect_s3(
                     aws_access_key_id=credentials['access'],
                     aws_secret_access_key=credentials['secret']
                 )
-            bucket = s3.get_bucket(credentials['audit_output'])
+            bucket = s3conn.get_bucket(credentials['audit_output'])
             k = boto.s3.key.Key(bucket)
             k.key = destination
             k.set_contents_from_string(stack)
         except (boto.exception.S3ResponseError,
-                boto.exception.BotoServerError), e:
-            raise ProvisionerException(e)
+                boto.exception.BotoServerError), exc:
+            raise ProvisionerException(exc)
 
-    def run(self, data, metadata={}, poll=False,
+    def run(self, data, metadata=None, poll=False,
             action='create', upload=False):
         """
         Interfaces with public and private cloud providers - responsible for
@@ -183,7 +192,8 @@ class AWSCFNOutput(JSONOutput):
         :returns: boolean
         """
 
-        LOG.debug('metadata is %s' % metadata)
+        metadata = metadata or {}
+        LOG.debug('metadata is %s', metadata)
 
         if metadata.get('region', None) is None:
             raise ProvisionerException('Need to supply region in metadata')
@@ -345,8 +355,8 @@ class AWSCFNOutput(JSONOutput):
             self.do_audit(data, metadata)
             return self.do_poll(cfn, metadata['name'], poll, action)
 
-        except boto.exception.BotoServerError, e:
-            raise ProvisionerException(str(e))
+        except boto.exception.BotoServerError, exc:
+            raise ProvisionerException(str(exc))
 
     def do_poll(self, cfn, name, poll, action):
         """
@@ -361,12 +371,12 @@ class AWSCFNOutput(JSONOutput):
         """
 
         if poll:
-            LOG.info('Polling until %s is complete' % name)
-            LOG.info('%20s | %35s | %20s | %s' % (
-                'resource id',
-                'resource type',
-                'resource status',
-                'resource status reason'))
+            LOG.info('Polling until %s is complete', name)
+            LOG.info('%20s | %35s | %20s | %s',
+                     'resource id',
+                     'resource type',
+                     'resource status',
+                     'resource status reason')
             seen_events = set()
             stack = None
             while True:
@@ -374,12 +384,12 @@ class AWSCFNOutput(JSONOutput):
                 try:
                     stack = cfn.describe_stacks(name)[0]
                     all_events = stack.describe_events()
-                except boto.exception.BotoServerError, e:
-                    LOG.info(e.message)
+                except boto.exception.BotoServerError, exc:
+                    LOG.info(exc.message)
                     if action == 'delete' and \
-                            e.message.endswith('does not exist'):
+                            exc.message.endswith('does not exist'):
                         return True
-                    if e.message.endswith('Rate exceeded'):
+                    if exc.message.endswith('Rate exceeded'):
                         continue
                     return False
                 for event in sorted(all_events, key=lambda x: x.timestamp):
@@ -388,11 +398,11 @@ class AWSCFNOutput(JSONOutput):
                     if event.timestamp < self.start_time:
                         seen_events.add(event.event_id)
                         continue
-                    LOG.info('%20s | %35s | %20s | %s' % (
-                        event.logical_resource_id,
-                        event.resource_type,
-                        event.resource_status,
-                        event.resource_status_reason))
+                    LOG.info('%20s | %35s | %20s | %s',
+                             event.logical_resource_id,
+                             event.resource_type,
+                             event.resource_status,
+                             event.resource_status_reason)
                     seen_events.add(event.event_id)
                 if stack.stack_status.endswith('COMPLETE') or\
                         stack.stack_status.endswith('FAILED'):
@@ -405,7 +415,7 @@ class AWSCFNOutput(JSONOutput):
             if len(stack.outputs) > 0:
                 LOG.info('Stack outputs')
                 for output in stack.outputs:
-                    LOG.info('%s: %s' % (output.description, output.value))
+                    LOG.info('%s: %s', output.description, output.value)
         return True
 
     def do_audit(self, data, metadata):
@@ -433,10 +443,10 @@ class AWSCFNOutput(JSONOutput):
                 metadata['name'],
                 time.strftime('%Y%m%dT%H%M%S'))
             audit.record_stack(data, dest, creds)
-        except AuditException, e:
-            LOG.error(e)
+        except AuditException, exc:
+            LOG.error(exc)
 
 
 __all__ = [
-    AWSCFNOutput,
+    'AWSCFNOutput',
 ]

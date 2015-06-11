@@ -67,7 +67,7 @@ class YamlParser(BaseParser):
         raise ParserFailure("Can't find environment-specific data for %s" %
                             field)
 
-    def parse(self, config, args={}):
+    def parse(self, config, args=None):
         """
         Builds internal representation of data from the
         YAML representation
@@ -81,18 +81,19 @@ class YamlParser(BaseParser):
         """
 
         LOG.info('Start parsing config')
+        args = args or {}
         try:
             data = yaml.load(config)
-        except Exception, e:
-            raise ParserFailure(e)
+        except Exception, exc:
+            raise ParserFailure(exc)
 
         try:
             self._stack['config'] = {
                 'name': data['config']['name'],
                 'environment': args['environment']
             }
-        except KeyError, e:
-            raise ParserFailure(e)
+        except KeyError, exc:
+            raise ParserFailure(exc)
 
         for field in ['vpcid', 'defaultsg', 'subnets', 'notify']:
             item = data['config'].get(field, None)
@@ -128,31 +129,36 @@ class YamlParser(BaseParser):
                 subcidrs = split_subnets(netrange, numsubnets)
                 settings = []
                 if net['public']:
-                    for z in zones:
+                    for zone in zones:
                         settings.append('public')
                 else:
-                    for z in zones:
+                    for zone in zones:
                         settings.append('private')
 
-                for n in range(0, numsubnets):
-                    z = n % len(zones)
+                for net in range(0, numsubnets):
+                    zidx = net % len(zones)
+                    subnname = "%s-%s-%s" % (
+                        netname,
+                        zones[zidx],
+                        settings[net]
+                    )
                     subnets.append({
-                        'cidr': str(subcidrs[n]),
-                        'name': "%s-%s-%s" % (netname, zones[z], settings[n]),
-                        'public': settings[n] == 'public',
-                        'zone': zones[z],
+                        'cidr': str(subcidrs[net]),
+                        'name': subnname,
+                        'public': settings[net] == 'public',
+                        'zone': zones[zidx],
                     })
 
                 data['resources']['network'][idx]['subnets'] = subnets
 
         dropped = []
-        for idx, sg in enumerate(data['resources'].get('secgroup', [])):
-            stages = sg.pop('stages', [])
+        for idx, secg in enumerate(data['resources'].get('secgroup', [])):
+            stages = secg.pop('stages', [])
             if stages:
                 if args['environment'] not in stages:
-                    LOG.debug('Found secgroup not present in %s: %s' % (
-                        args['environment'],
-                        sg['name']))
+                    LOG.debug('Found secgroup not present in %s: %s',
+                              args['environment'],
+                              secg['name'])
                     dropped.insert(0, idx)
         for drop in dropped:
             data['resources']['secgroup'].pop(drop)
@@ -162,21 +168,21 @@ class YamlParser(BaseParser):
             stages = instance.pop('stages', [])
             if stages:
                 if args['environment'] not in stages:
-                    LOG.debug('Found instance not present in %s: %s' % (
-                        args['environment'],
-                        instance['name']))
+                    LOG.debug('Found instance not present in %s: %s',
+                              args['environment'],
+                              instance['name'])
                     dropped.insert(0, idx)
         for drop in dropped:
             data['resources']['instance'].pop(drop)
 
         dropped = []
-        for idx, lb in enumerate(data['resources'].get('load_balancer', [])):
-            stages = lb.pop('stages', [])
+        for idx, ldb in enumerate(data['resources'].get('load_balancer', [])):
+            stages = ldb.pop('stages', [])
             if stages:
                 if args['environment'] not in stages:
-                    LOG.debug('Found lb not present in %s: %s' % (
-                        args['environment'],
-                        lb['name']))
+                    LOG.debug('Found lb not present in %s: %s',
+                              args['environment'],
+                              ldb['name'])
                     dropped.insert(0, idx)
         for drop in dropped:
             data['resources']['load_balancer'].pop(drop)
@@ -222,21 +228,21 @@ class YamlParser(BaseParser):
                                                         args['environment'],
                                                         field)
 
-        for lb in data['resources'].get('load_balancer', []):
+        for ldb in data['resources'].get('load_balancer', []):
             for field in ['policy', 'subnets']:
-                item = lb.get(field, None)
+                item = ldb.get(field, None)
                 if item:
-                    lb[field] =\
+                    ldb[field] =\
                         self._get_value_for_env(item,
                                                 args['environment'],
                                                 field)
 
-        for sg in data['resources'].get('secgroup', []):
-            if not sg.get('vpcid', None) and data['config'].get('vpcid'):
-                sg['vpcid'] = data['config']['vpcid']
+        for secg in data['resources'].get('secgroup', []):
+            if not secg.get('vpcid', None) and data['config'].get('vpcid'):
+                secg['vpcid'] = data['config']['vpcid']
 
             new_rules = []
-            for rule in sg['rules']:
+            for rule in secg['rules']:
                 for field in ['source_group', 'source_cidr']:
                     item = rule.get(field, None)
                     if item:
@@ -251,13 +257,13 @@ class YamlParser(BaseParser):
                                 new_rule = copy.deepcopy(rule)
                                 new_rule.update({field: source})
                                 new_rules.append(new_rule)
-            sg['rules'].extend(new_rules)
+            secg['rules'].extend(new_rules)
 
-        for lb in data['resources'].get('load_balancer', []):
+        for ldb in data['resources'].get('load_balancer', []):
             if data['config'].get('subnets'):
-                lb['subnets'] = lb.get('subnets', data['config']['subnets'])
-            lb['policy'] = copy.deepcopy(lb.get('policy', []))
-            for idx, policy in enumerate(lb['policy']):
+                ldb['subnets'] = ldb.get('subnets', data['config']['subnets'])
+            ldb['policy'] = copy.deepcopy(ldb.get('policy', []))
+            for idx, policy in enumerate(ldb['policy']):
                 if policy['type'] == 'log_policy':
                     prefix = policy['policy']['s3prefix']
                     prefix = "%s/%s" % (
@@ -265,11 +271,11 @@ class YamlParser(BaseParser):
                         policy['policy']['s3prefix'],
                     )
                     schema = 'external'
-                    if lb.get('internal'):
+                    if ldb.get('internal'):
                         schema = 'internal'
                     prefix = "%s/%s" % (prefix, schema)
                     policy['policy']['s3prefix'] = prefix
-                    lb['policy'][idx] = policy
+                    ldb['policy'][idx] = policy
 
         self._stack['resources'].update(data['resources'])
 
@@ -327,11 +333,11 @@ class YamlParser(BaseParser):
                 else:
                     instance['sg'].append('default')
 
-        LOG.debug('stack: %s' % self._stack)
+        LOG.debug('stack: %s', self._stack)
         LOG.info('Finished parsing config')
         return self._stack
 
 
 __all__ = [
-    YamlParser,
+    'YamlParser',
 ]

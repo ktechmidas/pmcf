@@ -118,14 +118,14 @@ class AWSFWParser(BaseParser):
         else:
             port = rest
             path = None
-        hc = {
+        hck = {
             'protocol': protocol.upper(),
             'port': int(port)
         }
         if path:
-            hc['path'] = path
-        LOG.debug('Found healthcheck: %s' % hc)
-        return hc
+            hck['path'] = path
+        LOG.debug('Found healthcheck: %s', hck)
+        return hck
 
     def build_lbs(self, farmname, elbs):
         """
@@ -141,14 +141,14 @@ class AWSFWParser(BaseParser):
         """
 
         for idx, elb in enumerate(elbs):
-            lb = {
+            ldb = {
                 'listener': [],
                 'policy': []
             }
             for listener in self._listify(elbs[idx]['listener']):
-                hc = listener.get('healthCheck')
-                if hc:
-                    lb['healthcheck'] = self._build_hc(hc)
+                hck = listener.get('healthCheck')
+                if hck:
+                    ldb['healthcheck'] = self._build_hc(hck)
                 lstnr = {
                     'protocol': listener['protocol'],
                     'lb_port': int(listener['port']),
@@ -169,8 +169,8 @@ class AWSFWParser(BaseParser):
                 else:
                     if listener['protocol'].upper() in ['HTTP', 'HTTPS']:
                         lstnr['instance_protocol'] = 'HTTP'
-                LOG.debug('Found listener: %s' % lstnr)
-                lb['listener'].append(lstnr)
+                LOG.debug('Found listener: %s', lstnr)
+                ldb['listener'].append(lstnr)
             if elb.get('elb-logging'):
                 log_policy = {
                     'emit_interval': int(elb['elb-logging']['emitinterval']),
@@ -178,18 +178,18 @@ class AWSFWParser(BaseParser):
                     's3prefix': urllib.unquote(elb['elb-logging']['prefix']),
                     'enabled': True,
                 }
-                LOG.debug('Found log_policy: %s' % log_policy)
-                lb['policy'].append({
+                LOG.debug('Found log_policy: %s', log_policy)
+                ldb['policy'].append({
                     'type': 'log_policy',
                     'policy': log_policy
                 })
 
-            LOG.debug('Found loadbalancer: %s' % lb)
+            LOG.debug('Found loadbalancer: %s', ldb)
             if elb.get('suffix'):
-                lb['name'] = elb['suffix']
+                ldb['name'] = elb['suffix']
             else:
-                lb['name'] = farmname.replace('-', '')
-            self._stack['resources']['load_balancer'].append(lb)
+                ldb['name'] = farmname.replace('-', '')
+            self._stack['resources']['load_balancer'].append(ldb)
         return self._stack['resources']['load_balancer']
 
     def build_fw(self, inst_name, rules):
@@ -207,18 +207,18 @@ class AWSFWParser(BaseParser):
 
         fwrules = []
         for rule in rules:
-            r = {
+            rle = {
                 'from_port': int(rule['port']),
                 'to_port': int(rule['port']),
                 'protocol': rule['protocol'],
             }
             try:
                 netaddr.IPNetwork(rule['source'])
-                r['source_cidr'] = rule['source']
+                rle['source_cidr'] = rule['source']
             except netaddr.AddrFormatError:
-                r['source_group'] = rule['source']
-            LOG.debug('Found firewall rule: %s' % r)
-            fwrules.append(r)
+                rle['source_group'] = rule['source']
+            LOG.debug('Found firewall rule: %s', rle)
+            fwrules.append(rle)
         self._stack['resources']['secgroup'].append({
             'name': inst_name,
             'rules': fwrules
@@ -238,7 +238,7 @@ class AWSFWParser(BaseParser):
         :returns: list
         """
 
-        for idx, instance in enumerate(instances):
+        for instance in instances:
             inst = {}
             if instance.get('cname'):
                 inst['name'] = instance['cname']
@@ -293,31 +293,32 @@ class AWSFWParser(BaseParser):
                     }
                     inst['block_device'].append(data)
 
-            LOG.debug('Found instance: %s' % inst)
+            LOG.debug('Found instance: %s', inst)
             self._stack['resources']['instance'].append(inst)
         return self._stack['resources']['instance']
 
-    def build_ds(self, ds, args={}):
+    def build_ds(self, dat, args=None):
         """
         Builds internal representation of data from the
         AWSFW native XML structure.
 
-        :param ds: dictionary created by xmltodict from AWSFW XML
-        :type ds: dict.
+        :param dat: dictionary created by xmltodict from AWSFW XML
+        :type dat: dict.
         :param args: Configuration parameters
         :type args: dict.
         :raises: :class:`pmcf.exceptions.ParserFailure`
         :returns: dict
         """
 
-        name_parts = ds['farmName'].split('-')
+        args = args or {}
+        name_parts = dat['farmName'].split('-')
 
         self._stack['config'] = {
             'name': name_parts[0],
             'environment': name_parts[1],
             'strategy': 'BlueGreen',
             'version': name_parts[2],
-            'owner': ds.get('farmOwner', 'gis-channel4@piksel.com')
+            'owner': dat.get('farmOwner', 'gis-channel4@piksel.com')
         }
         try:
             self._stack['config']['generation'] = name_parts[3]
@@ -332,37 +333,37 @@ class AWSFWParser(BaseParser):
             self._stack['config']['instance_secretkey'] =\
                 args['instance_secretkey']
 
-        if ds.get('ELB'):
-            self.build_lbs(ds['farmName'], self._listify(ds['ELB']))
-        if ds.get('instances'):
-            self.build_instances(ds['farmName'],
-                                 self._listify(ds['instances']))
+        if dat.get('ELB'):
+            self.build_lbs(dat['farmName'], self._listify(dat['ELB']))
+        if dat.get('instances'):
+            self.build_instances(dat['farmName'],
+                                 self._listify(dat['instances']))
 
-        for instance in self._stack['resources']['instance']:
-            instance['provisioner']['args']['platform_environment'] =\
+        for inst in self._stack['resources']['instance']:
+            inst['provisioner']['args']['platform_environment'] =\
                 self._stack['config']['environment']
             if self._stack['config'].get('instance_accesskey'):
-                instance['provisioner']['args']['AWS_ACCESS_KEY_ID'] =\
+                inst['provisioner']['args']['AWS_ACCESS_KEY_ID'] =\
                     self._stack['config']['instance_accesskey']
             if self._stack['config'].get('instance_secretkey'):
-                instance['provisioner']['args']['AWS_SECRET_ACCESS_KEY'] =\
+                inst['provisioner']['args']['AWS_SECRET_ACCESS_KEY'] =\
                     self._stack['config']['instance_secretkey']
-            if ds.get('key'):
-                instance['sshKey'] = ds['key']
-            if ds.get('cloudwatch'):
-                instance['monitoring'] = self._str_to_bool(ds['cloudwatch'])
-            if ds.get('appBucket'):
-                instance['provisioner']['args']['appbucket'] = ds['appBucket']
-            if ds.get('roleBucket'):
-                instance['provisioner']['args']['rolebucket'] = ds['appBucket']
+            if dat.get('key'):
+                inst['sshKey'] = dat['key']
+            if dat.get('cloudwatch'):
+                inst['monitoring'] = self._str_to_bool(dat['cloudwatch'])
+            if dat.get('appBucket'):
+                inst['provisioner']['args']['appbucket'] = dat['appBucket']
+            if dat.get('roleBucket'):
+                inst['provisioner']['args']['rolebucket'] = dat['appBucket']
             # The XML declaration <noDefaultSG/> becomes:
             # { 'noDefaultSG': None } so a normal
-            # if ds.get('noDefaultSG') returns 'None' which evaluates to false
-            if ds.get('noDefaultSG', 'missing') == 'missing':
-                instance['sg'].append('default')
+            # if dat.get('noDefaultSG') returns 'None' which evaluates to false
+            if dat.get('noDefaultSG', 'missing') == 'missing':
+                inst['sg'].append('default')
         return self._stack
 
-    def parse(self, config, args={}):
+    def parse(self, config, args=None):
         """
         Builds internal representation of data from the
         AWSFW native XML structure.
@@ -376,17 +377,18 @@ class AWSFWParser(BaseParser):
         """
 
         LOG.info('Start parsing farm config')
+        args = args or {}
         try:
             data = xmltodict.parse(config)
-        except ExpatError, e:
-            raise ParserFailure(e.message)
+        except ExpatError, exc:
+            raise ParserFailure(exc.message)
 
         self.build_ds(data['c4farm'], args)
-        LOG.debug('stack: %s' % self._stack)
+        LOG.debug('stack: %s', self._stack)
         LOG.info('Finished parsing farm config')
         return self._stack
 
 
 __all__ = [
-    AWSFWParser,
+    'AWSFWParser',
 ]

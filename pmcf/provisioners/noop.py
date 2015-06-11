@@ -48,5 +48,5 @@ class NoopProvisioner(BaseProvisioner):
 
 
 __all__ = [
-    NoopProvisioner,
+    'NoopProvisioner',
 ]

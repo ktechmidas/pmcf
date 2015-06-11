@@ -12,4 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.version
+    :platform: Unix
+    :synopsis: module containing version for PMCF
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 VERSION = '2014.1'

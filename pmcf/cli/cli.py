@@ -29,8 +29,17 @@ from pmcf.config import PMCFConfig
 from pmcf.exceptions import PMCFException
 from pmcf.utils import colourise_output
 
+# pylint: disable=invalid-name
+
 
 def main():
+    """
+    Reads command line arguments, calls into other modules for parsing,
+    validation and building output.  Exits with appropriate return code.
+
+    :returns:  boolean
+    """
+
     parser = argparse.ArgumentParser()
     output_group = parser.add_mutually_exclusive_group()
     output_group.add_argument("-v", "--verbose",
@@ -70,7 +79,7 @@ def main():
     args = parser.parse_args()
 
     # Log everything, and send it to stderr.
-    FORMAT = "[%(asctime)-15s] [%(levelname)s] %(name)s: %(message)s"
+    fmt = "[%(asctime)-15s] [%(levelname)s] %(name)s: %(message)s"
 
     # Simple coloured output
     logging.addLevelName(logging.DEBUG, colourise_output(
@@ -91,7 +100,7 @@ def main():
     else:
         lvl = logging.WARNING
 
-    logging.basicConfig(format=FORMAT, level=lvl)
+    logging.basicConfig(format=fmt, level=lvl)
     logging.getLogger('boto').setLevel(logging.CRITICAL)
 
     LOG = logging.getLogger(__name__)
@@ -101,8 +110,8 @@ def main():
         options = cfg.get_config()
         cli = PMCFCLI(options)
         return cli.run()
-    except PMCFException, e:
-        LOG.error(e.message)
+    except PMCFException, exc:
+        LOG.error(exc.message)
         return True
 
 if __name__ == '__main__':

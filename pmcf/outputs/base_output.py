@@ -64,7 +64,7 @@ class BaseOutput(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def run(self, data, metadata={}, poll=False,
+    def run(self, data, metadata=None, poll=False,
             action='create', upload=False):
         """
         Interfaces with public and private cloud providers
@@ -85,7 +85,7 @@ class BaseOutput(object):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def do_audit(self, data, metadata={}):
+    def do_audit(self, data, metadata=None):
         """
         Records audit logs for current transaction
 
@@ -100,5 +100,5 @@ class BaseOutput(object):
 
 
 __all__ = [
-    BaseOutput,
+    'BaseOutput',
 ]

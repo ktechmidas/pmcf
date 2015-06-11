@@ -29,10 +29,10 @@ from pmcf.outputs.vagrant import VagrantOutput
 
 
 __all__ = [
-    AWSCFNOutput,
-    C4AWSCFNOutput,
-    BaseOutput,
-    JSONOutput,
-    SequoiaAWSCFNOutput,
-    VagrantOutput,
+    'AWSCFNOutput',
+    'C4AWSCFNOutput',
+    'BaseOutput',
+    'JSONOutput',
+    'SequoiaAWSCFNOutput',
+    'VagrantOutput',
 ]

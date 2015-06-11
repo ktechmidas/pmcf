@@ -46,10 +46,10 @@ class NoopAudit(BaseAudit):
         :returns:  boolean
         """
 
-        LOG.info('Not actually recording stack to %s' % destination)
+        LOG.info('Not actually recording stack to %s', destination)
         return True
 
 
 __all__ = [
-    NoopAudit,
+    'NoopAudit',
 ]

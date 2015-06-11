@@ -81,5 +81,5 @@ class InPlace(BaseStrategy):
 
 
 __all__ = [
-    InPlace,
+    'InPlace',
 ]

@@ -131,5 +131,5 @@ class PMCFConfig(object):
 
 
 __all__ = [
-    PMCFConfig,
+    'PMCFConfig',
 ]

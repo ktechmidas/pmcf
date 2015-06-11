@@ -30,12 +30,12 @@ from pmcf.provisioners.puppet import PuppetProvisioner
 from pmcf.provisioners.winpuppet import WindowsPuppetProvisioner
 
 __all__ = [
-    AWSFWProvisioner,
-    BaseProvisioner,
-    BlockingProvisioner,
-    AnsibleProvisioner,
-    ChefProvisioner,
-    NoopProvisioner,
-    PuppetProvisioner,
-    WindowsPuppetProvisioner,
+    'AWSFWProvisioner',
+    'BaseProvisioner',
+    'BlockingProvisioner',
+    'AnsibleProvisioner',
+    'ChefProvisioner',
+    'NoopProvisioner',
+    'PuppetProvisioner',
+    'WindowsPuppetProvisioner',
 ]

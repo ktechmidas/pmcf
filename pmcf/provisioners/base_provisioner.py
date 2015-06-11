@@ -35,6 +35,9 @@ from pmcf.exceptions import ProvisionerException
 LOG = logging.getLogger(__name__)
 
 
+# pylint: disable=no-self-use
+
+
 class BaseProvisioner(object):
     """
     Abstract base class for provisioner classes.
@@ -63,6 +66,8 @@ class BaseProvisioner(object):
 
         raise NotImplementedError
 
+# pylint: disable=unused-argument
+
     def provisioner_policy(self, args):
         """
         Policy that a provisioner needs for an instance.  Not called unless
@@ -74,6 +79,8 @@ class BaseProvisioner(object):
         """
 
         return None
+
+# pylint: enable=unused-argument
 
     def wants_profile(self):
         """
@@ -93,6 +100,8 @@ class BaseProvisioner(object):
 
         return False
 
+# pylint: disable=unused-argument
+
     def cfn_init(self, args):
         """
         Return metadata suitable for consumption by cfn_init
@@ -107,12 +116,15 @@ class BaseProvisioner(object):
 
         return None
 
-    def add_file(self, ud, filename, ftype='plain', compress=True):
+# pylint: enable=unused-argument
+
+    def add_file(self, userdata, filename,
+                 ftype='plain', compress=True):
         """
         Add data from file to userdata
 
-        :param ud: userdata object built so far
-        :type ud: :class:`email.mime.multipart.MIMEMultipart`
+        :param userdata: userdata object built so far
+        :type userdata: :class:`email.mime.multipart.MIMEMultipart`
         :param filename: filename of data to add to userdata
         :type filename: str.
         :param ftype: file Mimetype
@@ -123,15 +135,16 @@ class BaseProvisioner(object):
         """
 
         fname = os.path.basename(filename)
-        with open(filename) as fd:
-            return self.add_data(ud, fd.read(), fname, ftype, compress)
+        with open(filename) as fld:
+            return self.add_data(userdata, fld.read(), fname, ftype, compress)
 
-    def add_data(self, ud, part, filename, ftype='plain', compress=True):
+    def add_data(self, userdata, part, filename,
+                 ftype='plain', compress=True):
         """
         Add data from string to userdata
 
-        :param ud: userdata object built so far
-        :type ud: :class:`email.mime.multipart.MIMEMultipart`
+        :param userdata: userdata object built so far
+        :type userdata: :class:`email.mime.multipart.MIMEMultipart`
         :param part: string data to add to userdata
         :type part: str.
         :param filename: filename of data to add to userdata
@@ -156,8 +169,8 @@ class BaseProvisioner(object):
 
         sub_message.add_header('Content-Disposition',
                                'attachment; filename="%s"' % (filename))
-        ud.attach(sub_message)
-        return ud
+        userdata.attach(sub_message)
+        return userdata
 
     def make_skeleton(self):
         """
@@ -168,21 +181,21 @@ class BaseProvisioner(object):
 
         return MIMEMultipart(boundary=self.boundary)
 
-    def resize(self, ud):
+    def resize(self, userdata):
         """
         Checks size of userdata and aborts if it is too large
 
-        :param ud: userdata object built so far
-        :type ud: :class:`email.mime.multipart.MIMEMultipart`
+        :param userdata: userdata object built so far
+        :type userdata: :class:`email.mime.multipart.MIMEMultipart`
         :raises: :class:`pmcf.exceptions.ProvisionerException`
         """
 
-        data = ud.as_string()
+        data = userdata.as_string()
         if len(data) > 16384:
             raise ProvisionerException('userdata is too long')
         return data
 
 
 __all__ = [
-    BaseProvisioner,
+    'BaseProvisioner',
 ]

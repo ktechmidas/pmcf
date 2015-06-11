@@ -12,11 +12,24 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+"""
+..  module:: pmcf.resources.aws.helpers.cloudformation
+    :platform: Unix
+    :synopsis: helper class to extend troposphere
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from troposphere import AWSObject
 from troposphere.validators import integer
 
 
 class Stack(AWSObject):
+    """
+    Override of troposphere class to provide extra functionality now present
+    cloudformation
+    """
+
     type = "AWS::CloudFormation::Stack"
 
     props = {
@@ -28,5 +41,5 @@ class Stack(AWSObject):
 
 
 __all__ = [
-    Stack,
+    'Stack',
 ]

@@ -52,10 +52,10 @@ class PMCFCLI(object):
         """
         try:
             stack = self.parser.parse_file(self.args['stackfile'], self.args)
-            for k, v in stack['resources'].iteritems():
-                for idx, res in enumerate(v):
-                    data = stack['resources'][k][idx]
-                    self.policy.validate_resource(k, data)
+            for key, val in stack['resources'].iteritems():
+                for idx in range(0, len(val)):
+                    data = stack['resources'][key][idx]
+                    self.policy.validate_resource(key, data)
             self.parser.validate()
             try:
                 data = self.output.add_resources(stack['resources'],
@@ -68,28 +68,28 @@ class PMCFCLI(object):
                     'name': stack['config']['name'],
                     'environment': stack['config']['environment'],
                 }
-            except KeyError, e:
+            except KeyError, exc:
                 if self.args.get('debug', False):
-                    LOG.exception(e.message)
-                raise ParserFailure(str(e))
+                    LOG.exception(exc.message)
+                raise ParserFailure(str(exc))
 
-            for k in ['owner', 'version', 'strategy']:
-                if stack['config'].get(k):
-                    metadata[k] = stack['config'][k]
+            for key in ['owner', 'version', 'strategy']:
+                if stack['config'].get(key):
+                    metadata[key] = stack['config'][key]
             metadata['audit'] = self.args.get('audit', 'NoopAudit')
             if self.args.get('audit_output', None):
                 metadata['audit_output'] = self.args['audit_output']
 
             return not self.output.run(data, metadata,
                                        self.args['poll'], self.args['action'])
-        except PMCFException, e:
+        except PMCFException, exc:
             if self.args.get('debug', False):
-                LOG.exception(e.message)
+                LOG.exception(exc.message)
             else:
-                LOG.error(e.message)
+                LOG.error(exc.message)
             return True
 
 
 __all__ = [
-    PMCFCLI,
+    'PMCFCLI',
 ]

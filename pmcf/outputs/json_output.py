@@ -37,6 +37,12 @@ LOG = logging.getLogger(__name__)
 
 
 class JSONOutput(BaseOutput):
+    """
+    Cloudformation JSON output class.
+
+    This class creates JSON output suitable for use with the AWS
+    cloudformation API, but does not itself make use of the API.
+    """
 
     def _add_caches(self, data, caches, config, sgs):
         """
@@ -70,11 +76,11 @@ class JSONOutput(BaseOutput):
                 "NumCacheNodes": cache['count'],
             }
             cache_sgs = []
-            for sg in cache['sg']:
-                if sgs.get(sg):
-                    cache_sgs.append(Ref(sgs[sg]))
+            for secg in cache['sg']:
+                if sgs.get(secg):
+                    cache_sgs.append(Ref(sgs[secg]))
                 else:
-                    cache_sgs.append(sg)
+                    cache_sgs.append(secg)
             cache_data['VpcSecurityGroupIds'] = cache_sgs
 
             if cache['params'].get('params', {}) != {}:
@@ -362,17 +368,17 @@ class JSONOutput(BaseOutput):
         """
 
         sgs = {}
-        for sg in secgroups:
+        for secg in secgroups:
             rules = []
-            sgname = 'sg%s' % re.sub(r'\W+', '', sg['name'])
-            name = sg['name']
-            for idx, rule in enumerate(sg['rules']):
+            sgname = 'sg%s' % re.sub(r'\W+', '', secg['name'])
+            name = secg['name']
+            for idx, rule in enumerate(secg['rules']):
                 if rule.get('port'):
                     rule['to_port'] = rule['from_port'] = rule['port']
                 if rule.get('source_group'):
                     sg_rule_data = {}
                     if rule['source_group'].startswith('='):
-                        if sg.get('vpcid', None):
+                        if secg.get('vpcid', None):
                             sg_rule_data['SourceSecurityGroupId'] =\
                                 Ref(sgs[rule['source_group'][1:]])
                         else:
@@ -383,7 +389,7 @@ class JSONOutput(BaseOutput):
                         sg_rule_data['SourceSecurityGroupName'] = sg_group
                         sg_rule_data['SourceSecurityGroupOwnerId'] = sg_owner
                     else:
-                        if sg.get('vpcid', None):
+                        if secg.get('vpcid', None):
                             sg_rule_data['SourceSecurityGroupId'] =\
                                 rule['source_group']
                         else:
@@ -404,18 +410,18 @@ class JSONOutput(BaseOutput):
                         CidrIp=rule['source_cidr'],
                     ))
             sgargs = {}
-            if sg.get('vpcid'):
-                if sg['vpcid'].startswith('='):
-                    sgargs['VpcId'] = Ref('VPC%s' % sg['vpcid'][1:])
+            if secg.get('vpcid'):
+                if secg['vpcid'].startswith('='):
+                    sgargs['VpcId'] = Ref('VPC%s' % secg['vpcid'][1:])
                 else:
-                    sgargs['VpcId'] = sg['vpcid']
+                    sgargs['VpcId'] = secg['vpcid']
             sgs[name] = ec2.SecurityGroup(
                 sgname,
-                GroupDescription='security group for %s' % sg['name'],
+                GroupDescription='security group for %s' % secg['name'],
                 SecurityGroupIngress=rules,
                 **sgargs
             )
-            LOG.debug('Adding sg: %s' % sgs[name].JSONrepr())
+            LOG.debug('Adding sg: %s', sgs[name].JSONrepr())
             data.add_resource(sgs[name])
         return sgs
 
@@ -436,14 +442,14 @@ class JSONOutput(BaseOutput):
         """
 
         lbs = {}
-        for lb in loadbalancers:
-            lb_hc_tgt = lb['healthcheck']['protocol'] + ':' + \
-                str(lb['healthcheck']['port'])
-            if lb['healthcheck'].get('path'):
-                lb_hc_tgt += lb['healthcheck']['path']
+        for ldb in loadbalancers:
+            lb_hc_tgt = ldb['healthcheck']['protocol'] + ':' + \
+                str(ldb['healthcheck']['port'])
+            if ldb['healthcheck'].get('path'):
+                lb_hc_tgt += ldb['healthcheck']['path']
 
             listeners = []
-            for listener in lb['listener']:
+            for listener in ldb['listener']:
                 kwargs = {
                     'InstancePort': listener['instance_port'],
                     'LoadBalancerPort': listener['lb_port'],
@@ -455,8 +461,8 @@ class JSONOutput(BaseOutput):
                     kwargs['SSLCertificateId'] = listener['sslCert']
                 listeners.append(elasticloadbalancing.Listener(**kwargs))
 
-            name = "ELB%s" % re.sub(r'\W+', '', lb['name'])
-            lbtagname = '%s::%s' % (lb['name'], config['environment'])
+            name = "ELB%s" % re.sub(r'\W+', '', ldb['name'])
+            lbtagname = '%s::%s' % (ldb['name'], config['environment'])
 
             ecdp = elasticloadbalancing.ConnectionDrainingPolicy(
                 Enabled=True,
@@ -482,11 +488,11 @@ class JSONOutput(BaseOutput):
                         'Key': 'App',
                         'Value': inst['name']})
 
-            if lb.get('sg'):
+            if ldb.get('sg'):
                 elb['SecurityGroups'] = []
-                for sg in lb['sg']:
-                    elb['SecurityGroups'].append(Ref(sgs[sg]))
-            for policy in lb['policy']:
+                for secg in ldb['sg']:
+                    elb['SecurityGroups'].append(Ref(sgs[secg]))
+            for policy in ldb['policy']:
                 if policy['type'] == 'log_policy':
                     eap = elasticloadbalancing.AccessLoggingPolicy(
                         name,
@@ -496,9 +502,9 @@ class JSONOutput(BaseOutput):
                         S3BucketPrefix=policy['policy']['s3prefix']
                     )
                     elb['AccessLoggingPolicy'] = eap
-            if lb.get('subnets'):
-                elb['Subnets'] = lb['subnets']
-                if lb.get('internal', False):
+            if ldb.get('subnets'):
+                elb['Subnets'] = ldb['subnets']
+                if ldb.get('internal', False):
                     elb['Scheme'] = 'internal'
             else:
                 elb['AvailabilityZones'] = GetAZs('')
@@ -513,8 +519,8 @@ class JSONOutput(BaseOutput):
                     Value=GetAtt(lbs[name], "DNSName"),
                 )
             )
-            if lb.get('dns', None):
-                if lb.get('internal', False) and lb.get('subnets'):
+            if ldb.get('dns', None):
+                if ldb.get('internal', False) and ldb.get('subnets'):
                     alias_tgt = route53.AliasTarget(
                         GetAtt(name, "CanonicalHostedZoneNameID"),
                         GetAtt(name, "DNSName")
@@ -529,19 +535,19 @@ class JSONOutput(BaseOutput):
                     AliasTarget=alias_tgt,
                     HostedZoneName="%s.%s" % (
                         config['environment'],
-                        lb['dns']
+                        ldb['dns']
                     ),
                     Comment="ELB for %s in %s" % (
                         config['name'], config['environment']),
                     Name="%s.%s.%s" % (
-                        lb['name'],
+                        ldb['name'],
                         config['environment'],
-                        lb['dns']
+                        ldb['dns']
                     ),
                     Type="A"
                 ))
 
-            LOG.debug('Adding lb: %s' % lbs[name].JSONrepr())
+            LOG.debug('Adding lb: %s', lbs[name].JSONrepr())
             data.add_resource(lbs[name])
         return lbs
 
@@ -564,8 +570,8 @@ class JSONOutput(BaseOutput):
         """
 
         for inst in instances:
-            ud = None
-            ci = None
+            udata = None
+            cfni = None
             args = inst['provisioner']['args']
             args.update({
                 'environment': config['environment'],
@@ -580,9 +586,9 @@ class JSONOutput(BaseOutput):
             if inst.get('nat'):
                 args['eip'] = []
                 records = []
-                for ei in range(0, inst['count']):
+                for idx in range(0, inst['count']):
                     eip = ec2.EIP(
-                        "EIP%s%s" % (inst['name'], ei),
+                        "EIP%s%s" % (inst['name'], idx),
                         Domain='vpc',
                     )
                     args['eip'].append(eip)
@@ -590,7 +596,7 @@ class JSONOutput(BaseOutput):
                     data.add_resource(eip)
 
                     data.add_resource(route53.RecordSetType(
-                        "EIPDNS%s%02d" % (inst['name'], ei + 1),
+                        "EIPDNS%s%02d" % (inst['name'], idx + 1),
                         HostedZoneName="%s.%s" % (
                             config['environment'],
                             inst['dnszone']
@@ -598,7 +604,7 @@ class JSONOutput(BaseOutput):
                         Comment="EIP for %s in %s" % (
                             inst['name'], config['environment']),
                         Name="%s%02d.%s.%s" % (
-                            inst['name'], ei + 1,
+                            inst['name'], idx + 1,
                             config['environment'],
                             inst['dnszone']
                         ),
@@ -675,17 +681,17 @@ class JSONOutput(BaseOutput):
                         Roles=[Ref(iam_role)]
                     ))
 
-                ip = iam.InstanceProfile(
+                iip = iam.InstanceProfile(
                     "Profile%s" % inst['name'],
                     Path="/%s/%s/" % (
                         inst['name'], config['environment']),
                     Roles=[Ref(iam_role)]
                 )
-                data.add_resource(ip)
-                args.update({'profile': Ref(ip)})
+                data.add_resource(iip)
+                args.update({'profile': Ref(iip)})
 
-            ud = provisioner.userdata(args)
-            ci = provisioner.cfn_init(args)
+            udata = provisioner.userdata(args)
+            cfni = provisioner.cfn_init(args)
 
             lcargs = {
                 'ImageId': inst['image'],
@@ -752,28 +758,28 @@ class JSONOutput(BaseOutput):
                 lcargs['BlockDeviceMappings'] = block_devs
 
             inst_sgs = []
-            for sg in inst['sg']:
-                if sgs.get(sg):
-                    inst_sgs.append(Ref(sgs[sg]))
+            for secg in inst['sg']:
+                if sgs.get(secg):
+                    inst_sgs.append(Ref(sgs[secg]))
                 else:
-                    inst_sgs.append(sg)
+                    inst_sgs.append(secg)
             lcargs['SecurityGroups'] = inst_sgs
-            if ud is not None:
-                lcargs['UserData'] = Base64(ud)
-            if ci is not None:
-                lcargs['Metadata'] = ci
+            if udata is not None:
+                lcargs['UserData'] = Base64(udata)
+            if cfni is not None:
+                lcargs['Metadata'] = cfni
 
             if inst.get('public'):
                 lcargs['AssociatePublicIpAddress'] = True
 
             if args.get('profile'):
                 lcargs['IamInstanceProfile'] = args['profile']
-            lc = autoscaling.LaunchConfiguration(
+            lcfg = autoscaling.LaunchConfiguration(
                 'LC%s' % inst['name'],
                 **lcargs
             )
-            LOG.debug('Adding lc: %s' % lc.JSONrepr())
-            data.add_resource(lc)
+            LOG.debug('Adding lc: %s', lcfg.JSONrepr())
+            data.add_resource(lcfg)
 
             asgtags = [
                 autoscaling.Tag(
@@ -817,7 +823,7 @@ class JSONOutput(BaseOutput):
             asgargs = {
                 'AvailabilityZones': inst.get('zones', GetAZs('')),
                 'DesiredCapacity': inst['count'],
-                'LaunchConfigurationName': Ref(lc),
+                'LaunchConfigurationName': Ref(lcfg),
                 'MaxSize': inst['max'],
                 'MinSize': inst['min'],
                 'Tags': asgtags,
@@ -836,7 +842,7 @@ class JSONOutput(BaseOutput):
             if inst.get('depends'):
                 asgargs['DependsOn'] = inst['depends']
             if inst.get('notify'):
-                nc = autoscaling.NotificationConfiguration(
+                ncfg = autoscaling.NotificationConfiguration(
                     TopicARN=inst['notify'],
                     NotificationTypes=[
                         "autoscaling:EC2_INSTANCE_LAUNCH",
@@ -845,12 +851,12 @@ class JSONOutput(BaseOutput):
                         "autoscaling:EC2_INSTANCE_TERMINATE_ERROR"
                     ]
                 )
-                asgargs['NotificationConfiguration'] = nc
+                asgargs['NotificationConfiguration'] = ncfg
             asg = autoscaling.AutoScalingGroup(
                 'ASG%s' % inst['name'],
                 **asgargs
             )
-            LOG.debug('Adding asg: %s' % asg.JSONrepr())
+            LOG.debug('Adding asg: %s', asg.JSONrepr())
             data.add_resource(asg)
 
             if inst.get('timed_scaling_policy'):
@@ -932,6 +938,7 @@ class JSONOutput(BaseOutput):
                 ))
 
                 def str_cond(cond):
+                    """Helper method used locally"""
                     # expect '>= 40'
                     cond = cond.split()[0]
                     lookup = {
@@ -1034,7 +1041,7 @@ class JSONOutput(BaseOutput):
         LOG.info('Finished building template')
         return data.to_json(indent=None)
 
-    def run(self, data, metadata={}, poll=False,
+    def run(self, data, metadata=None, poll=False,
             action='create', upload=False):
         """
         Pretty-prints stack definition as json-formatted string
@@ -1053,6 +1060,7 @@ class JSONOutput(BaseOutput):
         """
 
         LOG.info('Start running data')
+        metadata = metadata or {}
         indent = None
         if LOG.isEnabledFor(logging.DEBUG):
             indent = 4
@@ -1063,7 +1071,7 @@ class JSONOutput(BaseOutput):
         self.do_audit(data, metadata)
         return True
 
-    def do_audit(self, data, metadata={}):
+    def do_audit(self, data, metadata=None):
         """
         Records audit logs for current transaction
 
@@ -1077,5 +1085,5 @@ class JSONOutput(BaseOutput):
 
 
 __all__ = [
-    JSONOutput,
+    'JSONOutput',
 ]

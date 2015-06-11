@@ -26,8 +26,8 @@ from pmcf.strategy.inplace import InPlace
 from pmcf.strategy.prompt_inplace import PromptInPlace
 
 __all__ = [
-    BaseStrategy,
-    BlueGreen,
-    InPlace,
-    PromptInPlace,
+    'BaseStrategy',
+    'BlueGreen',
+    'InPlace',
+    'PromptInPlace',
 ]

@@ -15,85 +15,110 @@
 # This is the model layer, with a light validation layer over what troposphere
 # provides
 
+"""
+..  module:: pmcf.resources.aws.elasticache
+    :platform: Unix
+    :synopsis: wrapper classes for troposphere ec2 classes
+
+..  moduleauthor:: Stephen Gran <stephen.gran@piksel.com>
+"""
+
 from troposphere import elasticache as ec
 
-from pmcf.utils import error, init_error
+from pmcf.utils import do_init, do_json
+
+# pylint: disable=super-init-not-called
 
 
 class CacheCluster(ec.CacheCluster):
-    def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
+    def __init__(self, title=None, template=None, **kwargs):
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class ParameterGroup(ec.ParameterGroup):
-    def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
+    def __init__(self, title=None, template=None, **kwargs):
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class SecurityGroup(ec.SecurityGroup):
-    def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
+    def __init__(self, title=None, template=None, **kwargs):
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class SecurityGroupIngress(ec.SecurityGroupIngress):
-    def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
+    def __init__(self, title=None, template=None, **kwargs):
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 class SubnetGroup(ec.SubnetGroup):
-    def __init__(self, title=None, **kwargs):
-        try:
-            super(self.__class__, self).__init__(title, **kwargs)
-        except ValueError, e:
-            init_error(e.message, self.__class__.__name__, title)
+    """
+    Subclass of troposphere class to provide wrappers for raising correct
+    exception types and do other validation.
+    """
+
+    def __init__(self, title=None, template=None, **kwargs):
+        do_init(self, title, template=template, **kwargs)
 
     def JSONrepr(self):
-        try:
-            return super(self.__class__, self).JSONrepr()
-        except ValueError, e:
-            error(self, e.message)
+        """
+        Return JSON representation of troposphere resource object
+        """
+
+        return do_json(self)
 
 
 __all__ = [
-    CacheCluster,
-    ParameterGroup,
-    SecurityGroup,
-    SecurityGroupIngress,
-    SubnetGroup,
+    'CacheCluster',
+    'ParameterGroup',
+    'SecurityGroup',
+    'SecurityGroupIngress',
+    'SubnetGroup',
 ]
