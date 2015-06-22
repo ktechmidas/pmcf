@@ -246,7 +246,7 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                                 "c:\\cfn\\cfn-hup.conf",
                                 "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                             ]
-                        }
+                        },
                         "puppet": {
                             "enabled": "false",
                             "ensureRunning": "false"

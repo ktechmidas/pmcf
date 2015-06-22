@@ -253,7 +253,7 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\cfn-hup.conf", 
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ]
-                            }
+                            },
                             "puppet": {
                                 "enabled": "false",
                                 "ensureRunning": "false"
@@ -436,7 +436,7 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ], 
                                 "enabled": "true"
-                            }
+                            },
                             "puppet": {
                                 "enabled": "false",
                                 "ensureRunning": "false"
@@ -623,7 +623,7 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ], 
                                 "ensureRunning": "true"
-                            }
+                            },
                             "puppet": {
                                 "enabled": "false",
                                 "ensureRunning": "false"
@@ -712,7 +712,7 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ], 
                                 "ensureRunning": "true"
-                            }
+                            },
                             "puppet": {
                                 "enabled": "false",
                                 "ensureRunning": "false"
@@ -1053,7 +1053,7 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\cfn-hup.conf", 
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ]
-                            }
+                            },
                             "puppet": {
                                 "enabled": "false",
                                 "ensureRunning": "false"
