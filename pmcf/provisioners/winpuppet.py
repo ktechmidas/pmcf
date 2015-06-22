@@ -247,10 +247,10 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                                 "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                             ]
                         }
-						"puppet": {
-							"enabled": "false",
-							"ensureRunning": "false"
-						}
+                        "puppet": {
+                            "enabled": "false",
+                            "ensureRunning": "false"
+                        }
                     }
                 }
             }
