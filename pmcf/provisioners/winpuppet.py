@@ -237,16 +237,6 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                         ]),
                     },
                 },
-                "commands": {
-                    "1-stop-puppet-service": {
-                        "command": "sc stop puppet",
-                        "waitAfterCompletion": 0,
-                    },
-                    "2-disable-puppet-service": {
-                        "command": "sc config puppet start= disabled",
-                        "waitAfterCompletion": 0,
-                    },
-                },
                 "services": {
                     "windows": {
                         "cfn-hup": {
@@ -257,6 +247,10 @@ class WindowsPuppetProvisioner(BaseProvisioner):
                                 "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                             ]
                         }
+						"puppet": {
+							"enabled": "false",
+							"ensureRunning": "false"
+						}
                     }
                 }
             }
