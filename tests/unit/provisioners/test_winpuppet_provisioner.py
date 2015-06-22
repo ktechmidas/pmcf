@@ -244,16 +244,6 @@ class TestWindowsPuppetProvisioner(object):
                             "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
                         }
                     }, 
-                    "commands": {
-                        "1-stop-puppet-service": {
-                            "waitAfterCompletion": 0, 
-                            "command": "sc stop puppet"
-                        }, 
-                        "2-disable-puppet-service": {
-                            "waitAfterCompletion": 0, 
-                            "command": "sc config puppet start= disabled"
-                        }
-                    }, 
                     "services": {
                         "windows": {
                             "cfn-hup": {
@@ -263,6 +253,10 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\cfn-hup.conf", 
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ]
+                            }
+                            "puppet": {
+                                "enabled": "false",
+                                "ensureRunning": "false"
                             }
                         }
                     }
@@ -358,16 +352,6 @@ class TestWindowsPuppetProvisioner(object):
                     }
                 }, 
                 "bootstrap": {
-                    "commands": {
-                        "1-stop-puppet-service": {
-                            "waitAfterCompletion": 0, 
-                            "command": "sc stop puppet"
-                        }, 
-                        "2-disable-puppet-service": {
-                            "waitAfterCompletion": 0, 
-                            "command": "sc config puppet start= disabled"
-                        }
-                    }, 
                     "packages": {
                         "msi": {
                             "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
@@ -452,6 +436,10 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ], 
                                 "enabled": "true"
+                            }
+                            "puppet": {
+                                "enabled": "false",
+                                "ensureRunning": "false"
                             }
                         }
                     }
@@ -544,16 +532,6 @@ class TestWindowsPuppetProvisioner(object):
                     }
                 },
                 "bootstrap": {
-                    "commands": {
-                        "2-disable-puppet-service": {
-                            "command": "sc config puppet start= disabled", 
-                            "waitAfterCompletion": 0
-                        }, 
-                        "1-stop-puppet-service": {
-                            "command": "sc stop puppet", 
-                            "waitAfterCompletion": 0
-                        }
-                    }, 
                     "packages": {
                         "msi": {
                             "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
@@ -646,6 +624,10 @@ class TestWindowsPuppetProvisioner(object):
                                 ], 
                                 "ensureRunning": "true"
                             }
+                            "puppet": {
+                                "enabled": "false",
+                                "ensureRunning": "false"
+                            }
                         }
                     }
                 }, 
@@ -721,16 +703,6 @@ class TestWindowsPuppetProvisioner(object):
                     }
                 }, 
                 "bootstrap": {
-                    "commands": {
-                        "1-stop-puppet-service": {
-                            "command": "sc stop puppet", 
-                            "waitAfterCompletion": 0
-                        }, 
-                        "2-disable-puppet-service": {
-                            "command": "sc config puppet start= disabled", 
-                            "waitAfterCompletion": 0
-                        }
-                    }, 
                     "services": {
                         "windows": {
                             "cfn-hup": {
@@ -740,6 +712,10 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ], 
                                 "ensureRunning": "true"
+                            }
+                            "puppet": {
+                                "enabled": "false",
+                                "ensureRunning": "false"
                             }
                         }
                     }, 
@@ -1063,16 +1039,6 @@ class TestWindowsPuppetProvisioner(object):
                             }
                         }
                     }, 
-                    "commands": {
-                        "1-stop-puppet-service": {
-                            "waitAfterCompletion": 0, 
-                            "command": "sc stop puppet"
-                        }, 
-                        "2-disable-puppet-service": {
-                            "waitAfterCompletion": 0, 
-                            "command": "sc config puppet start= disabled"
-                        }
-                    }, 
                     "packages": {
                         "msi": {
                             "puppet": "https://downloads.puppetlabs.com/windows/puppet-3.7.5-x64.msi"
@@ -1087,6 +1053,10 @@ class TestWindowsPuppetProvisioner(object):
                                     "c:\\cfn\\cfn-hup.conf", 
                                     "c:\\cfn\\hooks.d\\cfn-auto-reloader.conf"
                                 ]
+                            }
+                            "puppet": {
+                                "enabled": "false",
+                                "ensureRunning": "false"
                             }
                         }
                     }
