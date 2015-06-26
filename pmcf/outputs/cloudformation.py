@@ -70,7 +70,7 @@ class AWSCFNOutput(JSONOutput):
             chkeys = get_changed_keys_from_templates(old_body, data)
             chkeys = [k for k in chkeys if not allowed.match(k)]
             print "Changed data:"
-            for k in chkeys:
+            for k in sorted(chkeys):
                 print k
             answer = self._get_input("Continue? [Yn]: ")
             if answer.lower().startswith('n'):
