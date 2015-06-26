@@ -169,11 +169,11 @@ def _mock_return_yes(self, prompt):
     return 'Yes'
 
 
-def _mock_return_true(self, cfn, name, data):
+def _mock_return_true(self, cfn, name, data, allowed):
     return True
 
 
-def _mock_return_false(self, cfn, name, data):
+def _mock_return_false(self, cfn, name, data, allowed):
     return False
 
 
@@ -980,7 +980,7 @@ class TestAWSCFNOutput(object):
             aws_access_key_id='access',
             aws_secret_access_key='secret'
         )
-        assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "b"}'))
+        assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "b"}', _mock_allowed_update(self)))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
                 _mock_get_template)
@@ -995,7 +995,7 @@ class TestAWSCFNOutput(object):
             aws_secret_access_key='secret'
         )
         sys.stdout = open('/dev/null', 'w')
-        assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
+        assert_equals(False, cfno._show_prompt(cfn, 'test', '{"a": "c"}', _mock_allowed_update(self)))
 
     @mock.patch('boto.cloudformation.CloudFormationConnection.get_template',
                 _mock_get_template)
@@ -1010,7 +1010,7 @@ class TestAWSCFNOutput(object):
             aws_secret_access_key='secret'
         )
         sys.stdout = open('/dev/null', 'w')
-        assert_equals(True, cfno._show_prompt(cfn, 'test', '{"a": "c"}'))
+        assert_equals(True, cfno._show_prompt(cfn, 'test', '{"a": "c"}', _mock_allowed_update(self)))
 
     @mock.patch('time.sleep', _mock_sleep)
     def test_do_poll_false_returns_true(self):

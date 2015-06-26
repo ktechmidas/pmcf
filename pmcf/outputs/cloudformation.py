@@ -57,7 +57,7 @@ class AWSCFNOutput(JSONOutput):
         old_body = resp['GetTemplateResult']['TemplateBody']
         return get_changed_keys_from_templates(old_body, data)
 
-    def _show_prompt(self, cfn, stack, data):
+    def _show_prompt(self, cfn, stack, data, allowed):
         """
         Helper method to create colourised diff outut and prompt for update
         """
@@ -67,6 +67,11 @@ class AWSCFNOutput(JSONOutput):
         if len(diff):
             print "Diff from previous:"
             print diff
+            chkeys = get_changed_keys_from_templates(old_body, data)
+            chkeys = [k for k in chkeys if not allowed.match(k)]
+            print "Changed data:"
+            for k in chkeys:
+                print k
             answer = self._get_input("Continue? [Yn]: ")
             if answer.lower().startswith('n'):
                 return False
@@ -334,7 +339,11 @@ class AWSCFNOutput(JSONOutput):
                         return True
 
                     if strategy.should_prompt('update'):
-                        if not self._show_prompt(cfn, metadata['name'], data):
+                        if not self._show_prompt(
+                                cfn,
+                                metadata['name'],
+                                data,
+                                allowed_update):
                             return True
 
                     LOG.info("stack %s exists, updating",
