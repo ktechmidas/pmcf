@@ -31,10 +31,10 @@ do
 done
 
 if [ "${force}" = yes ];then
-	rm -rf .venv doc/build
+	rmvirtualenv pmcf
+	rm -rf doc/build
 fi
 
-virtualenv -q .venv
-tools/with_venv.sh pip install --upgrade 'pip>=1.4'
-tools/with_venv.sh pip install --upgrade setuptools
-tools/with_venv.sh pip install --upgrade -r ${PWD}/requirements.txt -r ${PWD}/test-requirements.txt
+mkvirtualenv pmcf
+workon pmcf
+python setup.py install
