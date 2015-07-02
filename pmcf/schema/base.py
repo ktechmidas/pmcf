@@ -266,6 +266,8 @@ definitions:
                             - per-instance-public
                             - per-group-private
                             - per-group-public
+                            - cname-public
+                            - cname-private
                     zone:
                         type: string
                 required:
