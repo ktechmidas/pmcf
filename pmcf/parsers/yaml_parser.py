@@ -198,7 +198,7 @@ class YamlParser(BaseParser):
 
             for field in ['size', 'count', 'min', 'max', 'image', 'sg',
                           'monitoring', 'block_device', 'healthcheck',
-                          'subnets']:
+                          'subnets', 'lb']:
                 item = instance.get(field, None)
                 if item:
                     instance[field] =\
