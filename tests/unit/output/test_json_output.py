@@ -3922,6 +3922,161 @@ class TestJSONOutput(object):
         tmpl = out.add_resources(res, cfg)
         assert_equals(json.loads(tmpl), ret)
 
+    @mock.patch('pmcf.provisioners.PuppetProvisioner.userdata', _mock_ud)
+    @mock.patch('pmcf.provisioners.PuppetProvisioner.cfn_init', _mock_ud)
+    @mock.patch('pmcf.provisioners.PuppetProvisioner.provisioner_policy', _mock_ud)
+    def test_instance_valid_custom_tags(self):
+        out = JSONOutput()
+        ret = {
+            "Resources": {
+                "Roleapp": {
+                    "Type": "AWS::IAM::Role", 
+                    "Properties": {
+                        "AssumeRolePolicyDocument": {
+                            "Statement": [
+                                {
+                                    "Effect": "Allow", 
+                                    "Action": [
+                                        "sts:AssumeRole"
+                                    ], 
+                                    "Principal": {
+                                        "Service": [
+                                            "ec2.amazonaws.com"
+                                        ]
+                                    }
+                                }
+                            ], 
+                            "Version": "2012-10-17"
+                        }, 
+                        "Path": "/app/test/"
+                    }
+                }, 
+                "Waitapp": {
+                    "Type": "AWS::CloudFormation::WaitCondition", 
+                    "DependsOn": "ASGapp", 
+                    "Properties": {
+                        "Handle": {
+                            "Ref": "Handleapp"
+                        }, 
+                        "Timeout": 3600, 
+                        "Count": 1
+                    }
+                }, 
+                "Handleapp": {
+                    "Type": "AWS::CloudFormation::WaitConditionHandle"
+                }, 
+                "ASGapp": {
+                    "Type": "AWS::AutoScaling::AutoScalingGroup", 
+                    "Properties": {
+                        "DesiredCapacity": 6, 
+                        "HealthCheckType": "EC2", 
+                        "AvailabilityZones": {
+                            "Fn::GetAZs": ""
+                        }, 
+                        "Tags": [
+                            {
+                                "Value": "test::app::test", 
+                                "Key": "Name", 
+                                "PropagateAtLaunch": True
+                            }, 
+                            {
+                                "Value": "app", 
+                                "Key": "App", 
+                                "PropagateAtLaunch": True
+                            },
+                            {
+                                "Value": "bar", 
+                                "Key": "foo", 
+                                "PropagateAtLaunch": True
+                            } 
+                        ], 
+                        "MaxSize": 6, 
+                        "HealthCheckGracePeriod": 600, 
+                        "MinSize": 6, 
+                        "LaunchConfigurationName": {
+                            "Ref": "LCapp"
+                        }
+                    }
+                }, 
+                "LCapp": {
+                    "Type": "AWS::AutoScaling::LaunchConfiguration", 
+                    "Properties": {
+                        "ImageId": "ami-e97f849e", 
+                        "InstanceType": "m1.large", 
+                        "UserData": {
+                            "Fn::Base64": ""
+                        }, 
+                        "InstanceMonitoring": "false", 
+                        "SecurityGroups": [], 
+                        "IamInstanceProfile": {
+                            "Ref": "Profileapp"
+                        }, 
+                        "KeyName": "bootstrap", 
+                        "BlockDeviceMappings": [
+                            {
+                                "DeviceName": "/dev/xvdb", 
+                                "VirtualName": "ephemeral0"
+                            }, 
+                            {
+                                "DeviceName": "/dev/xvdc", 
+                                "VirtualName": "ephemeral1"
+                            }
+                        ]
+                    }, 
+                    "Metadata": ""
+                }, 
+                "Profileapp": {
+                    "Type": "AWS::IAM::InstanceProfile", 
+                    "Properties": {
+                        "Path": "/app/test/", 
+                        "Roles": [
+                            {
+                                "Ref": "Roleapp"
+                            }
+                        ]
+                    }
+                }
+            }, 
+            "Description": "test test stack", 
+            "AWSTemplateFormatVersion": "2010-09-09"
+        }
+
+        cfg = {
+            'name': 'test',
+            'environment': 'test',
+            'version': 'v1',
+            'instance_accesskey': '1234',
+            'instance_secretkey': '2345',
+        }
+        res = {
+            'load_balancer': [],
+            'secgroup': [],
+            'role': [],
+            'instance': [{
+                'block_device': [],
+                'count': 6,
+                'image': 'ami-e97f849e',
+                'monitoring': False,
+                'name': 'app',
+                'provisioner': {
+                    'args': {
+                        'infrastructure': 'test.tar.gz',
+                        'bucket': 'test',
+                        'custom_tags': {
+                            'foo': 'bar',
+                        }
+                    },
+                    'provider': 'PuppetProvisioner'},
+                'public': False,
+                'sg': [],
+                'size': 'm1.large',
+                'sshKey': 'bootstrap'
+            }]
+        }
+        tmpl = out.add_resources(res, cfg)
+        print json.dumps(json.loads(tmpl), indent=4)
+        assert_equals(json.loads(tmpl), ret)
+
     @mock.patch('pmcf.provisioners.AWSFWProvisioner.userdata', _mock_ud)
     def test_instance_valid_instance_secrets(self):
         out = JSONOutput()

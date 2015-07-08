@@ -134,6 +134,8 @@ definitions:
                         type: array
                     custom_facts:
                         type: object
+                    custom_tags:
+                        type: object
                 required:
                     - bucket
                 additionalProperties: false
@@ -170,6 +172,8 @@ definitions:
                         additionalProperties: false
                     custom_facts:
                         type: object
+                    custom_tags:
+                        type: object
                 required:
                     - bucket
                 additionalProperties: false
@@ -202,6 +206,8 @@ definitions:
                     custom_profile:
                         type: array
                     custom_facts:
+                        type: object
+                    custom_tags:
                         type: object
                 required:
                     - bucket

@@ -116,6 +116,9 @@ Optional parameters are:
 :custom_facts:
         Arbitrary key value pairs to pass to the instance as puppet facts.  Will be prefixed with 'ec2_' in the resulting fact name.
 
+:custom_tags:
+        Arbitrary key value pairs to pass to AWS as extra facts.
+
 :infrastructure:
         Name of the infrastructure artifact to download from S3
 

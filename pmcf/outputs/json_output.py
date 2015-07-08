@@ -797,6 +797,16 @@ class JSONOutput(BaseOutput):
                     propogate=True,
                 )
             ]
+            print inst['provisioner']
+            custom_tags = inst['provisioner']['args'].get('custom_tags', {})
+            for k, v in custom_tags.iteritems():
+                asgtags.append(
+                    autoscaling.Tag(
+                        key=k,
+                        value=v,
+                        propogate=True,
+                    )
+                )
             if inst.get('dns'):
                 dnstag = {
                     'r': inst['dns'].get('record', inst['name']),
